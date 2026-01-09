@@ -1,0 +1,120 @@
+﻿@model AirConServicingManagementSystem.Models.AirConUnit
+@{
+    ViewData["Title"] = "Edit Aircon";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<h3>Edit Aircon</h3>
+
+<form asp-action="EditAircon" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CustomerId" value="@ViewBag.CustomerId" />
+
+    <div class="mb-3">
+        <label class="form-label">Brand</label>
+        <select asp-for="BrandId" class="form-select" id="BrandId" required>
+            <option value="">-- Select Brand --</option>
+            @foreach (var brand in ViewBag.Brands)
+            {
+                <option value="@brand.Id">@brand.BrandName</option>
+            }
+        </select>
+        <span asp-validation-for="BrandId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Model</label>
+        <select asp-for="ModelId" class="form-select" id="ModelId" required>
+            <option value="">-- Select Model --</option>
+            @foreach (var m in ViewBag.Models)
+            {
+                <option value="@m.Id">@m.ModelName</option>
+            }
+        </select>
+        <span asp-validation-for="ModelId" class="text-danger"></span>
+    </div>
+
+   @*  <!-- Brand -->
+    <div class="mb-3">
+        <label class="form-label">Brand</label>
+        <select asp-for="BrandId" class="form-select" id="BrandId" required>
+            <option value="">-- Select Brand --</option>
+            @foreach (var brand in ViewBag.Brands)
+            {
+                <option value="@brand.Id" @(brand.Id == Model.BrandId ? "selected" : "")>@brand.BrandName</option>
+            }
+        </select>
+        <span asp-validation-for="BrandId" class="text-danger"></span>
+    </div>
+
+    <!-- Model -->
+    <div class="mb-3">
+        <label class="form-label">Model</label>
+        <select asp-for="ModelId" class="form-select" id="ModelId" required>
+            <option value="">-- Select Model --</option>
+            @foreach (var model in ViewBag.Models)
+            {
+                <option value="@model.Id" @(model.Id == Model.ModelId ? "selected" : "")>@model.ModelName</option>
+            }
+        </select>
+        <span asp-validation-for="ModelId" class="text-danger"></span>
+    </div>
+ *@
+    <!-- Serial Number -->
+    <div class="mb-3">
+        <label class="form-label">Serial Number</label>
+        <input asp-for="SerialNumber" class="form-control" placeholder="e.g. AC12345" />
+        <span asp-validation-for="SerialNumber" class="text-danger"></span>
+    </div>
+
+    <!-- Capacity -->
+    <div class="mb-3">
+        <label class="form-label">Capacity (HP)</label>
+        <input asp-for="CapacityHp" class="form-control" placeholder="e.g. 1.5 HP" />
+        <span asp-validation-for="CapacityHp" class="text-danger"></span>
+    </div>
+
+    <!-- Installed Location -->
+    <div class="mb-3">
+        <label class="form-label">Installed Location</label>
+        <input asp-for="Location" class="form-control" placeholder="Living Room / Office" />
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+
+    <!-- Installation Date -->
+    <div class="mb-3">
+        <label class="form-label">Installation Date</label>
+        <input asp-for="InstallationDate" type="date" class="form-control" />
+        <span asp-validation-for="InstallationDate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Update Aircon</button>
+    <a asp-action="Aircons" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#BrandId").change(function () {
+                var brandId = $(this).val();
+                $("#ModelId").empty().append('<option>Loading...</option>');
+
+                if (brandId) {
+                    $.getJSON('/CustomerDashboard/GetModelsByBrand', { brandId: brandId }, function (data) {
+                        $("#ModelId").empty().append('<option value="">-- Select Model --</option>');
+                        $.each(data, function (i, item) {
+                            $("#ModelId").append(
+                                $('<option>', { value: item.id, text: item.modelName })
+                            );
+                        });
+                    }).fail(function() {
+                        $("#ModelId").empty().append('<option value="">-- No Models Found --</option>');
+                    });
+                } else {
+                    $("#ModelId").empty().append('<option value="">-- Select Model --</option>');
+                }
+            });
+        });
+    </script>
+}

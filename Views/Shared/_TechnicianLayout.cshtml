@@ -1,0 +1,1268 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AirCon Service Management</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/fontawesome/css/all.min640.css" />
+@*     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+ *@    <style>
+        :root {
+            --primary-color: #2c8c99;
+            --primary-dark: #23727d;
+            --primary-light: #d8f0f3;
+            --secondary-color: #6c757d;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 70px;
+            --header-height: 70px;
+            --transition-speed: 0.3s;
+            --notification-color: #ff4757;
+            --time-color: #2c8c99;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: width var(--transition-speed) ease;
+            z-index: 1000;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            height: var(--header-height);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity var(--transition-speed);
+        }
+
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-size: 1.1rem;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(180deg);
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            overflow-y: auto;
+            height: calc(100vh - var(--header-height) - 100px);
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .section-label {
+            padding: 0 20px 10px 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity var(--transition-speed);
+        }
+
+        .sidebar.collapsed .section-label {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            position: relative;
+            margin: 5px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: all var(--transition-speed);
+            white-space: nowrap;
+            overflow: hidden;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: white;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .nav-text {
+            transition: opacity var(--transition-speed);
+            overflow: hidden;
+            font-size: 0.95rem;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--notification-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            overflow: hidden;
+            transition: opacity var(--transition-speed);
+        }
+
+        .sidebar.collapsed .user-info {
+            opacity: 0;
+            width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition-speed);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            border-bottom: 1px solid #eef1f6;
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title i {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .time-display {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(44, 140, 153, 0.1);
+        }
+
+        .time-display i {
+            font-size: 1rem;
+        }
+
+        .notification-wrapper {
+            position: relative;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+            font-size: 1.2rem;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-btn:hover {
+            background: #f8f9fa;
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--notification-color);
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(255, 71, 87, 0.3);
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .notification-wrapper:hover .notification-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(5px);
+        }
+
+        .notification-header {
+            padding: 20px;
+            border-bottom: 1px solid #eef1f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-title {
+            font-weight: 700;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .notification-count {
+            background: var(--primary-color);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f5f7fa;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: #f8fafc;
+        }
+
+        .notification-item.unread {
+            background: rgba(44, 140, 153, 0.05);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .notification-icon.info {
+            background: var(--primary-color);
+        }
+
+        .notification-icon.warning {
+            background: #ffa502;
+        }
+
+        .notification-icon.success {
+            background: #2ed573;
+        }
+
+        .notification-icon.danger {
+            background: var(--notification-color);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .notification-footer {
+            padding: 15px 20px;
+            text-align: center;
+            border-top: 1px solid #eef1f6;
+        }
+
+        .view-all {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .view-all:hover {
+            color: var(--primary-dark);
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .user-menu-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .user-avatar-small {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-name-small {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 25px;
+            background: #f5f7fa;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--secondary-color);
+        }
+
+        /* Footer */
+        .main-footer {
+            background: white;
+            border-top: 1px solid #eef1f6;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Mobile Responsive */
+        @@media (max-width: 992px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                margin-right: 15px;
+            }
+
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+
+            .sidebar.mobile-open + .mobile-overlay {
+                display: block;
+            }
+
+            .notification-dropdown {
+                position: fixed;
+                top: var(--header-height);
+                right: 10px;
+                width: calc(100% - 20px);
+                max-width: 320px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .top-header {
+                padding: 0 15px;
+            }
+
+            .page-title {
+                font-size: 1.3rem;
+            }
+
+            .header-actions {
+                gap: 15px;
+            }
+
+            .time-display {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+
+            .user-name-small {
+                display: none;
+            }
+
+            .content-wrapper {
+                padding: 15px;
+            }
+
+            .main-footer {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+
+        /* Tablet and Desktop */
+        @@media (min-width: 993px) {
+            .mobile-menu-btn,
+            .mobile-overlay {
+                display: none;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <span class="logo-text">AirCon Service</span>
+                </a>
+                <button class="toggle-btn" id="sidebarToggle">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="section-label">Main Menu</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="/" class="nav-link active">
+                                <span class="nav-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </span>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Technicians" asp-action="Index" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-users-cog"></i>
+                                </span>
+                                <span class="nav-text">Technicians</span>
+                                <span class="nav-badge" id="technicianCount">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-concierge-bell"></i>
+                                </span>
+                                <span class="nav-text">Service Jobs</span>
+                                <span class="nav-badge">5</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </span>
+                                <span class="nav-text">Appointments</span>
+                                <span class="nav-badge">3</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-box"></i>
+                                </span>
+                                <span class="nav-text">Inventory</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="section-label">Management</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                                <span class="nav-text">Schedule</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                </span>
+                                <span class="nav-text">Billing</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                                <span class="nav-text">Reports</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="section-label">Settings</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-cog"></i>
+                                </span>
+                                <span class="nav-text">System Settings</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">
+                                    <i class="fas fa-user-shield"></i>
+                                </span>
+                                <span class="nav-text">User Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name" id="currentUserName">Admin User</div>
+                        <div class="user-role">System Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Overlay -->
+        <div class="mobile-overlay" id="mobileOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn toggle-btn" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">
+                        <i class="fas fa-users-cog"></i>
+                        @ViewData["Title"]
+                    </h1>
+                </div>
+                <div class="header-actions">
+                    <!-- Current Time Display -->
+                    <div class="time-display" id="currentTime">
+                        <i class="far fa-clock"></i>
+                        <span id="timeText">Loading...</span>
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <div class="notification-wrapper">
+                        <button class="notification-btn" id="notificationBtn">
+                            <i class="far fa-bell"></i>
+                            <span class="notification-badge" id="notificationCount">3</span>
+                        </button>
+
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <div class="notification-title">Notifications</div>
+                                <div class="notification-count" id="dropdownNotificationCount">3</div>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <!-- Notifications will be loaded here -->
+                            </div>
+                            <div class="notification-footer">
+                                <a href="#" class="view-all">View All Notifications</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown">
+                        <button class="user-menu-btn" id="userMenuBtn">
+                            <div class="user-avatar-small">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="user-name-small" id="userNameSmall">Admin</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="notification-dropdown" id="userDropdown">
+                            <div class="notification-header">
+                                <div class="notification-title">Account</div>
+                            </div>
+                            <div class="notification-list">
+                                <a href="#" class="notification-item">
+                                    <div class="notification-icon info">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-message">My Profile</div>
+                                    </div>
+                                </a>
+                                <a href="#" class="notification-item">
+                                    <div class="notification-icon success">
+                                        <i class="fas fa-cog"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-message">Settings</div>
+                                    </div>
+                                </a>
+                                <a href="#" class="notification-item">
+                                    <div class="notification-icon warning">
+                                        <i class="fas fa-question-circle"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-message">Help & Support</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="notification-footer">
+                                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                                    <button type="submit" class="view-all" style="border: none; background: none; cursor: pointer; width: 100%;">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-wrapper">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Technician</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                    </ol>
+                </nav>
+
+                <div class="content-card">
+                    @RenderBody()
+                </div>
+            </main>
+
+            <footer class="main-footer">
+                <div class="footer-left">
+                    &copy; @DateTime.Now.Year - AirCon Servicing Management System v1.0
+                </div>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Privacy</a>
+                    <a href="#"><i class="fas fa-file-contract"></i> Terms</a>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            const notificationBtn = document.getElementById('notificationBtn');
+            const userMenuBtn = document.getElementById('userMenuBtn');
+
+            // Desktop toggle
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    const icon = this.querySelector('i');
+                    if (sidebar.classList.contains('collapsed')) {
+                        icon.className = 'fas fa-chevron-right';
+                    } else {
+                        icon.className = 'fas fa-chevron-left';
+                    }
+                });
+            }
+
+            // Mobile menu toggle
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('mobile-open');
+                });
+            }
+
+            // Close sidebar when clicking on overlay
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('mobile-open');
+                });
+            }
+
+            // Update active navigation link
+            function setActiveNav() {
+                const currentPath = window.location.pathname;
+                const navLinks = document.querySelectorAll('.nav-link');
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    const href = link.getAttribute('href');
+
+                    if (href && currentPath.includes(href.replace('~', ''))) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // Set active nav on page load
+            setActiveNav();
+
+            // Auto-collapse sidebar on mobile
+            function handleResize() {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('collapsed');
+                }
+            }
+
+            // Initial check
+            handleResize();
+
+            // Listen for resize events
+            window.addEventListener('resize', handleResize);
+        });
+
+        // Real-time clock functionality
+        function updateClock() {
+            const now = new Date();
+            const timeText = document.getElementById('timeText');
+
+            // Format time
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+
+            // Format date
+            const options = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            const dateString = now.toLocaleDateString('en-US', options);
+
+            timeText.textContent = `${dateString} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Update clock immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Notification system
+        const notifications = [
+            {
+                id: 1,
+                type: 'info',
+                icon: 'fas fa-tools',
+                message: 'New service request assigned to you',
+                time: '5 minutes ago',
+                unread: true
+            },
+            {
+                id: 2,
+                type: 'warning',
+                icon: 'fas fa-exclamation-triangle',
+                message: 'Appointment reminder: Customer John Doe at 2:00 PM',
+                time: '1 hour ago',
+                unread: true
+            },
+            {
+                id: 3,
+                type: 'success',
+                icon: 'fas fa-check-circle',
+                message: 'Service job #4567 completed successfully',
+                time: '2 hours ago',
+                unread: false
+            },
+            {
+                id: 4,
+                type: 'danger',
+                icon: 'fas fa-times-circle',
+                message: 'Inventory alert: AC filters running low',
+                time: '5 hours ago',
+                unread: true
+            },
+            {
+                id: 5,
+                type: 'info',
+                icon: 'fas fa-calendar-alt',
+                message: 'Team meeting scheduled for tomorrow 10 AM',
+                time: '1 day ago',
+                unread: false
+            }
+        ];
+
+        function updateNotificationUI() {
+            const notificationList = document.getElementById('notificationList');
+            const notificationCount = document.getElementById('notificationCount');
+            const dropdownNotificationCount = document.getElementById('dropdownNotificationCount');
+
+            // Count unread notifications
+            const unreadCount = notifications.filter(n => n.unread).length;
+
+            // Update badge counts
+            if (notificationCount) {
+                notificationCount.textContent = unreadCount;
+                notificationCount.style.display = unreadCount > 0 ? 'flex' : 'none';
+            }
+
+            if (dropdownNotificationCount) {
+                dropdownNotificationCount.textContent = unreadCount;
+            }
+
+            // Render notification list
+            if (notificationList) {
+                notificationList.innerHTML = '';
+
+                notifications.slice(0, 5).forEach(notification => {
+                    const notificationItem = document.createElement('div');
+                    notificationItem.className = `notification-item ${notification.unread ? 'unread' : ''}`;
+                    notificationItem.innerHTML = `
+                        <div class="notification-icon ${notification.type}">
+                            <i class="${notification.icon}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-message">${notification.message}</div>
+                            <div class="notification-time">${notification.time}</div>
+                        </div>
+                    `;
+
+                    notificationItem.addEventListener('click', function() {
+                        // Mark as read
+                        const notif = notifications.find(n => n.id === notification.id);
+                        if (notif) {
+                            notif.unread = false;
+                            updateNotificationUI();
+                        }
+                    });
+
+                    notificationList.appendChild(notificationItem);
+                });
+            }
+        }
+
+        // Initialize notifications
+        updateNotificationUI();
+
+        // User dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuBtn && userDropdown) {
+                let dropdownVisible = false;
+
+                userMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownVisible = !dropdownVisible;
+                    userDropdown.style.opacity = dropdownVisible ? '1' : '0';
+                    userDropdown.style.visibility = dropdownVisible ? 'visible' : 'hidden';
+                    userDropdown.style.transform = dropdownVisible ? 'translateY(5px)' : 'translateY(-10px)';
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    dropdownVisible = false;
+                    userDropdown.style.opacity = '0';
+                    userDropdown.style.visibility = 'hidden';
+                    userDropdown.style.transform = 'translateY(-10px)';
+                });
+
+                // Prevent dropdown from closing when clicking inside
+                userDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+
+        // Fetch technician count (example - you can replace with real API call)
+        function fetchTechnicianCount() {
+            // This is a mock function - replace with actual API call
+            const mockCount = 12; // Example count
+
+            const technicianCountElement = document.getElementById('technicianCount');
+            if (technicianCountElement) {
+                technicianCountElement.textContent = mockCount;
+            }
+        }
+
+        // Fetch user info (example - you can replace with real data)
+        function fetchUserInfo() {
+            // This is a mock function - replace with actual user data
+            const userName = "John Manager";
+            const userRole = "Administrator";
+
+            const userNameElement = document.getElementById('currentUserName');
+            const userNameSmallElement = document.getElementById('userNameSmall');
+
+            if (userNameElement) {
+                userNameElement.textContent = userName;
+            }
+
+            if (userNameSmallElement) {
+                userNameSmallElement.textContent = userName.split(' ')[0];
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchTechnicianCount();
+            fetchUserInfo();
+        });
+
+        // Set current page for demo purposes
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (!this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+
+                    // Remove active class from all links
+                    document.querySelectorAll('.nav-link').forEach(item => {
+                        item.classList.remove('active');
+                    });
+
+                    // Add active class to clicked link
+                    this.classList.add('active');
+
+                    // Update page title based on clicked link
+                    const pageTitle = this.querySelector('.nav-text').textContent;
+                    document.querySelector('.page-title').innerHTML = `
+                        <i class="${this.querySelector('.nav-icon i').className}"></i>
+                        ${pageTitle}
+                    `;
+
+                    // Update breadcrumb
+                    document.querySelector('.breadcrumb-item.active').textContent = pageTitle;
+
+                    // Close mobile menu if open
+                    document.getElementById('sidebar').classList.remove('mobile-open');
+                }
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

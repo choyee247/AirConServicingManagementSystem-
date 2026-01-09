@@ -1,0 +1,818 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - AirCon Admin</title>
+
+@*     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+ *@    <link rel="stylesheet" href="~/bootstrap/bootstrap.min532.css" />
+    <link rel="stylesheet" href="~/fontawesome/css/all.min651.css" />
+@*     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+ *@
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-icons111.css" />
+    @* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"> *@
+
+    <style>
+        :root {
+            --primary-color: #2c8c99;
+            --primary-light: #3ba6b5;
+            --primary-dark: #1e737e;
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 70px;
+            --header-height: 70px;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            transition: all var(--transition-speed) ease;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.08);
+            transition: all var(--transition-speed) ease;
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        /* Sidebar collapsed state */
+        body.sidebar-collapsed .sidebar {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar:hover {
+            box-shadow: 3px 0 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .sidebar .brand {
+            padding: 25px 20px;
+            font-size: 22px;
+            color: #fff;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            min-height: 80px;
+        }
+
+        .brand-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: all var(--transition-speed) ease;
+        }
+
+        body.sidebar-collapsed .brand-content {
+            justify-content: center;
+        }
+
+        .sidebar .brand i {
+            font-size: 26px;
+            color: #e3f7fa;
+            min-width: 30px;
+        }
+
+        .brand-text {
+            overflow: hidden;
+            transition: all var(--transition-speed) ease;
+        }
+
+        body.sidebar-collapsed .brand-text {
+            opacity: 0;
+            width: 0;
+            display: none;
+        }
+
+        /* Toggle button in sidebar */
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+            .toggle-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: scale(1.05);
+            }
+
+        body.sidebar-collapsed .toggle-btn {
+            margin: 0 auto;
+        }
+
+            body.sidebar-collapsed .toggle-btn i {
+                transform: rotate(180deg);
+            }
+
+        .sidebar a {
+            color: #e6f7f9;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+            border-left: 4px solid transparent;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+            .sidebar a i {
+                width: 20px;
+                text-align: center;
+                font-size: 18px;
+                flex-shrink: 0;
+            }
+
+        .link-text {
+            overflow: hidden;
+            transition: all var(--transition-speed) ease;
+        }
+
+        body.sidebar-collapsed .link-text {
+            opacity: 0;
+            width: 0;
+            display: none;
+        }
+
+        body.sidebar-collapsed .sidebar a {
+            justify-content: center;
+            padding: 15px 10px;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.12);
+            border-left: 4px solid #a8e6f0;
+            color: #ffffff;
+        }
+
+        body.sidebar-collapsed .sidebar a:hover {
+            border-left: 4px solid transparent;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .sidebar .active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #ffffff;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        body.sidebar-collapsed .sidebar .active {
+            border-left: 4px solid transparent;
+            border-radius: 8px;
+        }
+
+        .menu-header {
+            padding: 18px 20px 10px;
+            font-size: 12px;
+            color: #b3ebf2;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-top: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            white-space: nowrap;
+            transition: all var(--transition-speed) ease;
+        }
+
+        body.sidebar-collapsed .menu-header {
+            padding: 18px 10px 10px;
+            text-align: center;
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
+
+            body.sidebar-collapsed .menu-header span {
+                display: none;
+            }
+
+        /* Tooltip for collapsed state */
+        .sidebar a .tooltip {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-dark);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            margin-left: 10px;
+            pointer-events: none;
+        }
+
+            .sidebar a .tooltip::before {
+                content: '';
+                position: absolute;
+                left: -6px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 6px 6px 6px 0;
+                border-style: solid;
+                border-color: transparent var(--primary-dark) transparent transparent;
+            }
+
+        body.sidebar-collapsed .sidebar a:hover .tooltip {
+            display: block;
+        }
+
+        /* Sidebar content wrapper */
+        .sidebar-content {
+            padding-bottom: 20px;
+        }
+
+        /* Header Styling */
+        .main-header {
+            height: var(--header-height);
+            background-color: #ffffff;
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid #eaeef2;
+            transition: all var(--transition-speed) ease;
+        }
+
+        body.sidebar-collapsed .main-header {
+            left: var(--sidebar-collapsed);
+        }
+
+        /* Header Menu Toggle Button */
+        .header-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toggle-icon-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--primary-color);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+            .toggle-icon-btn:hover {
+                background-color: #f1f5f9;
+                color: var(--primary-dark);
+                transform: scale(1.05);
+            }
+
+        .header-left h1 {
+            font-size: 22px;
+            color: #2d3748;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .date-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #f1f7f9;
+            padding: 8px 16px;
+            border-radius: 50px;
+            color: #2c8c99;
+            font-weight: 500;
+            border: 1px solid #e0eff2;
+            transition: all var(--transition-speed) ease;
+        }
+
+            .date-display i {
+                font-size: 18px;
+            }
+
+        .notification {
+            position: relative;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #64748b;
+            position: relative;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+            .notification-btn:hover {
+                background-color: #f1f5f9;
+                color: var(--primary-color);
+            }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #ef4444;
+            color: white;
+            font-size: 11px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .user-profile:hover {
+                background-color: #f1f5f9;
+            }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #3ba6b5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #334155;
+            font-size: 15px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* Content Area */
+        .content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 30px;
+            min-height: calc(100vh - var(--header-height));
+            transition: all var(--transition-speed) ease;
+        }
+
+        body.sidebar-collapsed .content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        .content-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eef2f7;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        /* Responsive */
+        @@media (max-width: 992px) {
+            .sidebar
+
+        {
+            width: var(--sidebar-width);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        body.sidebar-collapsed .sidebar {
+            width: var(--sidebar-width);
+            transform: translateX(-100%);
+        }
+
+            body.sidebar-collapsed .sidebar.show {
+                transform: translateX(0);
+            }
+
+        .main-header {
+            left: 0;
+        }
+
+        body.sidebar-collapsed .main-header {
+            left: 0;
+        }
+
+        .content {
+            margin-left: 0;
+        }
+
+        body.sidebar-collapsed .content {
+            margin-left: 0;
+        }
+
+        .toggle-btn {
+            display: none;
+        }
+
+        }
+
+        @@media (min-width: 993px) {
+            .mobile-only
+
+        {
+            display: none !important;
+        }
+
+        }
+
+        /* Ensure all sidebar items are visible */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Scrollbar styling */
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+            .sidebar::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.4);
+            }
+    </style>
+    @RenderSection("Styles", required: false)
+</head>
+@{
+    var adminName = Context.Session.GetString("AdminUsername");
+    var adminRole = Context.Session.GetString("AdminRole");
+}
+<body>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-content">
+                <i class="fa-solid fa-snowflake"></i>
+                <span class="brand-text">AirCon Admin</span>
+            </div>
+            <button class="toggle-btn" id="sidebarToggle">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <a class="active" asp-controller="Admin" asp-action="Dashboard">
+                <i class="fa-solid fa-chart-line"></i>
+                <span class="link-text">Dashboard</span>
+                <span class="tooltip">Dashboard</span>
+            </a>
+
+            <div class="menu-header"><span>System Setup</span></div>
+            <a asp-controller="AirConBrand" asp-action="Brands">
+                <i class="fa-solid fa-tags"></i>
+                <span class="link-text">Brands</span>
+                <span class="tooltip">Brands</span>
+            </a>
+            <a asp-controller="AirConModel" asp-action="Models">
+                <i class="fa-solid fa-cubes"></i>
+                <span class="link-text">Models</span>
+                <span class="tooltip">Models</span>
+            </a>
+            <a asp-controller="CustomerDashboard" asp-action="AirCons">
+                <i class="fa-solid fa-wind"></i>
+                <span class="link-text">Aircon Units</span>
+                <span class="tooltip">Aircon Units</span>
+            </a>
+
+            <div class="menu-header"><span>Management</span></div>
+            <a asp-controller="Customer" asp-action="Index">
+                <i class="fa-solid fa-users"></i>
+                <span class="link-text">Customers</span>
+                <span class="tooltip">Customers</span>
+            </a>
+            <a asp-controller="Technicians" asp-action="Index">
+                <i class="fa-solid fa-user-gear"></i>
+                <span class="link-text">Technicians</span>
+                <span class="tooltip">Technicians</span>
+            </a>
+            <a asp-controller="User" asp-action="Index">
+                <i class="fa-solid fa-user-shield"></i>
+                <span class="link-text">Users & Roles</span>
+                <span class="tooltip">Users & Roles</span>
+            </a>
+
+            <div class="menu-header"><span>Services</span></div>
+            <a asp-controller="Service" asp-action="Index">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <span class="link-text">Service Monitoring</span>
+                <span class="tooltip">Service Monitoring</span>
+            </a>
+            <a asp-controller="Warranty" asp-action="Index">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span class="link-text">Warranty Control</span>
+                <span class="tooltip">Warranty Control</span>
+            </a>
+
+            <div class="menu-header"><span>Finance & Reminder</span></div>
+            <a asp-controller="Bonus" asp-action="Index">
+                <i class="fa-solid fa-coins"></i>
+                <span class="link-text">Bonus & Performance</span>
+                <span class="tooltip">Bonus & Performance</span>
+            </a>
+            <a asp-controller="Reminder" asp-action="Index">
+                <i class="fa-solid fa-bell"></i>
+                <span class="link-text">SMS / Email Reminder</span>
+                <span class="tooltip">SMS / Email Reminder</span>
+            </a>
+
+            <div class="menu-header"><span>Reports</span></div>
+            <a asp-controller="Report" asp-action="Monthly">
+                <i class="fa-solid fa-file-lines"></i>
+                <span class="link-text">Monthly Reports</span>
+                <span class="tooltip">Monthly Reports</span>
+            </a>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-left">
+            <div class="header-toggle">
+                <button class="toggle-icon-btn mobile-only" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <button class="toggle-icon-btn desktop-only" id="headerToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>@ViewData["Title"]</h1>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="date-display">
+                <i class="fa-regular fa-calendar"></i>
+                <span id="currentDate">Loading...</span>
+            </div>
+
+            <div class="notification">
+                <button class="notification-btn">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+
+            <div class="user-profile dropdown">
+                <div class="user-avatar dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    @adminName?.Substring(0, 1).ToUpper()
+                </div>
+
+                <div>
+                    <div class="user-name">@adminName</div>
+                    <div class="user-role">@adminRole</div>
+                </div>
+
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                   @*  <li>
+                        <a asp-controller="AdminLogin"
+                           asp-action="Profile"
+                           class="dropdown-item">
+                            <i class="fa fa-user"></i> Profile
+                        </a>
+                    </li> *@
+                    <li>
+                        <a asp-controller="AdminLogin"
+                           asp-action="ChangePassword"
+                           class="dropdown-item">
+                            <i class="fa fa-key"></i> Change Password
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+                    <li>
+                        <a asp-controller="AdminLogin"
+                           asp-action="Logout"
+                           class="dropdown-item text-danger">
+                            <i class="fa fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    <script>
+        // Update current date
+        function updateDate() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            const formattedDate = now.toLocaleDateString('en-US', options);
+            document.getElementById('currentDate').textContent = formattedDate;
+        }
+
+        // Initialize date
+        updateDate();
+
+        // Update date every minute (in case page stays open past midnight)
+        setInterval(updateDate, 60000);
+
+        // Notification click handler
+        document.querySelector('.notification-btn').addEventListener('click', function() {
+            alert('You have 3 new notifications:\n- New customer registration\n- Service request #1234 is pending\n- Monthly report is ready');
+        });
+
+        // User profile click handler
+        // document.querySelector('.user-profile').addEventListener('click', function() {
+        //     alert('Profile menu would open here with options: Profile, Settings, Logout');
+        // });
+
+        // Make sidebar items interactive
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar a').forEach(item => {
+                    item.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                // On mobile, close sidebar after clicking
+                if (window.innerWidth <= 992) {
+                    document.querySelector('.sidebar').classList.remove('show');
+                    document.body.classList.remove('sidebar-collapsed');
+                }
+            });
+        });
+
+        // Sidebar toggle functionality
+        const body = document.body;
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const headerToggle = document.getElementById('headerToggle');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.querySelector('.sidebar');
+
+        // Check localStorage for saved state
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (isCollapsed) {
+            body.classList.add('sidebar-collapsed');
+        }
+
+        function toggleSidebar() {
+            body.classList.toggle('sidebar-collapsed');
+
+            // Save state to localStorage
+            localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed'));
+        }
+
+        // Mobile toggle (show/hide sidebar)
+        function toggleMobileSidebar() {
+            sidebar.classList.toggle('show');
+        }
+
+        // Event listeners
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', toggleSidebar);
+        }
+
+        if (headerToggle) {
+            headerToggle.addEventListener('click', toggleSidebar);
+        }
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', toggleMobileSidebar);
+        }
+
+        // Close mobile sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth <= 992) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMobileToggle = mobileToggle.contains(event.target);
+
+                if (!isClickInsideSidebar && !isClickOnMobileToggle && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                }
+            }
+        });
+
+        // Auto-collapse on smaller screens
+        function checkScreenSize() {
+            if (window.innerWidth <= 1200 && window.innerWidth > 992) {
+                if (!body.classList.contains('sidebar-collapsed')) {
+                    body.classList.add('sidebar-collapsed');
+                }
+            }
+        }
+
+        // Initial check
+        checkScreenSize();
+
+        // Check on resize
+        window.addEventListener('resize', checkScreenSize);
+
+        console.log('Sidebar initialized. Current state:', isCollapsed ? 'Collapsed' : 'Expanded');
+    </script>
+    @RenderSection("Scripts", required: false)
+    <!-- Bootstrap 5 JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

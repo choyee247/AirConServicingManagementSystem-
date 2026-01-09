@@ -1,0 +1,16 @@
+﻿@model AirConServicingManagementSystem.Models.AirConModel
+@{
+    ViewData["Title"] = "Delete Model";
+}
+
+<h3>Delete Model</h3>
+
+<div class="alert alert-warning">
+    Are you sure you want to delete <strong>@Model.ModelName</strong> from Brand <strong>@Model.Brand.BrandName</strong>?
+</div>
+
+<form asp-action="DeleteModel" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a asp-action="Models" class="btn btn-secondary">Cancel</a>
+</form>

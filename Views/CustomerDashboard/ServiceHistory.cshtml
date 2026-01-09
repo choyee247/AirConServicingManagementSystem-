@@ -1,0 +1,29 @@
+﻿@model IEnumerable<ServiceRecord>
+@{
+    ViewData["Title"] = "Service History";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Aircon</th>
+            <th>Type</th>
+            <th>Technician</th>
+            <th>Next Due</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.ServiceDate?.ToString("dd MMM yyyy")</td>
+                <td>@s.AirConUnit.Brand.BrandName</td>
+                <td>@s.ServiceType</td>
+                <td>@s.Technician.Name</td>
+                <td>@s.NextServiceDue?.ToString("dd MMM yyyy")</td>
+            </tr>
+        }
+    </tbody>
+</table>

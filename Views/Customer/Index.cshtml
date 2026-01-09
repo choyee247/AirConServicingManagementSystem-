@@ -1,0 +1,612 @@
+﻿@model IEnumerable<AirConServicingManagementSystem.Models.Customer>
+
+@{
+    ViewData["Title"] = "Customer Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #2c8c99; /* Teal Blue - Air Conditioning Theme */
+    }
+
+    /* Primary Color Utilities */
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+
+    .bg-primary {
+        background-color: var(--primary-color) !important;
+    }
+
+    .border-primary {
+        border-color: var(--primary-color) !important;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #1a535c;
+            border-color: #1a535c;
+        }
+
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a535c 100%) !important;
+    }
+
+    .bg-primary-opacity-10 {
+        background-color: rgba(44, 140, 153, 0.1) !important;
+    }
+
+    .bg-primary-opacity-25 {
+        background-color: rgba(44, 140, 153, 0.25) !important;
+    }
+
+    .text-primary-opacity-75 {
+        color: rgba(44, 140, 153, 0.75) !important;
+    }
+</style>
+
+<div class="container-fluid px-3 px-md-4 py-4">
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div>
+            <h2 class="h3 fw-bold text-primary mb-2">Customer Management</h2>
+            <p class="text-muted mb-0">Manage all your air conditioning service customers in one place</p>
+        </div>
+        <a class="btn btn-primary mt-3 mt-md-0" asp-action="Create">
+            <i class="fas fa-user-plus me-2"></i>Add New Customer
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-6 col-md-3 mb-3">
+            <div class="card border-0 shadow-sm bg-gradient-primary text-white">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
+                            <i class="fas fa-users fa-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="h2 fw-bold mb-0">@Model.Count()</h3>
+                            <small class="opacity-75">Total Customers</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-check-circle fa-lg text-primary"></i>
+                        </div>
+                        <div>
+                            <h3 class="h2 fw-bold mb-0">24</h3>
+                            <small class="text-muted">Active Today</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-calendar-check fa-lg text-primary"></i>
+                        </div>
+                        <div>
+                            <h3 class="h2 fw-bold mb-0">156</h3>
+                            <small class="text-muted">Monthly Services</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-star fa-lg text-primary"></i>
+                        </div>
+                        <div>
+                            <h3 class="h2 fw-bold mb-0">4.8</h3>
+                            <small class="text-muted">Avg Rating</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fas fa-search text-primary"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" placeholder="Search customers..." id="searchInput">
+                        <button class="btn btn-outline-primary" type="button" id="clearSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" id="filterDate">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" id="applyFilters">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="fw-bold mb-0 text-primary">Customer List</h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Desktop View -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-primary-opacity-10">
+                        <tr>
+                            <th class="ps-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                </div>
+                            </th>
+                            <th class="text-primary">Customer</th>
+                            <th class="text-primary">Contact</th>
+                            <th class="text-primary">Address</th>
+                            <th class="text-primary">Status</th>
+                            <th class="text-primary">Last Service</th>
+                            <th class="text-end pe-4 text-primary">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="customer-row" data-name="@item.Name.ToLower()" data-email="@item.Email.ToLower()">
+                                <td class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input customer-checkbox" type="checkbox" value="@item.Id">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar bg-primary-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-0 text-primary">@item.Name</h6>
+                                            <small class="text-primary-opacity-75">ID: CUS-@item.Id.ToString("D4")</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <small class="fw-medium">@item.Phone</small>
+                                        <small class="text-primary-opacity-75">@item.Email</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <small class="text-truncate d-inline-block" style="max-width: 200px;"
+                                           data-bs-toggle="tooltip" title="@item.Address">
+                                        @item.Address
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-opacity-10 text-primary border border-primary">
+                                        <i class="fas fa-circle me-1" style="font-size: 8px;"></i>
+                                        Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-primary-opacity-75">2 days ago</small>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.Id"
+                                           data-bs-toggle="tooltip" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id"
+                                           data-bs-toggle="tooltip" title="Edit Customer">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a class="btn btn-outline-primary" asp-action="Delete" asp-route-id="@item.Id"
+                                           data-bs-toggle="tooltip" title="Delete Customer">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile View -->
+            <div class="d-md-none">
+                <div class="list-group list-group-flush">
+                    @foreach (var item in Model)
+                    {
+                        <div class="list-group-item border-0 customer-row" data-name="@item.Name.ToLower()" data-email="@item.Email.ToLower()">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input customer-checkbox" type="checkbox" value="@item.Id">
+                                    </div>
+                                    <div class="avatar bg-primary-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-primary">@item.Name</h6>
+                                        <small class="text-primary-opacity-75">@item.Phone</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-primary-opacity-10 text-primary border border-primary">
+                                    Active
+                                </span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-primary-opacity-75 d-block mb-1">
+                                    <i class="fas fa-envelope me-2"></i>@item.Email
+                                </small>
+                                <small class="text-primary-opacity-75 d-block">
+                                    <i class="fas fa-map-marker-alt me-2"></i>@item.Address
+                                </small>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-primary-opacity-75">
+                                    <i class="fas fa-calendar me-1"></i>Last: 2 days ago
+                                </small>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a class="btn btn-outline-primary btn-sm" asp-action="Details" asp-route-id="@item.Id">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@item.Id">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-outline-primary btn-sm" asp-action="Delete" asp-route-id="@item.Id">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Footer -->
+        <div class="card-footer bg-white border-0 py-3">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="mb-3 mb-md-0">
+                    <div class="form-check d-inline-block me-3">
+                        <input class="form-check-input" type="checkbox" id="selectAllMobile">
+                        <label class="form-check-label text-primary-opacity-75" for="selectAllMobile">
+                            Select All
+                        </label>
+                    </div>
+                    <span class="text-primary-opacity-75">@Model.Count() customers found</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm" id="deleteSelected">
+                        <i class="fas fa-trash me-1"></i>Delete Selected
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" id="exportSelected">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-users fa-4x text-primary opacity-25"></i>
+            </div>
+            <h4 class="fw-bold text-primary mb-3">No Customers Found</h4>
+            <p class="text-primary-opacity-75 mb-4">Start by adding your first customer to manage your air conditioning service business.</p>
+            <a class="btn btn-primary" asp-action="Create">
+                <i class="fas fa-user-plus me-2"></i>Add Your First Customer
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .customer-row:hover {
+        background-color: rgba(44, 140, 153, 0.05);
+    }
+
+    .table th {
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 1rem;
+    }
+
+    .btn-group .btn {
+        border-radius: 0.25rem !important;
+        margin: 0 2px;
+    }
+
+        .btn-group .btn:first-child {
+            border-top-left-radius: 0.25rem !important;
+            border-bottom-left-radius: 0.25rem !important;
+        }
+
+        .btn-group .btn:last-child {
+            border-top-right-radius: 0.25rem !important;
+            border-bottom-right-radius: 0.25rem !important;
+        }
+
+    /* Status Variations using Primary Color */
+    .status-active {
+        background-color: rgba(44, 140, 153, 0.1);
+        color: var(--primary-color);
+        border: 1px solid rgba(44, 140, 153, 0.3);
+    }
+
+    .status-inactive {
+        background-color: rgba(44, 140, 153, 0.05);
+        color: rgba(44, 140, 153, 0.7);
+        border: 1px solid rgba(44, 140, 153, 0.2);
+    }
+
+    .status-premium {
+        background-color: rgba(44, 140, 153, 0.15);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        font-weight: 600;
+    }
+
+    /* Dark Mode Support */
+    [data-bs-theme="dark"] .bg-light {
+        background-color: rgba(44, 140, 153, 0.1) !important;
+    }
+
+    [data-bs-theme="dark"] .card {
+        background-color: #2d2d2d;
+        border-color: #495057;
+    }
+
+    [data-bs-theme="dark"] .table {
+        color: #e0e0e0;
+    }
+
+        [data-bs-theme="dark"] .table th {
+            border-color: #495057;
+            color: rgba(44, 140, 153, 0.9);
+        }
+
+    [data-bs-theme="dark"] .customer-row:hover {
+        background-color: rgba(44, 140, 153, 0.1);
+    }
+
+    [data-bs-theme="dark"] .text-primary-opacity-75 {
+        color: rgba(44, 140, 153, 0.8) !important;
+    }
+
+    [data-bs-theme="dark"] .bg-primary-opacity-10 {
+        background-color: rgba(44, 140, 153, 0.15) !important;
+    }
+
+    [data-bs-theme="dark"] .input-group-text {
+        background-color: #2d2d2d;
+        border-color: #495057;
+        color: rgba(44, 140, 153, 0.9);
+    }
+
+    [data-bs-theme="dark"] .form-control,
+    [data-bs-theme="dark"] .form-select {
+        background-color: #2d2d2d;
+        border-color: #495057;
+        color: #e0e0e0;
+    }
+
+        [data-bs-theme="dark"] .form-control:focus,
+        [data-bs-theme="dark"] .form-select:focus {
+            background-color: #2d2d2d;
+            border-color: var(--primary-color);
+            color: #e0e0e0;
+            box-shadow: 0 0 0 0.25rem rgba(44, 140, 153, 0.25);
+        }
+</style>
+
+<!-- JavaScript for Interactive Features -->
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            const clearSearch = document.getElementById('clearSearch');
+            const customerRows = document.querySelectorAll('.customer-row');
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                filterCustomers(searchTerm);
+            });
+
+            clearSearch.addEventListener('click', function () {
+                searchInput.value = '';
+                filterCustomers('');
+            });
+
+            function filterCustomers(searchTerm) {
+                customerRows.forEach(row => {
+                    const name = row.getAttribute('data-name');
+                    const email = row.getAttribute('data-email');
+
+                    if (name.includes(searchTerm) || email.includes(searchTerm) || searchTerm === '') {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            // Select All functionality
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const selectAllMobileCheckbox = document.getElementById('selectAllMobile');
+            const customerCheckboxes = document.querySelectorAll('.customer-checkbox');
+            const deleteSelectedBtn = document.getElementById('deleteSelected');
+            const exportSelectedBtn = document.getElementById('exportSelected');
+
+            selectAllCheckbox?.addEventListener('change', function () {
+                const isChecked = this.checked;
+                customerCheckboxes.forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+                updateSelectedButtons();
+            });
+
+            selectAllMobileCheckbox?.addEventListener('change', function () {
+                const isChecked = this.checked;
+                customerCheckboxes.forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+                updateSelectedButtons();
+            });
+
+            customerCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedButtons);
+            });
+
+            function updateSelectedButtons() {
+                const checkedCount = document.querySelectorAll('.customer-checkbox:checked').length;
+                const hasSelection = checkedCount > 0;
+
+                deleteSelectedBtn.disabled = !hasSelection;
+                exportSelectedBtn.disabled = !hasSelection;
+
+                if (hasSelection) {
+                    deleteSelectedBtn.innerHTML = `<i class="fas fa-trash me-1"></i>Delete (${checkedCount})`;
+                    exportSelectedBtn.innerHTML = `<i class="fas fa-download me-1"></i>Export (${checkedCount})`;
+                } else {
+                    deleteSelectedBtn.innerHTML = `<i class="fas fa-trash me-1"></i>Delete Selected`;
+                    exportSelectedBtn.innerHTML = `<i class="fas fa-download me-1"></i>Export`;
+                }
+            }
+
+            // Delete selected functionality
+            deleteSelectedBtn.addEventListener('click', function () {
+                const selectedIds = Array.from(document.querySelectorAll('.customer-checkbox:checked'))
+                    .map(checkbox => checkbox.value);
+
+                if (selectedIds.length > 0) {
+                    if (confirm(`Are you sure you want to delete ${selectedIds.length} selected customer(s)?`)) {
+                        // Here you would typically make an API call to delete the selected customers
+                        console.log('Deleting customers:', selectedIds);
+                        // Reload the page or remove rows from DOM after successful deletion
+                        // location.reload();
+                    }
+                }
+            });
+
+            // Export selected functionality
+            exportSelectedBtn.addEventListener('click', function () {
+                const selectedIds = Array.from(document.querySelectorAll('.customer-checkbox:checked'))
+                    .map(checkbox => checkbox.value);
+
+                if (selectedIds.length > 0) {
+                    console.log('Exporting customers:', selectedIds);
+                    // Here you would typically make an API call to export the selected customers
+                    alert(`Exporting ${selectedIds.length} customer(s) to CSV...`);
+                }
+            });
+
+            // Filter functionality
+            const applyFiltersBtn = document.getElementById('applyFilters');
+            const filterStatus = document.getElementById('filterStatus');
+
+            applyFiltersBtn.addEventListener('click', function () {
+                const status = filterStatus.value;
+                const date = document.getElementById('filterDate').value;
+
+                // Update status badges based on filter
+                const statusBadges = document.querySelectorAll('.badge');
+                statusBadges.forEach(badge => {
+                    if (status === '') {
+                        badge.style.display = '';
+                    } else {
+                        const badgeText = badge.textContent.toLowerCase();
+                        if (badgeText.includes(status)) {
+                            badge.style.display = '';
+                        } else {
+                            badge.closest('tr')?.style.display = 'none';
+                            badge.closest('.list-group-item')?.style.display = 'none';
+                        }
+                    }
+                });
+            });
+
+            // Reset filters when status is cleared
+            filterStatus.addEventListener('change', function() {
+                if (this.value === '') {
+                    customerRows.forEach(row => {
+                        row.style.display = '';
+                    });
+                }
+            });
+        });
+    </script>
+}

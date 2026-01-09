@@ -1,49 +1,346 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AirConServicingManagementSystem</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/AirConServicingManagementSystem.styles.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - AirConServ</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="~/bootstrap/bootstrap.min530.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/fontawesome/css/all.min640.css">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c8c99;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --purple: #6f42c1;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        }
+
+        .min-vh-80 {
+            min-height: 80vh;
+        }
+
+        .hover-shadow {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+            .hover-shadow:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+            .navbar-brand i {
+                color: var(--primary-color);
+            }
+
+        .btn-purple {
+            background-color: var(--purple);
+            color: white;
+        }
+
+            .btn-purple:hover {
+                background-color: #5a32a3;
+                color: white;
+            }
+
+        .footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .theme-switch {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+            .theme-switch:hover {
+                background-color: rgba(0,0,0,0.05);
+            }
+
+        /* Dark Mode Styles */
+        [data-bs-theme="dark"] {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+            [data-bs-theme="dark"] .hero-section {
+                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            }
+
+            [data-bs-theme="dark"] .footer {
+                background-color: #212529;
+                border-top: 1px solid #495057;
+                color: #e0e0e0;
+            }
+
+            [data-bs-theme="dark"] .bg-light {
+                background-color: #2d2d2d !important;
+                color: #e0e0e0;
+            }
+
+            [data-bs-theme="dark"] .text-muted {
+                color: #adb5bd !important;
+            }
+
+            [data-bs-theme="dark"] .card {
+                background-color: #2d2d2d;
+                border-color: #495057;
+                color: #e0e0e0;
+            }
+
+            /* Navigation fixes for dark mode */
+            [data-bs-theme="dark"] .navbar {
+                background-color: #212529 !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            }
+
+            [data-bs-theme="dark"] .navbar-light .navbar-nav .nav-link {
+                color: rgba(255, 255, 255, 0.85) !important;
+            }
+
+                [data-bs-theme="dark"] .navbar-light .navbar-nav .nav-link:hover,
+                [data-bs-theme="dark"] .navbar-light .navbar-nav .nav-link:focus {
+                    color: rgba(255, 255, 255, 1) !important;
+                }
+
+                [data-bs-theme="dark"] .navbar-light .navbar-nav .nav-link.active {
+                    color: var(--primary-color) !important;
+                    font-weight: 600;
+                }
+
+            [data-bs-theme="dark"] .navbar-light .navbar-toggler {
+                border-color: rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.85);
+            }
+
+            [data-bs-theme="dark"] .navbar-light .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            }
+
+            /* Button fixes for dark mode */
+            [data-bs-theme="dark"] .btn-outline-primary {
+                color: #2c8c99;
+                border-color: #2c8c99;
+            }
+
+                [data-bs-theme="dark"] .btn-outline-primary:hover {
+                    background-color: var(--primary-color);
+                    border-color: var(--primary-color);
+                    color: white;
+                }
+
+            [data-bs-theme="dark"] .btn-primary {
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+            }
+
+            /* Footer text color in dark mode */
+            [data-bs-theme="dark"] .footer .text-muted,
+            [data-bs-theme="dark"] .footer a.text-decoration-none.text-muted {
+                color: #adb5bd !important;
+            }
+
+                [data-bs-theme="dark"] .footer a.text-decoration-none.text-muted:hover {
+                    color: #dee2e6 !important;
+                }
+
+            /* Social icons in dark mode */
+            [data-bs-theme="dark"] .footer .text-secondary {
+                color: #adb5bd !important;
+            }
+
+                [data-bs-theme="dark"] .footer .text-secondary:hover {
+                    color: #dee2e6 !important;
+                }
+
+            /* Form control colors in dark mode */
+            [data-bs-theme="dark"] .form-control {
+                background-color: #2d2d2d;
+                border-color: #495057;
+                color: #e0e0e0;
+            }
+
+                [data-bs-theme="dark"] .form-control:focus {
+                    background-color: #2d2d2d;
+                    border-color: #86b7fe;
+                    color: #e0e0e0;
+                    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+                }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AirConServicingManagementSystem</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-wind me-2"></i>AirCon<span class="text-primary">Serv</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/About">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Contact">Contact</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <div class="theme-switch me-3" id="themeToggle">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </div>
+
+                    <a href="/Account/Login" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login
+                    </a>
+                    <a href="/Account/Register" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-1"></i>Register
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4 class="fw-bold mb-3">
+                        <i class="fas fa-wind me-2"></i>AirCon<span class="text-primary">Serv</span>
+                    </h4>
+                    <p class="text-muted">Professional air conditioning servicing management system designed to streamline operations and improve customer satisfaction.</p>
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="#" class="text-secondary"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="#" class="text-secondary"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-secondary"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                        <a href="#" class="text-secondary"><i class="fab fa-instagram fa-lg"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="fw-bold mb-3">Product</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/Features" class="text-decoration-none text-muted">Features</a></li>
+                        <li class="mb-2"><a href="/Pricing" class="text-decoration-none text-muted">Pricing</a></li>
+                        <li class="mb-2"><a href="/Updates" class="text-decoration-none text-muted">Updates</a></li>
+                        <li class="mb-2"><a href="/FAQ" class="text-decoration-none text-muted">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="fw-bold mb-3">Company</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/About" class="text-decoration-none text-muted">About</a></li>
+                        <li class="mb-2"><a href="/Careers" class="text-decoration-none text-muted">Careers</a></li>
+                        <li class="mb-2"><a href="/Blog" class="text-decoration-none text-muted">Blog</a></li>
+                        <li class="mb-2"><a href="/Press" class="text-decoration-none text-muted">Press</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">Contact Us</h5>
+                    <ul class="list-unstyled text-muted">
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>123 Service Street, HVAC City, AC 12345</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i>(+95) 9 123 456 789</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i>support@airconserv.com</li>
+                        <li class="mb-2"><i class="fas fa-clock me-2"></i>Mon-Fri 9:00AM - 6:00PM</li>
                     </ul>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - AirConServicingManagementSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <hr class="my-4">
+
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">&copy; @DateTime.Now.Year AirConServ. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="/Privacy" class="text-decoration-none text-muted me-3">Privacy Policy</a>
+                    <a href="/Terms" class="text-decoration-none text-muted">Terms of Service</a>
+                </div>
+            </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Bootstrap & JavaScript -->
+    <script src="~/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const htmlElement = document.documentElement;
+
+            // Check for saved theme or prefer-color-scheme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-bs-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = htmlElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+                htmlElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
+            }
+
+            // Initialize Bootstrap components if needed
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

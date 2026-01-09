@@ -1,0 +1,36 @@
+﻿@model IEnumerable<ServiceReminder>
+@{
+    ViewData["Title"] = "Service Reminders";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Aircon</th>
+            <th>Reminder Type</th>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.AirConUnit.Brand.BrandName</td>
+                <td>@r.ReminderType</td>
+                <td>@r.ReminderDate?.ToString("dd MMM yyyy")</td>
+                <td>
+                    @if (r.SentStatus == true)
+                    {
+                        <span class="badge bg-success">Sent</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">Pending</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<AirConServicingManagementSystem.Models.AirConBrand>
+@{
+    ViewData["Title"] = "Aircon Brands";
+}
+
+<a asp-action="CreateBrand" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Add Brand</a>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Brand Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.BrandName</td>
+                <td>@item.Description</td>
+                <td>@(item.IsActive == true ? "Active" : "Inactive")</td>
+                <td>
+                    <a asp-action="EditBrand" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="DeleteBrand" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

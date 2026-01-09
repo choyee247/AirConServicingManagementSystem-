@@ -1,8 +1,306 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "AirConServ - Dashboard";
+    Layout = "_Layout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<style>
+    :root {
+        --primary-color: #2c8c99; /* Teal Blue - Air Conditioning Theme */
+        --secondary-color: #4a6572; /* Slate Gray */
+        --accent-color: #ff7e5f; /* Coral Accent */
+        --light-color: #f0f7f9; /* Ice Blue Light */
+        --dark-color: #1a535c; /* Deep Teal */
+        --success-color: #28a745; /* Green */
+        --warning-color: #ffc107; /* Yellow */
+        --info-color: #17a2b8; /* Cyan */
+        --purple: #6f42c1; /* Purple */
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-color) 100%);
+    }
+
+    /* Primary Color Overrides */
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+
+    .bg-primary {
+        background-color: var(--primary-color) !important;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: var(--dark-color);
+            border-color: var(--dark-color);
+        }
+
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+    /* Light Background */
+    .bg-light {
+        background-color: var(--light-color) !important;
+    }
+
+    /* Card hover effect with primary color border */
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(44, 140, 153, 0.1) !important;
+        border-top: 3px solid var(--primary-color);
+    }
+
+    /* Stats cards background with primary tint */
+    .bg-primary-opacity-10 {
+        background-color: rgba(44, 140, 153, 0.1) !important;
+    }
+
+    /* Custom accent colors */
+    .text-accent {
+        color: var(--accent-color) !important;
+    }
+
+    .bg-accent {
+        background-color: var(--accent-color) !important;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary">
+    <div class="container">
+        <div class="row align-items-center min-vh-80">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-white mb-4">Professional Air Conditioning Servicing Management</h1>
+                <p class="lead text-white mb-4">Streamline your HVAC service operations with our comprehensive management system. Track appointments, manage technicians, and improve customer satisfaction.</p>
+                <div class="d-flex gap-3">
+                    <a href="#features" class="btn btn-light btn-lg px-4 py-3">
+                        <i class="fas fa-play-circle me-2"></i>Learn More
+                    </a>
+                    <a href="/Contact" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-phone me-2"></i>Contact Us
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <img src="~/images/aircon.jpg"
+                         class="img-fluid rounded shadow-lg"
+                         alt="Air Conditioning System">
+                    <div class="position-absolute bottom-0 start-0 bg-primary text-white p-3 rounded-end shadow">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle fa-2x me-3"></i>
+                            <div>
+                                <h5 class="mb-0">Trusted Service</h5>
+                                <small class="opacity-75">Since 2026</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-primary-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                            <i class="fas fa-calendar-check fa-2x text-primary"></i>
+                        </div>
+                        <h3 class="display-6 fw-bold">1,250+</h3>
+                        <p class="text-muted">Monthly Services</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                            <i class="fas fa-user-tie fa-2x text-success"></i>
+                        </div>
+                        <h3 class="display-6 fw-bold">45+</h3>
+                        <p class="text-muted">Certified Technicians</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                            <i class="fas fa-users fa-2x text-warning"></i>
+                        </div>
+                        <h3 class="display-6 fw-bold">850+</h3>
+                        <p class="text-muted">Satisfied Clients</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                            <i class="fas fa-map-marker-alt fa-2x text-info"></i>
+                        </div>
+                        <h3 class="display-6 fw-bold">6</h3>
+                        <p class="text-muted">Service Areas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold mb-3 text-primary">Key Features</h2>
+                <p class="lead text-muted">Our system provides everything you need to manage your air conditioning servicing business efficiently.</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-primary-opacity-10 p-3 rounded me-4">
+                                <i class="fas fa-tasks fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold text-primary">Job Management</h4>
+                                <p class="text-muted">Schedule, assign, and track service jobs from start to completion with real-time updates.</p>
+                                <a href="#" class="text-primary text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-success bg-opacity-10 p-3 rounded me-4">
+                                <i class="fas fa-user-clock fa-2x text-success"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold text-success">Technician Tracking</h4>
+                                <p class="text-muted">Monitor technician locations, assign jobs based on proximity, and optimize routes.</p>
+                                <a href="#" class="text-success text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded me-4">
+                                <i class="fas fa-file-invoice-dollar fa-2x text-warning"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold text-warning">Billing & Invoicing</h4>
+                                <p class="text-muted">Generate professional invoices, track payments, and manage customer billing history.</p>
+                                <a href="#" class="text-warning text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-info bg-opacity-10 p-3 rounded me-4">
+                                <i class="fas fa-clipboard-check fa-2x text-info"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold text-info">Inventory Management</h4>
+                                <p class="text-muted">Track spare parts, manage stock levels, and automate reordering for essential components.</p>
+                                <a href="#" class="text-info text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-accent bg-opacity-10 p-3 rounded me-4">
+                                <i class="fas fa-chart-line fa-2x text-accent"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold text-accent">Analytics & Reports</h4>
+                                <p class="text-muted">Gain insights with detailed reports on service performance, revenue, and customer satisfaction.</p>
+                                <a href="#" class="text-accent text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-purple bg-opacity-10 p-3 rounded me-4">
+                                <i class="fas fa-mobile-alt fa-2x text-purple"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold text-purple">Mobile App</h4>
+                                <p class="text-muted">Technicians can update job status, access customer details, and submit reports on the go.</p>
+                                <a href="#" class="text-purple text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="display-5 fw-bold mb-4 text-primary">Ready to Transform Your Servicing Business?</h2>
+                <p class="lead text-muted mb-5">Join hundreds of HVAC companies using our system to improve efficiency and customer satisfaction.</p>
+                <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+                    <a href="/Account/Register" class="btn btn-primary btn-lg px-5 py-3">
+                        <i class="fas fa-rocket me-2"></i>Start Free Trial
+                    </a>
+                    <a href="/Contact" class="btn btn-outline-primary btn-lg px-5 py-3">
+                        <i class="fas fa-phone me-2"></i>Schedule a Demo
+                    </a>
+                </div>
+                <p class="text-muted mt-4">
+                    <small><i class="fas fa-check-circle text-success me-1"></i> No credit card required • 30-day free trial • Cancel anytime</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

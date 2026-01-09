@@ -1,0 +1,23 @@
+﻿@model IEnumerable<CustomerLocation>
+@{
+    ViewData["Title"] = "My Location";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Address</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+        </tr>
+    </thead>
+    @foreach (var l in Model)
+    {
+        <tr>
+            <td>@l.MapAddress</td>
+            <td>@l.Latitude</td>
+            <td>@l.Longitude</td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,31 @@
+﻿@model Customer
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<form asp-action="Profile" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label>Name</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Phone</label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Address</label>
+        <textarea asp-for="Address" class="form-control"></textarea>
+    </div>
+
+    <button class="btn btn-primary">Update</button>
+</form>

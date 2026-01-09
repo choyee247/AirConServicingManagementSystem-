@@ -1,0 +1,36 @@
+﻿@model AirConServicingManagementSystem.Models.AirConModel
+@{
+    ViewData["Title"] = "Add New Model";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<h3>Add New Model</h3>
+
+<form asp-action="CreateModel" method="post">
+    <div class="mb-3">
+        <label class="form-label">Brand</label>
+        <select asp-for="BrandId" class="form-select" required>
+            <option value="">-- Select Brand --</option>
+            @foreach (var brand in ViewBag.Brands)
+            {
+                <option value="@brand.Id">@brand.BrandName</option>
+            }
+        </select>
+        <span asp-validation-for="BrandId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ModelName" class="form-label"></label>
+        <input asp-for="ModelName" class="form-control" required/>
+        <span asp-validation-for="ModelName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Hp" class="form-label"></label>
+        <input asp-for="Hp" class="form-control" placeholder="e.g. 1.5 HP" required />
+        <span asp-validation-for="Hp" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Models" class="btn btn-secondary">Cancel</a>
+</form>

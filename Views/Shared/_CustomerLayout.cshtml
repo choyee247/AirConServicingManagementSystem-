@@ -1,0 +1,393 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AirConServ</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="~/bootstrap/bootstrap.min530.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/fontawesome/css/all.min640.css">
+
+    <style>
+        :root {
+            --primary-color: #2c8c99;
+            --secondary-color: #6c757d;
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+            --header-height: 60px;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), #23727d);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: width 0.3s;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+            .sidebar.collapsed {
+                width: var(--sidebar-collapsed-width);
+            }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            height: var(--header-height);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .logo i {
+                font-size: 24px;
+            }
+
+            .logo span {
+                font-size: 1.3rem;
+                font-weight: 600;
+                transition: opacity 0.3s;
+            }
+
+        .sidebar.collapsed .logo span {
+            opacity: 0;
+            width: 0;
+        }
+
+        .toggle-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .toggle-btn:hover {
+                background: rgba(255,255,255,0.2);
+            }
+
+        .nav-menu {
+            list-style: none;
+            padding: 20px 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+            .nav-link:hover {
+                background: rgba(255,255,255,0.1);
+                color: white;
+            }
+
+            .nav-link.active {
+                background: rgba(255,255,255,0.15);
+                color: white;
+                border-left: 4px solid white;
+            }
+
+        .nav-icon {
+            width: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .nav-text {
+            transition: opacity 0.3s;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-info {
+            transition: opacity 0.3s;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .user-info {
+            opacity: 0;
+            width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s;
+            min-height: 100vh;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification {
+            position: relative;
+            cursor: pointer;
+        }
+
+            .notification .badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+            }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .main-footer {
+            background: white;
+            border-top: 1px solid #dee2e6;
+            padding: 15px 20px;
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo"><i class="fas fa-fan"></i><span>AirConServ</span></div>
+            <button class="toggle-btn" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        </div>
+
+        <ul class="nav-menu">
+
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link active" href="/CustomerDashboard/Index">
+                    <span class="nav-icon"><i class="fas fa-home"></i></span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </li>
+
+            <!-- My Aircon Units -->
+            <li class="nav-item">
+                <a class="nav-link" href="/CustomerDashboard/AddAircon">
+                    <span class="nav-icon"><i class="fas fa-snowflake"></i></span>
+                    <span class="nav-text">My Aircon Units</span>
+                </a>
+            </li>
+
+            <!-- Service History -->
+            <li class="nav-item">
+                <a class="nav-link" href="/CustomerDashboard/ServiceHistory">
+                    <span class="nav-icon"><i class="fas fa-tools"></i></span>
+                    <span class="nav-text">Service History</span>
+                </a>
+            </li>
+
+            <!-- Service Reminders -->
+            <li class="nav-item">
+                <a class="nav-link" href="/CustomerDashboard/Reminders">
+                    <span class="nav-icon"><i class="fas fa-bell"></i></span>
+                    <span class="nav-text">Service Reminders</span>
+                </a>
+            </li>
+
+            <!-- My Location -->
+            <li class="nav-item">
+                <a class="nav-link" href="/CustomerDashboard/Location">
+                    <span class="nav-icon"><i class="fas fa-map-marker-alt"></i></span>
+                    <span class="nav-text">My Location</span>
+                </a>
+            </li>
+
+            <!-- Profile -->
+            <li class="nav-item">
+                <a class="nav-link" href="/CustomerDashboard/Profile">
+                    <span class="nav-icon"><i class="fas fa-user"></i></span>
+                    <span class="nav-text">Profile</span>
+                </a>
+            </li>
+
+            <!-- Logout -->
+            <li class="nav-item">
+                <a class="nav-link text-danger" href="/Account/Logout">
+                    <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </li>
+
+        </ul>
+
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar"><i class="fas fa-user"></i></div>
+                <div class="user-info">
+                    <div class="user-name">Cho Yee</div>
+                    <div class="user-role">Customer</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <h1 class="page-title">@ViewData["Title"]</h1>
+                <div class="header-right">
+                    <!-- Notification -->
+                    <div class="notification">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="badge bg-danger"></span>
+                    </div>
+                    <!-- Date & Time -->
+                    <div class="current-datetime text-muted">
+                        @DateTime.Now.ToString("dd MMM yyyy, hh:mm tt")
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-wrapper">
+            <div class="content-card">
+                @RenderBody()
+            </div>
+        </main>
+
+        <footer class="main-footer">
+            &copy; @DateTime.Now.Year AirConServ. All rights reserved.
+        </footer>
+    </div>
+
+    <script src="~/bootstrap/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebarToggle');
+
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

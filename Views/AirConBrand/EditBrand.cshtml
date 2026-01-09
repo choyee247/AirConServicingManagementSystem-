@@ -1,0 +1,30 @@
+﻿@model AirConServicingManagementSystem.Models.AirConBrand
+@{
+    ViewData["Title"] = "Edit Brand";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<h3>Edit Brand</h3>
+
+<form asp-action="EditBrand" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="BrandName" class="form-label"></label>
+        <input asp-for="BrandName" class="form-control" />
+        <span asp-validation-for="BrandName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Brands" class="btn btn-secondary">Cancel</a>
+</form>

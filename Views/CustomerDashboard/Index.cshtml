@@ -1,0 +1,54 @@
+﻿@model Customer
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+@{
+    // All service records from all aircons
+    var allServiceRecords = Model.AirConUnits
+        .SelectMany(a => a.ServiceRecords)
+        .Where(s => s.IsDeleted != true)
+        .ToList();
+
+    var lastServiceDate = allServiceRecords
+        .OrderByDescending(s => s.ServiceDate)
+        .FirstOrDefault()?.ServiceDate;
+
+    // All reminders from all aircons
+    var allReminders = Model.AirConUnits
+        .SelectMany(a => a.ServiceReminders)
+        .Where(r => r.IsDeleted != true)
+        .ToList();
+
+    var nextServiceDate = allReminders
+        .OrderBy(r => r.ReminderDate)
+        .FirstOrDefault()?.ReminderDate;
+}
+
+<div class="row text-center">
+    <div class="col-md-4">
+        <div class="content-card">
+            <h5>My Aircons</h5>
+            <h2>@Model.AirConUnits.Count</h2>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="content-card">
+            <h5>Last Service</h5>
+            <p>
+                @(lastServiceDate?.ToString("dd MMM yyyy") ?? "No Service Yet")
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="content-card">
+            <h5>Next Service</h5>
+            <p>
+                @(nextServiceDate?.ToString("dd MMM yyyy") ?? "No Reminder Yet")
+            </p>
+        </div>
+    </div>
+</div>

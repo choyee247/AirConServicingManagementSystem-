@@ -1,0 +1,71 @@
+﻿@model AirConServicingManagementSystem.Models.Customer
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header" style="background-color:#2c8c99; color:white;">
+            <h2 class="mb-0">Edit Customer</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label" style="color:#2c8c99;"></label>
+                    <input asp-for="Name" class="form-control border-primary" style="border-color:#2c8c99;" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Phone" class="form-label" style="color:#2c8c99;"></label>
+                    <input asp-for="Phone" class="form-control border-primary" style="border-color:#2c8c99;" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label" style="color:#2c8c99;"></label>
+                    <input asp-for="Email" class="form-control border-primary" style="border-color:#2c8c99;" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label" style="color:#2c8c99;"></label>
+                    <textarea asp-for="Address" class="form-control border-primary" style="border-color:#2c8c99;"></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary me-2"
+                        style="background-color:#2c8c99; border-color:#2c8c99;">
+                    Save
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">Back</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Input focus state */
+        .form-control:focus {
+            border-color: #2c8c99;
+            box-shadow: 0 0 0 0.2rem rgba(44, 140, 153, 0.25);
+        }
+
+        /* Button hover & active state */
+        .btn-primary:hover {
+            background-color: #23727d !important;
+            border-color: #23727d !important;
+        }
+
+        .btn-primary:active {
+            background-color: #1f5e66 !important;
+            border-color: #1f5e66 !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
