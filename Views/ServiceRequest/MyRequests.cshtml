@@ -1,0 +1,79 @@
+﻿@model IEnumerable<ServiceRequest>
+@{
+    ViewData["Title"] = "MyRequest";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm rounded-3">
+        <div class="card-header bg-white">
+            <h3 class="mb-0" style="color:#2c8c99; font-weight:700;">
+                My Service Requests
+            </h3>
+            <p class="text-muted mb-0">
+                Check your service status and technician details
+            </p>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>AirCon</th>          
+                            <th>Service</th>
+                            <th>Status</th>
+                            <th>Technician</th>
+                            <th>Warranty</th>       
+                            <th>Fee</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model)
+                        {
+                            <tr>
+                                <td>@s.RequestedAt.ToString("dd-MM-yyyy")</td>
+
+                                <td>
+                                    @s.AirCon?.Brand?.BrandName - @s.AirCon?.Model?.ModelName
+                                </td>
+
+                                <td>
+                                    <span class="badge"
+                                          style="background-color:@(s.ServiceType == "Urgent" ? "#2c8c99" : "#6c757d"); color:white;">
+                                        @s.ServiceType
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge"
+                                          style="background-color:@(s.Status == "Pending" ? "#f0ad4e" :
+                                               s.Status == "Completed" ? "#28a745" :
+                                               "#6c757d"); color:white;">
+                                        @s.Status
+                                    </span>
+                                </td>
+
+                                <td>@(s.Technician?.Name ?? "Not Assigned")</td>
+
+                                <td>
+                                    @if (s.IsWarrantyApplied)
+                                    {
+                                        <span class="badge bg-success">Warranty</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">No Warranty</span>
+                                    }
+                                </td>
+
+                                <td>@s.Fee MMK</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

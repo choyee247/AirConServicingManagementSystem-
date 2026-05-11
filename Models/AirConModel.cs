@@ -16,10 +16,6 @@ public partial class AirConModel
     [StringLength(100)]
     public string? ModelName { get; set; }
 
-    [Column("HP")]
-    [StringLength(20)]
-    public string? Hp { get; set; }
-
     public bool? IsDeleted { get; set; }
 
     [Column(TypeName = "datetime")]

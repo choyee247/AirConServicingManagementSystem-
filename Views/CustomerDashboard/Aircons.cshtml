@@ -1,60 +1,243 @@
 ﻿@model IEnumerable<AirConServicingManagementSystem.Models.AirConUnit>
+
 @{
-    ViewData["Title"] = "My Aircon Units";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "My AirCon Units";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
 }
 
-<h3>My Aircon Units</h3>
+<style>
+    :root {
+        --primary: #2c8c99;
+        --primary-dark: #23727d;
+        --light: #eef8fa;
+    }
 
-<a asp-action="AddAircon" class="btn btn-primary mb-3">
-    <i class="fas fa-plus"></i> Add New Aircon
-</a>
+    .page-header {
+        background: linear-gradient(135deg,var(--primary),var(--primary-dark));
+        color: white;
+        padding: 20px 25px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    }
 
-<table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Brand</th>
-            <th>Model</th>
-            <th>Serial Number</th>
-            <th>Capacity (HP)</th>
-            <th>Location</th>
-            <th>Installation Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Any())
-        {
-            int index = 1;
-            foreach (var aircon in Model)
-            {
-                <tr>
-                    <td>@index</td>
-                    <td>@aircon.Brand.BrandName</td>
-                    <td>@aircon.Model.ModelName</td>
-                    <td>@aircon.SerialNumber</td>
-                    <td>@aircon.CapacityHp</td>
-                    <td>@aircon.Location</td>
-                    <td>@aircon.InstallationDate?.ToString("yyyy-MM-dd")</td>
-                    <td>
-                        <a asp-action="EditAircon" asp-route-id="@aircon.Id" class="btn btn-sm btn-warning">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <a asp-action="DeleteAircon" asp-route-id="@aircon.Id" class="btn btn-sm btn-danger"
-                           onclick="return confirm('Are you sure you want to delete this aircon?');">
-                            <i class="fas fa-trash"></i> Delete
-                        </a>
-                    </td>
-                </tr>
-                index++;
-            }
+    .summary-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 18px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        margin-bottom: 20px;
+    }
+
+    .aircon-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 22px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 14px rgba(0,0,0,.06);
+        border-left: 6px solid var(--primary);
+    }
+
+    .aircon-title {
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .info-badge {
+        display: inline-block;
+        padding: 7px 14px;
+        border-radius: 30px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        background: var(--light);
+        color: #333;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .warranty-active {
+        background: #dff7e6;
+        color: #15803d;
+    }
+
+    .warranty-expired {
+        background: #ffe4e6;
+        color: #be123c;
+    }
+
+    .btn-main {
+        background: #2c8c99;
+        color: #fff;
+        border: none;
+    }
+
+        .btn-main:hover {
+            background: #23727d;
+            color: white;
         }
-        else
-        {
-            <tr>
-                <td colspan="8" class="text-center">No aircon units found.</td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+    .action-group .btn {
+        margin: 4px;
+        border-radius: 8px;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    .serial-box {
+        background: #f8fafc;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-top: 8px;
+    }
+</style>
+
+<div class="page-header">
+    <h2>
+        <i class="fas fa-snowflake"></i>
+        My AirCon Units
+    </h2>
+
+    <p class="mb-0">
+        View your AirCon details, warranty, generate QR and print service QR.
+    </p>
+</div>
+
+<div class="summary-box d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h5>Total Units: @Model.Count()</h5>
+        <small class="text-muted">
+            Customer-based AirCon management
+        </small>
+    </div>
+
+   @*  <a asp-action="AddAircon" class="btn btn-main">
+        <i class="fas fa-plus"></i>
+        Add New AirCon
+    </a> *@
+</div>
+
+
+@if (Model.Any())
+{
+    foreach (var aircon in Model)
+    {
+        bool warrantyActive =
+            aircon.Warranty != null &&
+            aircon.Warranty.IsActive;
+
+        <div class="aircon-card">
+
+            <div class="d-flex justify-content-between flex-wrap">
+                <div>
+                    <h4 class="aircon-title">
+                        @aircon.Brand.BrandName
+                        -
+                        @aircon.Model.ModelName
+                    </h4>
+
+                    <div class="info-badge">
+                        <i class="fas fa-bolt"></i>
+                        @aircon.CapacityHp HP
+                    </div>
+
+                    <div class="info-badge">
+                        <i class="fas fa-calendar"></i>
+                        Installed:
+                        @aircon.InstallationDate?.ToString("yyyy-MM-dd")
+                    </div>
+
+                    <div class="info-badge @(warrantyActive ? "warranty-active":"warranty-expired")">
+                        <i class="fas fa-shield-alt"></i>
+
+                        @(warrantyActive
+                            ? "Warranty Active"
+                            : "Warranty Expired")
+                    </div>
+
+                    @if (aircon.WarrantyPeriodMonths != null)
+                    {
+                        <div class="info-badge">
+                            Warranty:
+                            @aircon.WarrantyPeriodMonths Months
+                        </div>
+                    }
+
+                    <div class="serial-box">
+                        <b>Serial:</b>
+                        @aircon.SerialNumber
+                    </div>
+
+                </div>
+            </div>
+
+
+            <hr />
+
+            <div class="action-group">
+
+                <!-- Edit -->
+               @*  <a asp-action="EditAircon"
+                   asp-route-id="@aircon.Id"
+                   class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </a>
+
+                <!-- Delete -->
+                <a asp-action="DeleteAircon"
+                   asp-route-id="@aircon.Id"
+                   onclick="return confirm('Delete this AirCon?')"
+                   class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                    Delete
+                </a> *@
+
+
+                <!-- Generate QR -->
+                <a asp-controller="TechnicianService"
+                   asp-action="GenerateQR"
+                   asp-route-customerId="@aircon.CustomerId"
+                   class="btn btn-main">
+                    <i class="fas fa-qrcode"></i>
+                    Generate QR
+                </a>
+
+                <!-- View Warranty -->
+                <a asp-controller="ServiceRequest"
+                   asp-action="Warranty"
+                   class="btn btn-success">
+                    <i class="fas fa-shield-alt"></i>
+                    Warranty
+                </a>
+
+                <!-- Print -->
+              @*   <button onclick="window.print()"
+                        class="btn btn-secondary">
+                    <i class="fas fa-print"></i>
+                    Print
+                </button> *@
+
+            </div>
+
+        </div>
+    }
+}
+else
+{
+    <div class="empty-box">
+        <i class="fas fa-snowflake fa-3x mb-3 text-muted"></i>
+
+        <h4>No AirCon Units Found</h4>
+
+        <p class="text-muted">
+            Add your first AirCon unit to begin service tracking.
+        </p>
+    </div>
+}

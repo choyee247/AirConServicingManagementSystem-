@@ -14,11 +14,6 @@ public partial class AirConBrand
     [StringLength(100)]
     public string BrandName { get; set; } = null!;
 
-    [StringLength(200)]
-    public string? Description { get; set; }
-
-    public bool? IsActive { get; set; }
-
     [Column(TypeName = "datetime")]
     public DateTime? CreatedAt { get; set; }
 
@@ -29,6 +24,9 @@ public partial class AirConBrand
 
     [Column(TypeName = "datetime")]
     public DateTime? DeletedAt { get; set; }
+
+    [StringLength(100)]
+    public string? MadeIn { get; set; }
 
     [InverseProperty("Brand")]
     public virtual ICollection<AirConModel> AirConModels { get; set; } = new List<AirConModel>();

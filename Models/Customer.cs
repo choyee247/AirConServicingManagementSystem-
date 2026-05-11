@@ -17,9 +17,6 @@ public partial class Customer
     [StringLength(20)]
     public string? Phone { get; set; }
 
-    [StringLength(100)]
-    public string? Email { get; set; }
-
     [StringLength(200)]
     public string? Address { get; set; }
 
@@ -38,11 +35,20 @@ public partial class Customer
     public virtual ICollection<AirConUnit> AirConUnits { get; set; } = new List<AirConUnit>();
 
     [InverseProperty("Customer")]
+    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+    [InverseProperty("Customer")]
     public virtual ICollection<CustomerLocation> CustomerLocations { get; set; } = new List<CustomerLocation>();
+
+    [InverseProperty("Customer")]
+    public virtual ICollection<CustomerQrToken> CustomerQrTokens { get; set; } = new List<CustomerQrToken>();
 
     [InverseProperty("Customer")]
     public virtual ICollection<ServiceRecord> ServiceRecords { get; set; } = new List<ServiceRecord>();
 
     [InverseProperty("Customer")]
     public virtual ICollection<ServiceReminder> ServiceReminders { get; set; } = new List<ServiceReminder>();
+
+    [InverseProperty("Customer")]
+    public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
 }

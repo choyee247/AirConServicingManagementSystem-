@@ -1,0 +1,37 @@
+﻿@model IEnumerable<AirConServicingManagementSystem.Models.MaintenanceSchedule>
+
+@{
+    ViewData["Title"] = "My Maintenance";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<h3>My Maintenance</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>AirCon</th>
+            <th>Scheduled Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.AirCon.Brand.BrandName - @m.AirCon.Model.ModelName</td>
+                <td>@m.ScheduledDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@m.Status</td>
+                <td>
+                    @if (m.Status == "Scheduled")
+                    {
+                        <a asp-action="Confirm" asp-route-id="@m.MaintenanceId" class="btn btn-success btn-sm">
+                            Confirm
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

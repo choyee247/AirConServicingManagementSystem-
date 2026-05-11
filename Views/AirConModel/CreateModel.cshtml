@@ -4,33 +4,158 @@
     Layout = "~/Views/Shared/_CustomerLayout.cshtml";
 }
 
-<h3>Add New Model</h3>
+<div class="container-fluid py-4">
+    <div class="card border-0 shadow-sm" style="border-top: 4px solid #2c8c99;">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0" style="color: #2c8c99;">
+                    <i class="bi bi-plus-circle me-2"></i>Add New Model
+                </h4>
+                <a asp-action="Models" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Models
+                </a>
+            </div>
+        </div>
 
-<form asp-action="CreateModel" method="post">
-    <div class="mb-3">
-        <label class="form-label">Brand</label>
-        <select asp-for="BrandId" class="form-select" required>
-            <option value="">-- Select Brand --</option>
-            @foreach (var brand in ViewBag.Brands)
-            {
-                <option value="@brand.Id">@brand.BrandName</option>
-            }
-        </select>
-        <span asp-validation-for="BrandId" class="text-danger"></span>
+        <div class="card-body">
+            <form asp-action="CreateModel" method="post" class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Brand</label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: #f8f9fa; border-color: #dee2e6;">
+                                    <i class="bi bi-building" style="color: #2c8c99;"></i>
+                                </span>
+                                <select asp-for="BrandId" class="form-select" required>
+                                    <option value="">-- Select Brand --</option>
+                                    @foreach (var brand in ViewBag.Brands)
+                                    {
+                                        <option value="@brand.Id">@brand.BrandName</option>
+                                    }
+                                </select>
+                            </div>
+                            <span asp-validation-for="BrandId" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ModelName" class="form-label fw-semibold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: #f8f9fa; border-color: #dee2e6;">
+                                    <i class="bi bi-tag" style="color: #2c8c99;"></i>
+                                </span>
+                                <input asp-for="ModelName" class="form-control" placeholder="Enter model name" required />
+                            </div>
+                            <span asp-validation-for="ModelName" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                       @*  <div class="mb-4">
+                            <label asp-for="Hp" class="form-label fw-semibold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: #f8f9fa; border-color: #dee2e6;">
+                                    <i class="bi bi-lightning-charge" style="color: #2c8c99;"></i>
+                                </span>
+                                <input asp-for="Hp" class="form-control" placeholder="e.g. 1.5 HP" required />
+                                <span class="input-group-text bg-light" style="border-color: #dee2e6;">HP</span>
+                            </div>
+                            <span asp-validation-for="Hp" class="text-danger small mt-1 d-block"></span>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1" style="color: #2c8c99;"></i>
+                                Enter the horsepower rating (e.g., 1.0, 1.5, 2.0)
+                            </div>
+                        </div> *@
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card bg-light border-0">
+                            <div class="card-body">
+                                <h6 class="card-title" style="color: #2c8c99;">
+                                    <i class="bi bi-info-circle me-2"></i>Model Information
+                                </h6>
+                                <p class="card-text small text-muted">
+                                    Add a new air conditioner model to the system. Models are linked to brands and help
+                                    identify specific units for service scheduling and inventory management.
+                                </p>
+                                <div class="alert alert-light border" style="border-color: #2c8c99 !important;">
+                                    <h6 class="alert-heading small mb-2" style="color: #2c8c99;">
+                                        <i class="bi bi-lightbulb me-1"></i>Tips:
+                                    </h6>
+                                    <ul class="small mb-0 ps-3">
+                                        <li>Select the correct brand first</li>
+                                        <li>Use descriptive model names</li>
+                                        <li>HP rating helps in service estimation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 pt-4 mt-3 border-top">
+                    <button type="submit" class="btn text-white" style="background-color: #2c8c99; border-color: #2c8c99;">
+                        <i class="bi bi-check-circle me-2"></i>Save Model
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Reset
+                    </button>
+                    <a asp-action="Models" class="btn btn-outline-secondary ms-auto">
+                        <i class="bi bi-x-circle me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="ModelName" class="form-label"></label>
-        <input asp-for="ModelName" class="form-control" required/>
-        <span asp-validation-for="ModelName" class="text-danger"></span>
-    </div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Custom styling for form controls
+            const formSelects = document.querySelectorAll('select.form-select');
+            const formInputs = document.querySelectorAll('input.form-control');
 
-    <div class="mb-3">
-        <label asp-for="Hp" class="form-label"></label>
-        <input asp-for="Hp" class="form-control" placeholder="e.g. 1.5 HP" required />
-        <span asp-validation-for="Hp" class="text-danger"></span>
-    </div>
+            // Add focus styling to selects
+            formSelects.forEach(select => {
+                select.addEventListener('focus', function() {
+                    this.style.borderColor = '#2c8c99';
+                    this.style.boxShadow = '0 0 0 0.25rem rgba(44, 140, 153, 0.25)';
+                });
 
-    <button type="submit" class="btn btn-success">Save</button>
-    <a asp-action="Models" class="btn btn-secondary">Cancel</a>
-</form>
+                select.addEventListener('blur', function() {
+                    this.style.borderColor = '#dee2e6';
+                    this.style.boxShadow = 'none';
+                });
+            });
+
+            // Add focus styling to inputs
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.borderColor = '#2c8c99';
+                    this.style.boxShadow = '0 0 0 0.25rem rgba(44, 140, 153, 0.25)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.style.borderColor = '#dee2e6';
+                    this.style.boxShadow = 'none';
+                });
+            });
+
+            // Form validation styling
+            const form = document.querySelector('form.needs-validation');
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    // Add custom invalid styling
+                    const invalidElements = form.querySelectorAll(':invalid');
+                    invalidElements.forEach(element => {
+                        element.style.borderColor = '#dc3545';
+                        element.style.boxShadow = '0 0 0 0.25rem rgba(220, 53, 69, 0.25)';
+                    });
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    </script>
+}

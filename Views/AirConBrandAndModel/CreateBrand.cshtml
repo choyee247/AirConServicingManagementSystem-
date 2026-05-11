@@ -12,15 +12,15 @@
         <span asp-validation-for="BrandName" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
+   @*  <div class="mb-3">
         <label asp-for="Description" class="form-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
-    </div>
+    </div> *@
 
-    <div class="mb-3 form-check">
+    @* <div class="mb-3 form-check">
         <input asp-for="IsActive" class="form-check-input" />
         <label asp-for="IsActive" class="form-check-label"></label>
-    </div>
+    </div> *@
 
     <button type="submit" class="btn btn-success">Save</button>
     <a asp-action="Brands" class="btn btn-secondary">Cancel</a>

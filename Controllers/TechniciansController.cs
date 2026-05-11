@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using AirConServicingManagementSystem.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace AirConServicingManagementSystem.Controllers
 {
@@ -21,23 +22,24 @@ namespace AirConServicingManagementSystem.Controllers
             ViewData["CurrentFilter"] = searchString;
             ViewData["StatusFilter"] = statusFilter;
 
-            var technicians = _context.ServiceTechnicians
-                .Where(t => t.IsDeleted == null || t.IsDeleted == false)
+            var technicians = _context.Technicians
+                .Where(t => !t.IsDeleted)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
                 technicians = technicians.Where(t =>
                     t.Name.Contains(searchString) ||
-                    t.Phone.Contains(searchString) ||
+                    t.PhoneNumber.Contains(searchString) ||
                     t.Email.Contains(searchString) ||
-                    t.Address.Contains(searchString));
+                    t.Address.Contains(searchString) ||
+                    t.TechnicianRole.Contains(searchString));
             }
 
             if (!string.IsNullOrEmpty(statusFilter))
             {
-                bool isActive = statusFilter == "active";
-                technicians = technicians.Where(t => t.IsActive == isActive);
+                bool isAvailable = statusFilter == "available";
+                technicians = technicians.Where(t => t.IsAvailable == isAvailable);
             }
 
             technicians = technicians.OrderByDescending(t => t.CreatedAt);
@@ -45,28 +47,39 @@ namespace AirConServicingManagementSystem.Controllers
             return View(await technicians.ToListAsync());
         }
 
+
         // GET: Technicians/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null) return NotFound();
+
+            var technician = await _context.Technicians
+                .Include(t => t.Appointments)
+                .Include(t => t.Payments)
+                .Include(t => t.ServiceRequests)
+                .FirstOrDefaultAsync(t => t.TechnicianId == id && !t.IsDeleted);
+
+            if (technician == null) return NotFound();
+
+            var viewModel = new TechnicianViewModel
             {
-                return NotFound();
-            }
+                Id = technician.TechnicianId,
+                Name = technician.Name,
+                PhoneNumber = technician.PhoneNumber,
+                Email = technician.Email,
+                Address = technician.Address,
+                TechnicianRole = technician.TechnicianRole,
+                JoinDate = technician.JoinDate,
+                LeaveDate = technician.LeaveDate,
+                IsAvailable = technician.IsAvailable,
+                CreatedAt = technician.CreatedAt,
+                UpdatedAt = technician.UpdatedAt,
+            };
 
-            var technician = await _context.ServiceTechnicians
-                .Include(t => t.ServiceRecords)
-                .Include(t => t.TechnicianBonuses)
-                .FirstOrDefaultAsync(m => m.Id == id && (m.IsDeleted == null || m.IsDeleted == false));
-
-            if (technician == null)
-            {
-                return NotFound();
-            }
-
-            return View(technician);
+            return View(viewModel);
         }
 
-        // GET: Technicians/Create
+
         // GET: Technicians/Create
         public IActionResult Create()
         {
@@ -80,15 +93,18 @@ namespace AirConServicingManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                var technician = new ServiceTechnician
+                var technician = new Technician
                 {
                     Name = viewModel.Name,
-                    Phone = viewModel.Phone,
+                    PhoneNumber = viewModel.PhoneNumber,
                     Email = viewModel.Email,
                     Address = viewModel.Address,
-                    JoinDate = viewModel.JoinDate,
-                    IsActive = viewModel.IsActive,
+                    TechnicianRole = viewModel.TechnicianRole,
+                    JoinDate = viewModel.JoinDate ?? DateTime.Now,
+                    LeaveDate = viewModel.LeaveDate,
+                    IsAvailable = viewModel.IsAvailable,
                     CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
                     IsDeleted = false
                 };
 
@@ -104,28 +120,24 @@ namespace AirConServicingManagementSystem.Controllers
         // GET: Technicians/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var technician = await _context.ServiceTechnicians
-                .FirstOrDefaultAsync(m => m.Id == id && (m.IsDeleted == null || m.IsDeleted == false));
+            var technician = await _context.Technicians
+                .FirstOrDefaultAsync(t => t.TechnicianId == id && !t.IsDeleted);
 
-            if (technician == null)
-            {
-                return NotFound();
-            }
+            if (technician == null) return NotFound();
 
             var viewModel = new TechnicianViewModel
             {
-                Id = technician.Id,
+                Id = technician.TechnicianId,
                 Name = technician.Name,
-                Phone = technician.Phone,
+                PhoneNumber = technician.PhoneNumber,
                 Email = technician.Email,
                 Address = technician.Address,
+                TechnicianRole = technician.TechnicianRole,
                 JoinDate = technician.JoinDate,
-                IsActive = technician.IsActive ?? true,
+                LeaveDate = technician.LeaveDate,
+                IsAvailable = technician.IsAvailable,
                 CreatedAt = technician.CreatedAt,
                 UpdatedAt = technician.UpdatedAt
             };
@@ -138,29 +150,25 @@ namespace AirConServicingManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, TechnicianViewModel viewModel)
         {
-            if (id != viewModel.Id)
-            {
-                return NotFound();
-            }
+            if (id != viewModel.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var existingTechnician = await _context.ServiceTechnicians
-                        .FirstOrDefaultAsync(t => t.Id == id && (t.IsDeleted == null || t.IsDeleted == false));
+                    var existingTechnician = await _context.Technicians
+                        .FirstOrDefaultAsync(t => t.TechnicianId == id && !t.IsDeleted);
 
-                    if (existingTechnician == null)
-                    {
-                        return NotFound();
-                    }
+                    if (existingTechnician == null) return NotFound();
 
                     existingTechnician.Name = viewModel.Name;
-                    existingTechnician.Phone = viewModel.Phone;
+                    existingTechnician.PhoneNumber = viewModel.PhoneNumber;
                     existingTechnician.Email = viewModel.Email;
                     existingTechnician.Address = viewModel.Address;
-                    existingTechnician.JoinDate = viewModel.JoinDate;
-                    existingTechnician.IsActive = viewModel.IsActive;
+                    existingTechnician.TechnicianRole = viewModel.TechnicianRole;
+                    existingTechnician.JoinDate = viewModel.JoinDate ?? existingTechnician.JoinDate;
+                    existingTechnician.LeaveDate = viewModel.LeaveDate;
+                    existingTechnician.IsAvailable = viewModel.IsAvailable;
                     existingTechnician.UpdatedAt = DateTime.Now;
 
                     _context.Update(existingTechnician);
@@ -170,14 +178,8 @@ namespace AirConServicingManagementSystem.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TechnicianExists(viewModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!TechnicianExists(viewModel.Id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -187,28 +189,22 @@ namespace AirConServicingManagementSystem.Controllers
         // GET: Technicians/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var technician = await _context.ServiceTechnicians
-                .FirstOrDefaultAsync(m => m.Id == id && (m.IsDeleted == null || m.IsDeleted == false));
+            var technician = await _context.Technicians
+                .FirstOrDefaultAsync(t => t.TechnicianId == id && !t.IsDeleted);
 
-            if (technician == null)
-            {
-                return NotFound();
-            }
+            if (technician == null) return NotFound();
 
-            return View(technician);
+            return View(technician); // Pass the Technician object to Delete view
         }
 
         // POST: Technicians/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var technician = await _context.ServiceTechnicians.FindAsync(id);
+            var technician = await _context.Technicians.FindAsync(id);
 
             if (technician != null)
             {
@@ -225,83 +221,46 @@ namespace AirConServicingManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Technicians/SoftDelete/5 (AJAX)
-        [HttpPost]
-        public async Task<IActionResult> SoftDelete(int id)
-        {
-            var technician = await _context.ServiceTechnicians.FindAsync(id);
-
-            if (technician != null)
-            {
-                technician.IsDeleted = true;
-                technician.DeletedAt = DateTime.Now;
-                technician.UpdatedAt = DateTime.Now;
-
-                _context.Update(technician);
-                await _context.SaveChangesAsync();
-
-                return Json(new { success = true, message = "Technician deleted successfully!" });
-            }
-
-            return Json(new { success = false, message = "Technician not found!" });
-        }
-
-        // POST: Technicians/ToggleStatus/5 (AJAX)
-        [HttpPost]
-        public async Task<IActionResult> ToggleStatus(int id)
-        {
-            var technician = await _context.ServiceTechnicians
-                .FirstOrDefaultAsync(t => t.Id == id && (t.IsDeleted == null || t.IsDeleted == false));
-
-            if (technician != null)
-            {
-                technician.IsActive = !technician.IsActive;
-                technician.UpdatedAt = DateTime.Now;
-
-                _context.Update(technician);
-                await _context.SaveChangesAsync();
-
-                return Json(new
-                {
-                    success = true,
-                    message = $"Technician {(technician.IsActive == true ? "activated" : "deactivated")} successfully!",
-                    isActive = technician.IsActive
-                });
-            }
-
-            return Json(new { success = false, message = "Technician not found!" });
-        }
-
         private bool TechnicianExists(int id)
         {
-            return _context.ServiceTechnicians.Any(e => e.Id == id && (e.IsDeleted == null || e.IsDeleted == false));
+            return _context.Technicians.Any(t => t.TechnicianId == id && !t.IsDeleted);
         }
-
-        // GET: Technicians/Statistics
-        public async Task<IActionResult> Statistics()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleStatus(int id)
         {
-            var totalTechnicians = await _context.ServiceTechnicians
-                .Where(t => t.IsDeleted == null || t.IsDeleted == false)
-                .CountAsync();
+            var technician = await _context.Technicians.FindAsync(id);
+            if (technician == null)
+                return Json(new { success = false, message = "Technician not found" });
 
-            var activeTechnicians = await _context.ServiceTechnicians
-                .Where(t => (t.IsDeleted == null || t.IsDeleted == false) && t.IsActive == true)
-                .CountAsync();
+            technician.IsAvailable = !technician.IsAvailable;
+            technician.UpdatedAt = DateTime.Now;
 
-            var statistics = new
+            _context.Update(technician);
+            await _context.SaveChangesAsync();
+
+            return Json(new
             {
-                Total = totalTechnicians,
-                Active = activeTechnicians,
-                Inactive = totalTechnicians - activeTechnicians,
-                JoinThisMonth = await _context.ServiceTechnicians
-                    .Where(t => (t.IsDeleted == null || t.IsDeleted == false) &&
-                                t.JoinDate != null &&
-                                t.JoinDate.Value.Month == DateTime.Now.Month &&
-                                t.JoinDate.Value.Year == DateTime.Now.Year)
-                    .CountAsync()
-            };
+                success = true,
+                message = $"Technician is now {(technician.IsAvailable ? "Available" : "Unavailable")}."
+            });
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SoftDelete(int id)
+        {
+            var technician = await _context.Technicians.FindAsync(id);
+            if (technician == null)
+                return Json(new { success = false, message = "Technician not found" });
 
-            return View(statistics);
+            technician.IsDeleted = true;
+            technician.DeletedAt = DateTime.Now;
+            technician.UpdatedAt = DateTime.Now;
+
+            _context.Update(technician);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Technician deleted successfully!" });
         }
     }
 }

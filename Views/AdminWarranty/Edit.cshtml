@@ -1,0 +1,45 @@
+﻿@model AirConServicingManagementSystem.Models.Warranty
+
+@{
+    ViewData["Title"] = "Edit Warranty";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-warning text-white">
+            <h4 class="mb-0">Edit Warranty</h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="WarrantyId" />
+
+                <div class="mb-3">
+                    <label class="form-label">AirCon</label>
+                    <input class="form-control" value="@Model.AirConId" disabled />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Start Date</label>
+                        <input asp-for="StartDate" type="date" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">End Date</label>
+                        <input asp-for="EndDate" type="date" class="form-control" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-save"></i> Update
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary ms-2">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

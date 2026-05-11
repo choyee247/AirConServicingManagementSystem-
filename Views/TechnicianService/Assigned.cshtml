@@ -1,0 +1,185 @@
+﻿@model IEnumerable<ServiceRequest>
+
+@{
+    ViewData["Title"] = "Assigned Services";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<style>
+    body {
+        background: #f4f8fa;
+    }
+
+    .page-title {
+        color: #2c8c99;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .card-container {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,.08);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg,#2c8c99,#45a8b5);
+        color: #fff;
+        padding: 18px 25px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .table thead {
+        background: #eef7f8;
+    }
+
+        .table thead th {
+            color: #2c8c99;
+            font-weight: 600;
+            border: none;
+            padding: 16px;
+        }
+
+    .table td {
+        padding: 16px;
+        vertical-align: middle;
+        border-top: 1px solid #edf2f4;
+    }
+
+    .table tbody tr:hover {
+        background: #f8fcfc;
+    }
+
+    .badge-custom {
+        padding: 8px 14px;
+        border-radius: 25px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-warranty {
+        background: rgba(44,140,153,.15);
+        color: #2c8c99;
+    }
+
+    .badge-nowarranty {
+        background: #ffe5e5;
+        color: #d63031;
+    }
+
+    .badge-free {
+        background: #dff9fb;
+        color: #2c8c99;
+    }
+
+    .badge-discount {
+        background: #fff4d6;
+        color: #e17055;
+    }
+
+    .badge-normal {
+        background: #ecf0f1;
+        color: #636e72;
+    }
+
+    .btn-complete {
+        background: #2c8c99;
+        border: none;
+        color: #fff;
+        border-radius: 25px;
+        padding: 6px 14px;
+        font-size: 13px;
+        transition: .3s;
+    }
+
+        .btn-complete:hover {
+            background: #226f7a;
+            color: #fff;
+        }
+
+    .status-text {
+        font-weight: 600;
+        color: #2d3436;
+    }
+</style>
+
+<div class="container py-4">
+
+    <h2 class="page-title">Assigned Services</h2>
+
+    <div class="card-container">
+
+        <div class="card-header">
+            Service Requests
+        </div>
+
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Warranty</th>
+                        <th>Payment</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td class="status-text">@s.Customer.Name</td>
+                            <td>@s.Location</td>
+                            <td class="status-text">@s.Status</td>
+
+                            <td>
+                                @if (s.IsWarrantyApplied)
+                                {
+                                    <span class="badge-custom badge-warranty">Warranty</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-custom badge-nowarranty">No Warranty</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (s.IsFreeService)
+                                {
+                                    <span class="badge-custom badge-free">Free</span>
+                                }
+                                else if (s.DiscountAmount > 0)
+                                {
+                                    <span class="badge-custom badge-discount">
+                                        Discount @s.DiscountAmount
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-custom badge-normal">Normal</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (s.Status != "Completed")
+                                {
+                                    <a asp-action="Complete"
+                                       asp-route-id="@s.ServiceId"
+                                       class="btn btn-complete">
+                                        Complete
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>

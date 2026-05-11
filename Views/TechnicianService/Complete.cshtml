@@ -1,0 +1,51 @@
+﻿@model AirConServicingManagementSystem.ViewModels.CompleteServiceViewModel
+
+@{
+    ViewData["Title"] = "Complete Service";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header text-white"
+             style="background:#2c8c99;">
+            <h4 class="mb-0">Complete Service</h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Complete" method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="ServiceId" />
+
+                <div class="mb-3">
+                    <label asp-for="SummaryOption" class="form-label"></label>
+                    <select asp-for="SummaryOption" class="form-select">
+                        <option value="">-- Select Summary --</option>
+                        <option>General cleaning completed</option>
+                        <option>Gas refilled and tested</option>
+                        <option>Filter cleaned</option>
+                        <option>Indoor and outdoor units cleaned</option>
+                        <option>Electrical wiring checked</option>
+                        <option>Water leakage fixed</option>
+                        <option>Routine maintenance completed</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AdditionalRemarks" class="form-label"></label>
+                    <textarea asp-for="AdditionalRemarks"
+                              class="form-control"
+                              rows="5"
+                              placeholder="Enter additional details..."></textarea>
+                </div>
+
+                <button type="submit"
+                        class="btn text-white"
+                        style="background:#2c8c99;">
+                    Complete & Generate QR
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

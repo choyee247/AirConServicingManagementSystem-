@@ -1,111 +1,208 @@
 ﻿@model AirConServicingManagementSystem.Models.AirConUnit
+
 @{
     ViewData["Title"] = "Add New Aircon";
     Layout = "~/Views/Shared/_CustomerLayout.cshtml";
 }
 
-<h3>Add New Aircon</h3>
+<div class="container-fluid">
+    <div class="form-container">
+        <!-- Header -->
+        <div class="form-header">
+            <i class="fas fa-plus-circle"></i>
+            <h3>Add New Air Conditioning Unit</h3>
+        </div>
 
-<form asp-action="AddAircon" method="post">
-    <!-- Hidden CustomerId -->
-    <input type="hidden" asp-for="CustomerId" value="@ViewBag.CustomerId" />
+        <!-- Info -->
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            Fill in the details of the air conditioning unit. Fields marked with * are required.
+        </div>
 
-    <!-- Brand -->
-    @* <div class="mb-3">
-        <label class="form-label">Brand</label>
-        <select asp-for="BrandId" class="form-select" id="BrandId" required>
-            <option value="">-- Select Brand --</option>
-            @foreach (var brand in ViewBag.Brands)
-            {
-                <option value="@brand.Id">@brand.BrandName</option>
+        <!-- Form -->
+        <form asp-action="AddAircon" method="post" id="addAirconForm">
+            <input type="hidden" asp-for="CustomerId" value="@ViewBag.CustomerId" />
+
+            <!-- Brand -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-tag"></i> Brand Information
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label field-required">Brand</label>
+                    <div class="input-group">
+                        <select asp-for="BrandId" class="form-select" id="BrandId" required>
+                            <option value="">-- Select Brand --</option>
+                            @foreach (var brand in ViewBag.Brands)
+                            {
+                                <option value="@brand.Id">@brand.BrandName</option>
+                            }
+                        </select>
+                        <a asp-controller="AirConBrand"
+                           asp-action="CreateBrand"
+                           class="btn btn-outline-primary-custom">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </div>
+                    <span asp-validation-for="BrandId" class="text-danger"></span>
+
+                    <div class="loading-indicator" id="brandLoading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading models...
+                    </div>
+                </div>
+
+                <!-- Model -->
+                <div class="mb-3">
+                    <label class="form-label field-required">Model</label>
+                    <div class="input-group">
+                        <select asp-for="ModelId" class="form-select" id="ModelId" required>
+                            <option value="">-- Select Model --</option>
+                        </select>
+                        <a asp-controller="AirConModel"
+                           asp-action="CreateModel"
+                           class="btn btn-outline-primary-custom">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </div>
+                    <span asp-validation-for="ModelId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Unit Details -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-cog"></i> Unit Details
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Serial Number</label>
+                        <input asp-for="SerialNumber" class="form-control" />
+                        <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Capacity (HP)</label>
+                        <input asp-for="CapacityHp" class="form-control" />
+                        <span asp-validation-for="CapacityHp" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    @* <div class="col-md-6 mb-3">
+                        <label class="form-label">Location</label>
+                        <input asp-for="Location" class="form-control" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div> *@
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Installation Date</label>
+                        <input asp-for="InstallationDate" type="date" class="form-control" />
+                        <span asp-validation-for="InstallationDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <button type="submit" class="btn btn-custom">
+                    <i class="fas fa-save"></i> Save Aircon
+                </button>
+
+                <a asp-action="Aircons" class="btn btn-secondary-custom ms-2">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Styles {
+    <style>
+        :root {
+            --primary-color: #2c8c99;
+            --primary-light: #e0f7fa;
+            --primary-dark: #1a5f6b;
+            --secondary-color: #f8f9fa;
+            --text-dark: #333;
+            --text-light: #666;
+            --border-radius: 10px;
+            --box-shadow: 0 5px 15px rgba(44, 140, 153, 0.1);
+        }
+        .form-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,.08);
+        }
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2c8c99;
+            border-bottom: 2px solid #e0f7fa;
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1a5f6b;
+        }
+
+        .btn-custom {
+            background: #2c8c99;
+            color: #fff;
+        }
+
+            .btn-custom:hover {
+                background: #1a5f6b;
             }
-        </select>
-        <span asp-validation-for="BrandId" class="text-danger"></span>
-    </div>
 
-    <!-- Model -->
-    <div class="mb-3">
-        <label class="form-label">Model</label>
-        <select asp-for="ModelId" class="form-select" id="ModelId" required>
-            <option value="">-- Select Model --</option>
-        </select>
-        <span asp-validation-for="ModelId" class="text-danger"></span>
-    </div> *@
-    <!-- Brand -->
-    <div class="mb-3">
-        <label class="form-label">Brand</label>
-        <div class="input-group">
-            <select asp-for="BrandId" class="form-select" id="BrandId" required>
-                <option value="">-- Select Brand --</option>
-                @foreach (var brand in ViewBag.Brands)
-                {
-                    <option value="@brand.Id">@brand.BrandName</option>
-                }
-            </select>
-            <a class="btn btn-outline-primary" asp-controller="AirConBrand" asp-action="CreateBrand">+ Add Brand</a>
-        </div>
-        <span asp-validation-for="BrandId" class="text-danger"></span>
-    </div>
+        .btn-outline-primary-custom {
+            border: 1px solid #2c8c99;
+            color: #2c8c99;
+        }
 
-    <!-- Model -->
-    <div class="mb-3">
-        <label class="form-label">Model</label>
-        <div class="input-group">
-            <select asp-for="ModelId" class="form-select" id="ModelId" required>
-                <option value="">-- Select Model --</option>
-            </select>
-            <a class="btn btn-outline-primary" asp-controller="AirConModel" asp-action="CreateModel">+ Add Model</a>
-        </div>
-        <span asp-validation-for="ModelId" class="text-danger"></span>
-    </div>
+            .btn-outline-primary-custom:hover {
+                background: #2c8c99;
+                color: #fff;
+            }
 
-    <!-- Serial Number -->
-    <div class="mb-3">
-        <label class="form-label">Serial Number</label>
-        <input asp-for="SerialNumber" class="form-control" placeholder="e.g. AC12345" />
-        <span asp-validation-for="SerialNumber" class="text-danger"></span>
-    </div>
-
-    <!-- Capacity -->
-    <div class="mb-3">
-        <label class="form-label">Capacity (HP)</label>
-        <input asp-for="CapacityHp" class="form-control" placeholder="e.g. 1.5 HP" />
-        <span asp-validation-for="CapacityHp" class="text-danger"></span>
-    </div>
-
-    <!-- Installed Location -->
-    <div class="mb-3">
-        <label class="form-label">Installed Location</label>
-        <input asp-for="Location" class="form-control" placeholder="Living Room / Office" />
-        <span asp-validation-for="Location" class="text-danger"></span>
-    </div>
-
-    <!-- Installation Date -->
-    <div class="mb-3">
-        <label class="form-label">Installation Date</label>
-        <input asp-for="InstallationDate" type="date" class="form-control" />
-        <span asp-validation-for="InstallationDate" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-success">
-        <i class="fas fa-save"></i> Save Aircon
-    </button>
-    <a asp-action="Aircons" class="btn btn-secondary">Cancel</a>
-</form>
-
+        .loading-indicator {
+            display: none;
+            color: #2c8c99;
+            margin-top: 10px;
+        }
+    </style>
+}
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
         $(document).ready(function () {
 
-            $('#BrandId').on('change', function () {
+            // Brand select change
+            $('#BrandId').change(function () {
+                let brandId = $(this).val();
+                let modelDropdown = $('#ModelId');
+                let loading = $('#brandLoading');
 
-                var brandId = $(this).val();
-                $('#ModelId').html('<option value="">Loading...</option>');
+                modelDropdown.html('<option>Loading...</option>');
+                loading.show();
 
                 if (!brandId) {
-                    $('#ModelId').html('<option value="">-- Select Model --</option>');
+                    modelDropdown.html('<option value="">-- Select Model --</option>');
+                    loading.hide();
                     return;
                 }
 
@@ -114,24 +211,25 @@
                     type: 'GET',
                     data: { brandId: brandId },
                     success: function (data) {
-
-                        $('#ModelId').empty();
-                        $('#ModelId').append('<option value="">-- Select Model --</option>');
-
+                        modelDropdown.empty().append('<option value="">-- Select Model --</option>');
                         $.each(data, function (i, item) {
-                            $('#ModelId').append(
-                                $('<option></option>')
-                                    .val(item.id)
-                                    .text(item.modelName)
-                            );
+                            modelDropdown.append(`<option value="${item.id}">${item.modelName}</option>`);
                         });
+                        loading.hide();
                     },
                     error: function () {
-                        alert('Failed to load models');
+                        alert('Failed to load models. Please try again.');
+                        modelDropdown.html('<option value="">-- Select Model --</option>');
+                        loading.hide();
                     }
                 });
             });
 
+            // Form submit loading state
+            $('#addAirconForm').submit(function () {
+                $('.btn-custom').html('<i class="fas fa-spinner fa-spin"></i> Saving...')
+                                 .prop('disabled', true);
+            });
         });
     </script>
 }

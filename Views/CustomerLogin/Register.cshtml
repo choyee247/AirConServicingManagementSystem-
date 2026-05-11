@@ -1,0 +1,876 @@
+﻿@model AirConServicingManagementSystem.Models.Customer
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Customer Registration - AirCon Management System";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c8c99;
+            --primary-dark: #1e6a75;
+            --primary-light: #e1f5f8;
+            --primary-gradient: linear-gradient(135deg, #2c8c99 0%, #34a8b8 100%);
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff9f43;
+            --accent-gradient: linear-gradient(135deg, #ff9f43 0%, #ffb463 100%);
+            --text-color: #333;
+            --light-text: #6c757d;
+            --success-color: #28a745;
+            --card-shadow: 0 15px 35px rgba(44, 140, 153, 0.15);
+            --hover-shadow: 0 20px 40px rgba(44, 140, 153, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+            /* Background decorative elements */
+            body::before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 80%;
+                height: 80%;
+                background: radial-gradient(circle, rgba(44, 140, 153, 0.08) 1px, transparent 1px);
+                background-size: 30px 30px;
+                z-index: -1;
+            }
+
+            body::after {
+                content: "";
+                position: absolute;
+                bottom: -30%;
+                left: -30%;
+                width: 60%;
+                height: 60%;
+                background: radial-gradient(circle, rgba(44, 140, 153, 0.05) 1px, transparent 1px);
+                background-size: 40px 40px;
+                z-index: -1;
+            }
+
+        .register-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .register-card {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: none;
+            display: flex;
+            min-height: 600px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+            .register-card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--hover-shadow);
+            }
+
+        .register-left {
+            flex: 1.2;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .register-left::before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+                background-size: 30px 30px;
+                opacity: 0.3;
+                z-index: 0;
+                animation: float 20s linear infinite;
+            }
+
+            .register-left::after {
+                content: "";
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.05);
+                top: -50px;
+                right: -50px;
+                z-index: 0;
+            }
+
+        @@keyframes float {
+            0%
+
+        {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(30px, 30px) rotate(360deg);
+        }
+
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            background: white;
+            color: var(--primary-color);
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-right: 18px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container:hover .logo-icon {
+            transform: rotate(15deg);
+        }
+
+        .system-name {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .register-left h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            line-height: 1.3;
+        }
+
+        .register-left p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 35px;
+            position: relative;
+            z-index: 1;
+            line-height: 1.6;
+        }
+
+        .benefits-list {
+            position: relative;
+            z-index: 1;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+            .benefit-item:hover {
+                background-color: rgba(255, 255, 255, 0.15);
+                transform: translateX(10px);
+                border-left: 4px solid rgba(255, 255, 255, 0.5);
+            }
+
+        .benefit-icon {
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover .benefit-icon {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .benefit-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .register-right {
+            flex: 1.5;
+            padding: 50px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: white;
+        }
+
+        .register-form-header {
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+            .register-form-header h2 {
+                color: var(--primary-dark);
+                font-size: 28px;
+                font-weight: 700;
+                margin-bottom: 10px;
+                position: relative;
+                display: inline-block;
+            }
+
+                .register-form-header h2::after {
+                    content: "";
+                    position: absolute;
+                    bottom: -5px;
+                    left: 0;
+                    width: 60px;
+                    height: 4px;
+                    background: var(--accent-gradient);
+                    border-radius: 2px;
+                }
+
+            .register-form-header p {
+                color: var(--light-text);
+                font-size: 15px;
+                margin-top: 15px;
+            }
+
+        .alert-danger {
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #cf1322;
+            border-radius: 10px;
+            padding: 15px 18px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(207, 19, 34, 0.08);
+        }
+
+            .alert-danger i {
+                margin-right: 10px;
+                font-size: 18px;
+            }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            position: relative;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+            .form-label i {
+                margin-right: 10px;
+                color: var(--primary-color);
+                font-size: 16px;
+                width: 20px;
+                text-align: center;
+            }
+
+        .form-control {
+            padding: 16px 18px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            width: 100%;
+            background-color: #fdfdfd;
+        }
+
+            .form-control:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 4px rgba(44, 140, 153, 0.15);
+                background-color: white;
+                outline: none;
+            }
+
+            .form-control::placeholder {
+                color: #adb5bd;
+                font-weight: 400;
+            }
+
+        .form-group:focus-within .form-label {
+            color: var(--primary-color);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .btn-register {
+            flex: 1.5;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 18px;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(44, 140, 153, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-register::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.7s;
+            }
+
+            .btn-register:hover::before {
+                left: 100%;
+            }
+
+            .btn-register:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(44, 140, 153, 0.4);
+            }
+
+            .btn-register:active {
+                transform: translateY(-1px);
+            }
+
+            .btn-register i {
+                margin-right: 10px;
+                font-size: 18px;
+            }
+
+        .btn-login {
+            flex: 1;
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 18px;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(44, 140, 153, 0.1);
+        }
+
+            .btn-login:hover {
+                background-color: var(--primary-light);
+                transform: translateY(-3px);
+                box-shadow: 0 8px 15px rgba(44, 140, 153, 0.2);
+                border-color: var(--primary-dark);
+                color: var(--primary-dark);
+                text-decoration: none;
+            }
+
+            .btn-login i {
+                margin-right: 10px;
+                font-size: 18px;
+            }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #f0f0f0;
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+            .form-footer p {
+                margin-bottom: 8px;
+            }
+
+            .form-footer a {
+                color: var(--primary-color);
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.2s;
+                border-bottom: 1px dashed transparent;
+            }
+
+                .form-footer a:hover {
+                    color: var(--primary-dark);
+                    border-bottom: 1px dashed var(--primary-color);
+                }
+
+        .responsive-toggle {
+            display: none;
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+            font-weight: 700;
+            cursor: pointer;
+            padding: 15px;
+            background-color: var(--primary-light);
+            border-radius: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(44, 140, 153, 0.1);
+        }
+
+            .responsive-toggle:hover {
+                background-color: #d4f0f5;
+                transform: translateY(-2px);
+            }
+
+            .responsive-toggle i {
+                margin-right: 10px;
+                font-size: 18px;
+            }
+
+        .required-mark {
+            color: #ff4d4f;
+            margin-left: 4px;
+        }
+
+        .text-danger {
+            font-size: 13px;
+            margin-top: 5px;
+            display: block;
+            padding-left: 5px;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 18px;
+            top: 42px;
+            color: #adb5bd;
+            transition: color 0.3s;
+        }
+
+        .form-group:focus-within .input-icon {
+            color: var(--primary-color);
+        }
+
+        @@media (max-width: 992px) {
+            .register-card
+
+        {
+            flex-direction: column;
+            max-width: 650px;
+            min-height: auto;
+        }
+
+        .register-left, .register-right {
+            padding: 40px 35px;
+        }
+
+        .responsive-toggle {
+            display: block;
+        }
+
+        .register-left {
+            display: none;
+        }
+
+            .register-left.active {
+                display: flex;
+            }
+
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        }
+
+        @@media (max-width: 576px) {
+            body
+
+        {
+            padding: 15px;
+        }
+
+        .register-container {
+            padding: 0;
+        }
+
+        .register-left, .register-right {
+            padding: 30px 25px;
+        }
+
+        .register-form-header h2 {
+            font-size: 24px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 28px;
+        }
+
+        .system-name {
+            font-size: 22px;
+        }
+
+        .btn-register, .btn-login {
+            padding: 16px;
+            font-size: 16px;
+        }
+
+        }
+    </style>
+    <!-- intl-tel-input -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.3.3/css/intlTelInput.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.3.3/js/intlTelInput.min.js"></script>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <!-- Left Panel - Branding & Benefits -->
+            <div class="register-left" id="registerLeft">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-fan"></i>
+                    </div>
+                    <div class="system-name">AirCon Management</div>
+                </div>
+
+                <h1>Join AirCon Management System</h1>
+                <p>Register now to access advanced air conditioning management features and optimize your cooling system's performance with our intelligent platform.</p>
+
+                <div class="benefits-list">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="benefit-text">Smart energy consumption tracking & analytics</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="benefit-text">Automated maintenance scheduling & alerts</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="benefit-text">Mobile app access & remote control features</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="benefit-text">24/7 customer support & technical assistance</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Registration Form -->
+            <div class="register-right">
+                <div class="responsive-toggle" id="toggleView">
+                    <i class="fas fa-exchange-alt me-2"></i>View Registration Benefits
+                </div>
+
+                <div class="register-form-header">
+                    <h2>Create Your Account</h2>
+                    <p>Fill in your details to register for the AirCon Management System and start managing your AC systems efficiently</p>
+                </div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> @ViewBag.Error
+                    </div>
+                }
+
+                <form asp-action="Register" method="post" id="registrationForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user"></i> Full Name<span class="required-mark">*</span>
+                            </label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter your full name" required />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                            <div class="input-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-phone"></i> Phone Number<span class="required-mark">*</span>
+                            </label>
+                            <input asp-for="Phone" id="phone" class="form-control" placeholder="Enter phone number" required />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                            <div class="input-icon">
+                                <i class="fas fa-phone-volume"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                   @*  <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-envelope"></i> Email Address<span class="required-mark">*</span>
+                            </label>
+                            <input asp-for="Email" class="form-control" placeholder="customer@example.com" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <div class="input-icon">
+                                <i class="fas fa-envelope-open"></i>
+                            </div>
+                        </div>
+                    </div> *@
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-home"></i> Address
+                            </label>
+                            <input asp-for="Address" class="form-control" placeholder="Enter your full address" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                            <div class="input-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-register">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+
+                        <a asp-action="Login" class="btn-login">
+                            <i class="fas fa-sign-in-alt"></i> Back to Login
+                        </a>
+                    </div>
+                </form>
+
+                <div class="form-footer">
+                    <p><i class="fas fa-shield-alt me-1"></i> Your information is secured with 256-bit encryption</p>
+                    <p class="mt-2">Already have an account? <a asp-action="Login">Sign in here</a></p>
+                    <p class="mt-1">© 2026 AirCon Management System. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize phone input
+            const phoneInput = document.querySelector("#phone");
+            if (phoneInput) {
+                const iti = window.intlTelInput(phoneInput, {
+                    initialCountry: "mm",
+                    separateDialCode: true,
+                    preferredCountries: ["mm", "th", "sg", "jp", "us"],
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.3.3/js/utils.js",
+                    customContainer: 'w-100',
+                    autoPlaceholder: "polite",
+                    formatOnDisplay: true
+                });
+
+                phoneInput.form.addEventListener("submit", function() {
+                    phoneInput.value = iti.getNumber();
+                });
+            }
+
+            // Toggle left panel on mobile
+            const toggleView = document.getElementById('toggleView');
+            const registerLeft = document.getElementById('registerLeft');
+
+            if (toggleView && registerLeft) {
+                toggleView.addEventListener('click', function() {
+                    registerLeft.classList.toggle('active');
+
+                    if (registerLeft.classList.contains('active')) {
+                        toggleView.innerHTML = '<i class="fas fa-exchange-alt me-2"></i>Hide Registration Benefits';
+                        toggleView.style.backgroundColor = '#d4f0f5';
+                    } else {
+                        toggleView.innerHTML = '<i class="fas fa-exchange-alt me-2"></i>View Registration Benefits';
+                        toggleView.style.backgroundColor = '';
+                    }
+                });
+            }
+
+            // Enhanced form validation
+            const form = document.getElementById('registrationForm');
+            if (form) {
+                const inputs = form.querySelectorAll('.form-control[required]');
+
+                inputs.forEach(input => {
+                    // Add validation styling
+                    input.addEventListener('input', function() {
+                        if (this.value.trim() === '') {
+                            this.style.borderColor = '#ff4d4f';
+                            this.style.boxShadow = '0 0 0 4px rgba(255, 77, 79, 0.1)';
+                        } else {
+                            this.style.borderColor = '#2c8c99';
+                            this.style.boxShadow = '0 0 0 4px rgba(44, 140, 153, 0.15)';
+                        }
+                    });
+
+                    // Focus effects
+                    input.addEventListener('focus', function() {
+                        this.style.borderColor = 'var(--primary-color)';
+                        this.style.boxShadow = '0 0 0 4px rgba(44, 140, 153, 0.2)';
+                        this.parentElement.querySelector('.input-icon').style.color = 'var(--primary-color)';
+                    });
+
+                    input.addEventListener('blur', function() {
+                        if (this.value.trim() === '' && this.hasAttribute('required')) {
+                            this.style.borderColor = '#ff4d4f';
+                            this.style.boxShadow = '0 0 0 4px rgba(255, 77, 79, 0.1)';
+                        } else {
+                            this.style.boxShadow = 'none';
+                            this.style.borderColor = '#e9ecef';
+                        }
+                        this.parentElement.querySelector('.input-icon').style.color = '#adb5bd';
+                    });
+                });
+
+                // Form submission validation
+                form.addEventListener('submit', function(e) {
+                    let valid = true;
+                    const requiredInputs = form.querySelectorAll('[required]');
+                    const firstInvalidInput = form.querySelector('.form-control[required]:invalid');
+
+                    requiredInputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            valid = false;
+                            input.style.borderColor = '#ff4d4f';
+                            input.style.boxShadow = '0 0 0 4px rgba(255, 77, 79, 0.2)';
+                        }
+                    });
+
+                    if (!valid) {
+                        e.preventDefault();
+                        // Scroll to first invalid input
+                        if (firstInvalidInput) {
+                            firstInvalidInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            firstInvalidInput.focus();
+                        }
+
+                        // Show error notification
+                        const errorAlert = document.createElement('div');
+                        errorAlert.className = 'alert alert-danger mt-3';
+                        errorAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> Please fill in all required fields marked with *';
+                        errorAlert.style.animation = 'fadeIn 0.3s';
+
+                        const existingAlert = document.querySelector('.alert.alert-danger');
+                        if (existingAlert) {
+                            existingAlert.parentNode.insertBefore(errorAlert, existingAlert.nextSibling);
+                        } else {
+                            form.insertBefore(errorAlert, form.firstChild);
+                        }
+
+                        // Remove error after 5 seconds
+                        setTimeout(() => {
+                            if (errorAlert.parentNode) {
+                                errorAlert.style.animation = 'fadeOut 0.3s';
+                                setTimeout(() => errorAlert.parentNode.removeChild(errorAlert), 300);
+                            }
+                        }, 5000);
+                    }
+                });
+            }
+
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+        @@keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+        @@keyframes fadeOut {
+                    from { opacity: 1; transform: translateY(0); }
+                    to { opacity: 0; transform: translateY(-10px); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Add floating animation to benefit items
+            const benefitItems = document.querySelectorAll('.benefit-item');
+            benefitItems.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+﻿@model IEnumerable<AirConServicingManagementSystem.Models.ServiceRequest>
+
+@{
+    ViewData["Title"] = "Service Requests";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm rounded-3">
+        <div class="card-header bg-white">
+            <h3 class="mb-0" style="color:#2c8c99; font-weight:700;">
+                Service Requests
+            </h3>
+            <p class="text-muted mb-0">
+                Manage and assign technicians for service requests
+            </p>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Service ID</th>
+                            <th>Customer</th>
+                            <th>AirCon</th>
+                            <th>Service Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ServiceId</td>
+                                <td>@item.Customer.Name</td>
+                                <td>@item.AirCon.SerialNumber</td>
+                                <td>
+                                    <span class="badge"
+                                          style="background-color:@(item.ServiceType == "Urgent" ? "#2c8c99" : "#6c757d"); color:white;">
+                                        @item.ServiceType
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          style="background-color:@(item.Status == "Pending" ? "#f0ad4e" :
+                                                                   item.Status == "Completed" ? "#28a745" :
+                                                                   "#6c757d"); color:white;">
+                                        @item.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-action="Assign" asp-route-id="@item.ServiceId"
+                                       class="btn btn-sm"
+                                       style="background-color:#2c8c99; color:white;">
+                                        Assign Technician
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

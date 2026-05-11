@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AirConServicingManagementSystem.Models;
+using AirConServicingManagementSystem.ViewsModels;
 
 public class CustomerDashboardController : Controller
 {
@@ -29,15 +30,59 @@ public class CustomerDashboardController : Controller
 
         return View(customer);
     }
+    //public async Task<IActionResult> Index()
+    //{
+    //    int? customerId = HttpContext.Session.GetInt32("CustomerId");
 
+    //    if (customerId == null)
+    //    {
+    //        return RedirectToAction("Invalid", "Qr"); 
+    //    }
+
+    //    var customer = await _context.Customers
+    //        .Include(c => c.AirConUnits.Where(a => a.IsDeleted != true))
+    //            .ThenInclude(a => a.Brand)
+    //        .Include(c => c.AirConUnits.Where(a => a.IsDeleted != true))
+    //            .ThenInclude(a => a.Model)
+    //        .Include(c => c.ServiceRecords.Where(s => s.IsDeleted != true))
+    //        .Include(c => c.ServiceReminders.Where(r => r.IsDeleted != true))
+    //        .FirstOrDefaultAsync(c => c.Id == customerId);
+
+    //    if (customer == null)
+    //    {
+    //        HttpContext.Session.Clear();
+    //        return RedirectToAction("Invalid", "Qr");
+    //    }
+
+    //    return View(customer);
+    //}
+
+    ///this?//
+    //public async Task<IActionResult> Index(int customerId)
+    //{
+    //    var customer = await _context.Customers
+    //        .Include(c => c.AirConUnits.Where(a => a.IsDeleted != true))
+    //            .ThenInclude(a => a.Brand)
+    //        .Include(c => c.AirConUnits.Where(a => a.IsDeleted != true))
+    //            .ThenInclude(a => a.Model)
+    //        .Include(c => c.ServiceRecords.Where(s => s.IsDeleted != true))
+    //        .Include(c => c.ServiceReminders.Where(r => r.IsDeleted != true))
+    //        .FirstOrDefaultAsync(c => c.Id == customerId);
+
+    //    if (customer == null)
+    //        return Content("Invalid Customer");
+
+    //    return View(customer);
+    //}
     // GET: CustomerDashboard/Aircons
     public async Task<IActionResult> Aircons()
     {
-        int customerId = HttpContext.Session.GetInt32("CustomerId") ?? 1; // Session or fallback
+        int customerId = HttpContext.Session.GetInt32("CustomerId") ?? 0;
 
         var aircons = await _context.AirConUnits
             .Include(a => a.Brand)
             .Include(a => a.Model)
+            .Include(a => a.Warranty)
             .Where(a => a.CustomerId == customerId && a.IsDeleted != true)
             .ToListAsync();
 
@@ -48,7 +93,7 @@ public class CustomerDashboardController : Controller
     // GET: Add Aircon
     public async Task<IActionResult> AddAircon()
     {
-        int customerId = 1; // 🔴 later replace with Session
+        int customerId = 9; // 🔴 later replace with Session
 
         ViewBag.Brands = await _context.AirConBrands
             .Where(b => b.IsDeleted != true)
@@ -128,7 +173,7 @@ public class CustomerDashboardController : Controller
             aircon.ModelId = model.ModelId;
             aircon.SerialNumber = model.SerialNumber;
             aircon.CapacityHp = model.CapacityHp;
-            aircon.Location = model.Location;
+            //aircon.Location = model.Location;
             aircon.InstallationDate = model.InstallationDate;
             aircon.UpdatedAt = DateTime.Now;
 
@@ -202,21 +247,135 @@ public class CustomerDashboardController : Controller
 
         return View(locations);
     }
-
-    // 👤 Profile
+    // GET: Customer/Profile
     public async Task<IActionResult> Profile()
     {
-        int customerId = 1;
-        var customer = await _context.Customers.FindAsync(customerId);
-        return View(customer);
+        int? customerId = HttpContext.Session.GetInt32("CustomerId");
+        if (customerId == null)
+            return RedirectToAction("Login", "CustomerLogin");
+
+        var customer = await _context.Customers
+            .Include(c => c.CustomerLocations)
+            .FirstOrDefaultAsync(c => c.Id == customerId && c.IsDeleted != true);
+
+        if (customer == null)
+            return NotFound();
+
+        var location = customer.CustomerLocations.FirstOrDefault();
+
+        var vm = new CustomerLocationViewModel
+        {
+            Name = customer.Name,
+            Phone = customer.Phone,
+            //Email = customer.Email,
+            Address = customer.Address,
+            Latitude = location?.Latitude,   // default Yangon
+            Longitude = location?.Longitude,
+            MapAddress = location?.MapAddress
+        };
+
+        return View(vm);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Profile(Customer customer)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Profile(CustomerLocationViewModel vm)
     {
+        int? customerId = HttpContext.Session.GetInt32("CustomerId");
+        if (customerId == null)
+            return RedirectToAction("Login", "CustomerLogin");
+
+        var customer = await _context.Customers
+            .Include(c => c.CustomerLocations)
+            .FirstOrDefaultAsync(c => c.Id == customerId && c.IsDeleted != true);
+
+        if (customer == null)
+            return NotFound();
+
+        if (ModelState.IsValid)
+        {
+            return View(vm);
+        }
+
+        // Update customer info
+        customer.Name = vm.Name;
+        customer.Phone = vm.Phone?.Trim();
+        //customer.Email = vm.Email;
+        customer.Address = vm.Address;
         customer.UpdatedAt = DateTime.Now;
-        _context.Update(customer);
+
+        // Update or Insert location
+        var location = customer.CustomerLocations.FirstOrDefault();
+        if (location != null)
+        {
+            location.Latitude = vm.Latitude;
+            location.Longitude = vm.Longitude;
+            location.MapAddress = vm.MapAddress;
+        }
+        else if (vm.Latitude.HasValue && vm.Longitude.HasValue)
+        {
+            location = new CustomerLocation
+            {
+                CustomerId = customer.Id,
+                Latitude = vm.Latitude,
+                Longitude = vm.Longitude,
+                MapAddress = vm.MapAddress,
+                CreatedAt = DateTime.Now
+            };
+            _context.Add(location);
+        }
+
         await _context.SaveChangesAsync();
-        return RedirectToAction("Index");
+
+        TempData["Success"] = "Profile updated successfully.";
+
+        // Redirect to GET Profile to refresh View
+        return RedirectToAction("Profile");
     }
+
+
+    // 👤 Profile
+    //public async Task<IActionResult> Profile()
+    //{
+    //    int? customerId = HttpContext.Session.GetInt32("CustomerId");
+
+    //    if (customerId == null)
+    //        return RedirectToAction("Login", "CustomerLogin");
+
+    //    var customer = await _context.Customers
+    //        .FirstOrDefaultAsync(c => c.Id == customerId && c.IsDeleted != true);
+
+    //    if (customer == null)
+    //        return NotFound();
+
+    //    return View(customer);
+    //}
+
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> Profile(Customer model)
+    //{
+    //    int? customerId = HttpContext.Session.GetInt32("CustomerId");
+
+    //    if (customerId == null)
+    //        return RedirectToAction("Login", "CustomerLogin");
+
+    //    var customer = await _context.Customers
+    //        .FirstOrDefaultAsync(c => c.Id == customerId && c.IsDeleted != true);
+
+    //    if (customer == null)
+    //        return NotFound();
+
+    //    // ✅ Only update allowed fields
+    //    customer.Name = model.Name;
+    //    customer.Phone = model.Phone?.Trim();
+    //    customer.Email = model.Email;
+    //    customer.Address = model.Address;
+    //    customer.UpdatedAt = DateTime.Now;
+
+    //    await _context.SaveChangesAsync();
+
+    //    TempData["Success"] = "Profile updated successfully.";
+    //    return RedirectToAction("Profile");
+    //}
 }

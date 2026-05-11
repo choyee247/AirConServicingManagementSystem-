@@ -1,0 +1,75 @@
+﻿@model ServiceRequest
+@{
+    ViewData["Title"] = "Request Service";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm rounded-3">
+        <div class="card-header bg-white">
+            <h3 class="mb-0" style="color:#2c8c99; font-weight:700;">
+                Request AirCon Service
+            </h3>
+            <p class="text-muted mb-0">
+                Select your AirCon unit and service type
+            </p>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">AirCon Unit</label>
+                        <select asp-for="AirConId" class="form-select" required>
+                            <option value="">-- Select AirCon --</option>
+
+                            @if (ViewBag.AirCons != null)
+                            {
+                                foreach (var a in ViewBag.AirCons)
+                                {
+                                    <option value="@a.Id">
+                                        @(a.Brand?.BrandName) - @(a.Model?.ModelName)
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Service Type</label>
+                        <select asp-for="ServiceType" class="form-select" required>
+                            <option value="Normal">Normal</option>
+                            <option value="Urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input asp-for="IsUrgent" class="form-check-input" />
+                            <label class="form-check-label">Urgent Service</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Service Location</label>
+                        <input asp-for="Location" class="form-control" placeholder="Enter location" required />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Notes</label>
+                        <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Add details or issues"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary w-100"
+                            style="background:#2c8c99; border:none;">
+                        Confirm Service Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

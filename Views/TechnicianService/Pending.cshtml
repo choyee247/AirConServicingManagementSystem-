@@ -1,0 +1,30 @@
+﻿@model IEnumerable<ServiceRequest>
+@{
+    ViewData["Title"] = "Pending Jobs";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+<h3>Pending Jobs</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Location</th>
+            <th>Service Type</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.Customer.Name</td>
+                <td>@s.Location</td>
+                <td>@s.ServiceType</td>
+                <td>
+                    <a asp-action="Accept" asp-route-id="@s.ServiceId" class="btn btn-success btn-sm">Accept</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

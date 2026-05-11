@@ -1,0 +1,138 @@
+﻿@model IEnumerable<Warranty>
+
+@{
+    ViewData["Title"] = "My Warranty";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    body {
+        background: #f4f8fa;
+    }
+
+    .page-title {
+        color: #2c8c99;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .card-box {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,.08);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg,#2c8c99,#45a8b5);
+        color: #fff;
+        padding: 18px 25px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .table thead {
+        background: #eef7f8;
+    }
+
+        .table thead th {
+            color: #2c8c99;
+            font-weight: 600;
+            padding: 15px;
+            border: none;
+        }
+
+    .table td {
+        padding: 15px;
+        vertical-align: middle;
+        border-top: 1px solid #edf2f4;
+    }
+
+    .table tbody tr:hover {
+        background: #f8fcfc;
+    }
+
+    .badge-custom {
+        padding: 7px 14px;
+        border-radius: 25px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .active-badge {
+        background: rgba(44,140,153,.15);
+        color: #2c8c99;
+    }
+
+    .expired-badge {
+        background: #ffe5e5;
+        color: #d63031;
+    }
+
+    .aircon-text {
+        font-weight: 600;
+        color: #2d3436;
+    }
+
+    .date-text {
+        color: #636e72;
+    }
+</style>
+
+<div class="container py-4">
+
+    <h2 class="page-title">My Warranty</h2>
+
+    <div class="card-box">
+
+        <div class="card-header">
+            Warranty Details
+        </div>
+
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Air Conditioner</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var w in Model)
+                    {
+                        <tr>
+                            <td class="aircon-text">
+                                @w.AirCon.Brand.BrandName - @w.AirCon.Model.ModelName
+                            </td>
+
+                            <td class="date-text">
+                                @w.StartDate.ToString("yyyy-MM-dd")
+                            </td>
+
+                            <td class="date-text">
+                                @w.EndDate.ToString("yyyy-MM-dd")
+                            </td>
+
+                            <td>
+                                @if (w.IsActive)
+                                {
+                                    <span class="badge-custom active-badge">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-custom expired-badge">Expired</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>

@@ -26,7 +26,17 @@
         .FirstOrDefault()?.ReminderDate;
 }
 
-<div class="row text-center">
+<div class="row">
+    <div class="col-md-12">
+        <div class="welcome-section">
+            <h1>Welcome, @Model.Name!</h1>
+            <p>Here's your customer dashboard with all available functions</p>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row text-center mb-4">
     <div class="col-md-4">
         <div class="content-card">
             <h5>My Aircons</h5>
@@ -52,3 +62,198 @@
         </div>
     </div>
 </div>
+
+<!-- Customer Functions Grid -->
+<div class="row">
+    <div class="col-md-12">
+        <h3 class="section-title mb-4">Customer Functions</h3>
+        <div class="row">
+            <!-- View Personal Profile -->
+            <div class="col-md-4 mb-4">
+                <a href="@Url.Action("Profile", "Customer")" class="function-card">
+                    <div class="card function-card-content" style="border-left: 4px solid #2c8c99;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <i class="fas fa-user-circle fa-2x" style="color: #2c8c99;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">View Personal Profile</h5>
+                                    <p class="card-text text-muted small">View and update your personal information</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Manage Own Aircon Units -->
+            <div class="col-md-4 mb-4">
+                <a href="@Url.Action("AirconUnits", "Customer")" class="function-card">
+                    <div class="card function-card-content" style="border-left: 4px solid #2c8c99;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <i class="fas fa-snowflake fa-2x" style="color: #2c8c99;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Manage Aircon Units</h5>
+                                    <p class="card-text text-muted small">Add, edit, or remove your air conditioning units</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- View Service History -->
+            <div class="col-md-4 mb-4">
+                <a href="@Url.Action("ServiceHistory", "Customer")" class="function-card">
+                    <div class="card function-card-content" style="border-left: 4px solid #2c8c99;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <i class="fas fa-history fa-2x" style="color: #2c8c99;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">View Service History</h5>
+                                    <p class="card-text text-muted small">Track all past service records</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- View Warranty Information -->
+            <div class="col-md-4 mb-4">
+                <a href="@Url.Action("Warranty", "Customer")" class="function-card">
+                    <div class="card function-card-content" style="border-left: 4px solid #2c8c99;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <i class="fas fa-file-contract fa-2x" style="color: #2c8c99;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Warranty Information</h5>
+                                    <p class="card-text text-muted small">Check warranty status and details</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Receive Service Reminders -->
+            <div class="col-md-4 mb-4">
+                <a href="@Url.Action("Reminders", "Customer")" class="function-card">
+                    <div class="card function-card-content" style="border-left: 4px solid #2c8c99;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <i class="fas fa-bell fa-2x" style="color: #2c8c99;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Service Reminders</h5>
+                                    <p class="card-text text-muted small">View upcoming service reminders</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- View Location on Map -->
+            <div class="col-md-4 mb-4">
+                <a href="@Url.Action("Location", "Customer")" class="function-card">
+                    <div class="card function-card-content" style="border-left: 4px solid #2c8c99;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <i class="fas fa-map-marker-alt fa-2x" style="color: #2c8c99;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Location on Map</h5>
+                                    <p class="card-text text-muted small">View service location on map</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS Styles -->
+<style>
+    .welcome-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        border-left: 5px solid #2c8c99;
+    }
+
+        .welcome-section h1 {
+            color: #2c8c99;
+            margin-bottom: 0.5rem;
+        }
+
+    .section-title {
+        color: #2c8c99;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #2c8c99;
+    }
+
+    .content-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .content-card h5 {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .content-card h2, .content-card p {
+            color: #2c8c99;
+            font-weight: bold;
+            margin: 0;
+        }
+
+    .function-card {
+        text-decoration: none;
+        display: block;
+    }
+
+    .function-card-content {
+        height: 100%;
+        transition: all 0.3s ease;
+        border: 1px solid #dee2e6;
+    }
+
+        .function-card-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(44, 140, 153, 0.2);
+            border-color: #2c8c99;
+        }
+
+    .card-title {
+        color: #2c8c99;
+        font-weight: 600;
+    }
+</style>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

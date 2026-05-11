@@ -1,31 +1,147 @@
-﻿@model Customer
+﻿@model AirConServicingManagementSystem.ViewsModels.CustomerLocationViewModel
 @{
     ViewData["Title"] = "My Profile";
     Layout = "~/Views/Shared/_CustomerLayout.cshtml";
 }
 
-<form asp-action="Profile" method="post">
-    <input type="hidden" asp-for="Id" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-    <div class="mb-3">
-        <label>Name</label>
-        <input asp-for="Name" class="form-control" />
+<style>
+    .profile-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(44,140,153,0.15);
+        border: none;
+    }
+
+    .profile-header {
+        background-color: #2c8c99;
+        color: #fff;
+        padding: 20px;
+        border-radius: 12px 12px 0 0;
+    }
+
+        .profile-header i {
+            font-size: 26px;
+            margin-right: 10px;
+        }
+
+    .btn-primary {
+        background-color: #2c8c99;
+        border-color: #2c8c99;
+    }
+
+        .btn-primary:hover {
+            background-color: #23727d;
+            border-color: #23727d;
+        }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c8c99;
+    }
+
+    #map {
+        height: 350px;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card profile-card">
+        <div class="profile-header">
+            <h4 class="mb-0"><i class="fas fa-user-circle"></i> My Profile</h4>
+        </div>
+
+        <div class="card-body p-4">
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-1"></i>
+                    @TempData["Success"]
+                </div>
+            }
+
+            <form asp-action="Profile" method="post" id="profileForm">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-user me-1"></i> Full Name</label>
+                    <input asp-for="Name" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-phone me-1"></i> Phone</label>
+                    <input asp-for="Phone" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-envelope me-1"></i> Email</label>
+                    <input asp-for="Email" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-map-marker-alt me-1"></i> Address</label>
+                    <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-map-marked-alt me-1"></i> 📍 Map Location</label>
+                    <div id="map"></div>
+                </div>
+
+                <!-- Hidden fields -->
+                <input type="hidden" asp-for="Latitude" id="Latitude" />
+                <input type="hidden" asp-for="Longitude" id="Longitude" />
+                <input type="hidden" asp-for="MapAddress" id="MapAddress" />
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-1"></i> Update Profile
+                    </button>
+                </div>
+            </form>
+
+        </div>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label>Phone</label>
-        <input asp-for="Phone" class="form-control" />
-    </div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    // Initialize map using model coordinates
+    var lat = @Model.Latitude ?? 16.8409;
+    var lng = @Model.Longitude ?? 96.1735;
 
-    <div class="mb-3">
-        <label>Email</label>
-        <input asp-for="Email" class="form-control" />
-    </div>
+    var map = L.map('map').setView([lat, lng], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-    <div class="mb-3">
-        <label>Address</label>
-        <textarea asp-for="Address" class="form-control"></textarea>
-    </div>
+    var marker = L.marker([lat, lng], { draggable: true }).addTo(map);
 
-    <button class="btn btn-primary">Update</button>
-</form>
+    function updateLocation(lat, lng) {
+        document.getElementById("Latitude").value = lat;
+        document.getElementById("Longitude").value = lng;
+
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.display_name) {
+                    document.getElementById("Address").value = data.display_name;
+                    document.getElementById("MapAddress").value = data.display_name;
+                }
+            });
+    }
+
+    marker.on('dragend', function () {
+        var pos = marker.getLatLng();
+        updateLocation(pos.lat, pos.lng);
+    });
+
+    map.on('click', function (e) {
+        marker.setLatLng(e.latlng);
+        updateLocation(e.latlng.lat, e.latlng.lng);
+    });
+</script>

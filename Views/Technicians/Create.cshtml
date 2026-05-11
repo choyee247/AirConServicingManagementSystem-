@@ -48,14 +48,14 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label asp-for="Phone" class="form-label">Phone Number</label>
+                            <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
                             <div class="input-with-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                                 </svg>
-                                <input asp-for="Phone" class="form-input" placeholder="09-123456789" />
+                                <input asp-for="PhoneNumber" class="form-input" placeholder="09-123456789" />
                             </div>
-                            <span asp-validation-for="Phone" class="validation-error"></span>
+                            <span asp-validation-for="PhoneNumber" class="validation-error"></span>
                         </div>
 
                         <div class="form-group">
@@ -82,7 +82,7 @@
                     </h3>
 
                     <div class="form-row">
-                        <div class="form-group full-width">
+                        <div class="form-group">
                             <label asp-for="Address" class="form-label">Address</label>
                             <div class="input-with-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -92,6 +92,23 @@
                                 <textarea asp-for="Address" class="form-textarea" placeholder="Enter complete address" rows="3"></textarea>
                             </div>
                             <span asp-validation-for="Address" class="validation-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TechnicianRole" class="form-label">Technician Role</label>
+                            <div class="input-with-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+                                    <path d="M6 20v-1a6 6 0 0 1 12 0v1" />
+                                </svg>
+                                <select asp-for="TechnicianRole" class="form-input">
+                                    <option value="">-- Select Role --</option>
+                                    <option value="Technician">Technician</option>
+                                    <option value="Senior Technician">Senior Technician</option>
+                                    <option value="Supervisor">Supervisor</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="TechnicianRole" class="validation-error"></span>
                         </div>
                     </div>
 
@@ -109,14 +126,26 @@
                             </div>
                             <span asp-validation-for="JoinDate" class="validation-error"></span>
                         </div>
+                        <div class="form-group">
+                            <label asp-for="LeaveDate" class="form-label">Leave Date</label>
+                            <div class="input-with-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                </svg>
+                                <input asp-for="LeaveDate" type="date" class="form-input" />
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <label class="form-label">Status</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-label">
-                                    <input asp-for="IsActive" type="checkbox" checked />
+                                    <input asp-for="IsAvailable" type="checkbox" />
                                     <span class="checkbox-custom"></span>
-                                    <span class="checkbox-text">Active Technician</span>
+                                    <span class="checkbox-text">Available for Service</span>
                                 </label>
                                 <div class="checkbox-help">Uncheck to mark as inactive</div>
                             </div>

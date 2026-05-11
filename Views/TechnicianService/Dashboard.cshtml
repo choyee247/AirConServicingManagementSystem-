@@ -1,0 +1,312 @@
+﻿@model AirConServicingManagementSystem.ViewsModels.TechnicianDashboardVM
+
+@{
+    ViewData["Title"] = "Technician Dashboard";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+@functions {
+    string StatusStyle(string status)
+    {
+        return status switch
+        {
+            "Pending" => "background-color:#ffc107;color:#000;",
+            "Assigned" => "background-color:#0dcaf0;color:#000;",
+            "Accepted" => "background-color:#0d6efd;color:#fff;",
+            "Completed" => "background-color:#198754;color:#fff;",
+            "Rejected" => "background-color:#dc3545;color:#fff;",
+            _ => "background-color:#6c757d;color:#fff;"
+        };
+    }
+}
+
+<div class="container-fluid px-0">
+    <!-- Header -->
+    <div class="dashboard-header bg-white py-3 border-bottom">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-1 fw-bold">Technician Dashboard</h1>
+                <p class="text-muted mb-0">Welcome to your service management panel</p>
+            </div>
+            <div class="text-end">
+                <div class="text-muted small">@DateTime.Now.ToString("dd/MM/yyyy")</div>
+                <div class="text-muted small">@DateTime.Now.ToString("hh:mm tt")</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <!-- Stats Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted mb-2">Assigned</h6>
+                                <h2 class="mb-0 fw-bold">@Model.AssignedCount</h2>
+                                <small class="text-muted">Tasks waiting</small>
+                            </div>
+                            <div class="rounded-circle p-3" style="background-color: rgba(44, 140, 153, 0.1);">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#2c8c99">
+                                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM10 17H8V7H10V17ZM16 17H14V7H16V17Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted mb-2">Pending</h6>
+                                <h2 class="mb-0 fw-bold">@Model.PendingCount</h2>
+                                <small class="text-muted">Awaiting action</small>
+                            </div>
+                            <div class="rounded-circle p-3" style="background-color: rgba(255, 152, 0, 0.1);">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff9800">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM13 7H11V13L16.25 16.15L17 14.92L12.5 12.25V7Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted mb-2">Accepted</h6>
+                                <h2 class="mb-0 fw-bold">@Model.AcceptedCount</h2>
+                                <small class="text-muted">In progress</small>
+                            </div>
+                            <div class="rounded-circle p-3" style="background-color: rgba(76, 175, 80, 0.1);">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#4caf50">
+                                    <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted mb-2">Completed</h6>
+                                <h2 class="mb-0 fw-bold">@Model.CompletedCount</h2>
+                                <small class="text-muted">Finished tasks</small>
+                            </div>
+                            <div class="rounded-circle p-3" style="background-color: rgba(33, 150, 243, 0.1);">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#2196f3">
+                                    <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17ZM20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Summary -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Task Progress Summary</h6>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small>Completion Rate</small>
+                                <small class="fw-bold">@(Model.CompletedCount > 0 ? (Model.CompletedCount * 100 / (Model.AssignedCount + Model.PendingCount + Model.AcceptedCount + Model.CompletedCount)).ToString("0") : 0)%</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" style="width: @(Model.CompletedCount > 0 ? (Model.CompletedCount * 100 / (Model.AssignedCount + Model.PendingCount + Model.AcceptedCount + Model.CompletedCount)).ToString("0") : 0)%; background-color: #2c8c99;"></div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 12px; height: 12px; background-color: #2c8c99; border-radius: 2px;"></div>
+                                    <small>Assigned</small>
+                                    <small class="ms-auto fw-bold">@Model.AssignedCount</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 12px; height: 12px; background-color: #ff9800; border-radius: 2px;"></div>
+                                    <small>Pending</small>
+                                    <small class="ms-auto fw-bold">@Model.PendingCount</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 12px; height: 12px; background-color: #4caf50; border-radius: 2px;"></div>
+                                    <small>Accepted</small>
+                                    <small class="ms-auto fw-bold">@Model.AcceptedCount</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 12px; height: 12px; background-color: #2196f3; border-radius: 2px;"></div>
+                                    <small>Completed</small>
+                                    <small class="ms-auto fw-bold">@Model.CompletedCount</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Quick Actions</h6>
+                        <div class="d-grid gap-2">
+                           @*  <button class="btn btn-sm d-flex align-items-center" style="background-color: #2c8c99; color: white;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="white" class="me-2">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                                </svg>
+                                New Service Request
+                            </button> *@
+                            <button class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="me-2">
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                                </svg>
+                                View Schedule
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="me-2">
+                                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM7 10H9V17H7V10ZM11 7H13V17H11V7ZM15 13H17V17H15V13Z" />
+                                </svg>
+                                Reports
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Tasks -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0">Recent Tasks</h6>
+                    <a href="#" class="small text-decoration-none" style="color: #2c8c99;">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="small text-muted">ID</th>
+                                <th class="small text-muted">Customer</th>
+                                <th class="small text-muted">Location</th>
+                                <th class="small text-muted">Status</th>
+                                <th class="small text-muted">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.RecentServices.Any())
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center small text-muted">
+                                        No service requests
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var item in Model.RecentServices)
+                                {
+                                    <tr>
+                                        <td class="small">#AC-@item.ServiceId</td>
+                                        <td class="small">@item.Customer?.Name</td>
+                                        <td class="small">@item.Customer?.Address</td>
+                                        <td>
+                                            <span class="badge rounded-pill"
+                                                  style="@StatusStyle(item.Status)">
+                                                @item.Status
+                                            </span>
+                                        </td>
+                                        <td class="small">
+                                            @item.CreatedAt.ToString("dd MMM yyyy")
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    .card {
+        border-radius: 12px;
+        transition: transform 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+    .progress {
+        background-color: #e9ecef;
+        border-radius: 4px;
+    }
+
+    .progress-bar {
+        border-radius: 4px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-size: 14px;
+        padding: 8px 16px;
+        transition: all 0.2s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+    .table {
+        font-size: 14px;
+    }
+
+        .table th {
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table td {
+            border-bottom: 1px solid #f1f1f1;
+            vertical-align: middle;
+        }
+
+    .badge {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+    }
+
+    .dashboard-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: white;
+    }
+</style>

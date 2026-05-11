@@ -21,11 +21,19 @@ public partial class DBContext : DbContext
 
     public virtual DbSet<AirConUnit> AirConUnits { get; set; }
 
+    public virtual DbSet<Appointment> Appointments { get; set; }
+
     public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<CustomerLocation> CustomerLocations { get; set; }
 
+    public virtual DbSet<CustomerQrToken> CustomerQrTokens { get; set; }
+
+    public virtual DbSet<MaintenanceSchedule> MaintenanceSchedules { get; set; }
+
     public virtual DbSet<MonthlyServiceReport> MonthlyServiceReports { get; set; }
+
+    public virtual DbSet<Payment> Payments { get; set; }
 
     public virtual DbSet<ServicePhoto> ServicePhotos { get; set; }
 
@@ -33,13 +41,19 @@ public partial class DBContext : DbContext
 
     public virtual DbSet<ServiceReminder> ServiceReminders { get; set; }
 
+    public virtual DbSet<ServiceRequest> ServiceRequests { get; set; }
+
     public virtual DbSet<ServiceTechnician> ServiceTechnicians { get; set; }
 
     public virtual DbSet<ServiceWarranty> ServiceWarranties { get; set; }
 
+    public virtual DbSet<Technician> Technicians { get; set; }
+
     public virtual DbSet<TechnicianBonuse> TechnicianBonuses { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<Warranty> Warranties { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -52,7 +66,6 @@ public partial class DBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__AirConBr__3214EC072286C9BB");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
         });
@@ -89,6 +102,19 @@ public partial class DBContext : DbContext
                 .HasConstraintName("FK__AirConUni__Model__46E78A0C");
         });
 
+        modelBuilder.Entity<Appointment>(entity =>
+        {
+            entity.HasKey(e => e.AppointmentId).HasName("PK__Appointm__8ECDFCC2B7D35939");
+
+            entity.Property(e => e.Status).HasDefaultValue("Pending");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Appointments)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointments_Customers");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.Appointments).HasConstraintName("FK_Appointments_Technicians");
+        });
+
         modelBuilder.Entity<Customer>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC077FC05282");
@@ -109,11 +135,48 @@ public partial class DBContext : DbContext
                 .HasConstraintName("FK__CustomerL__Custo__68487DD7");
         });
 
+        modelBuilder.Entity<CustomerQrToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC07593BF303");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.CustomerQrTokens)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CustomerQrToken_Customer");
+        });
+
+        modelBuilder.Entity<MaintenanceSchedule>(entity =>
+        {
+            entity.HasKey(e => e.MaintenanceId).HasName("PK__Maintena__E60542D568160DCF");
+
+            entity.Property(e => e.Status).HasDefaultValue("Pending");
+
+            entity.HasOne(d => d.AirCon).WithMany(p => p.MaintenanceSchedules)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MaintenanceSchedules_AirConUnits");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.MaintenanceSchedules).HasConstraintName("FK_MaintenanceSchedule_Technicians");
+        });
+
         modelBuilder.Entity<MonthlyServiceReport>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__MonthlyS__3214EC0717C3BD42");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+        });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A38E774B46B");
+
+            entity.Property(e => e.PaidAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Service).WithOne(p => p.Payment)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Payments_ServiceRequests");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.Payments)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Payments_Technicians");
         });
 
         modelBuilder.Entity<ServicePhoto>(entity =>
@@ -144,9 +207,11 @@ public partial class DBContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ServiceRe__Custo__5070F446");
 
+            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.ServiceRecords).HasConstraintName("FK_ServiceRecords_ServiceRequests");
+
             entity.HasOne(d => d.Technician).WithMany(p => p.ServiceRecords)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ServiceRe__Techn__52593CB8");
+                .HasConstraintName("FK_ServiceRecords_Technicians");
         });
 
         modelBuilder.Entity<ServiceReminder>(entity =>
@@ -164,6 +229,28 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.Customer).WithMany(p => p.ServiceReminders)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ServiceRe__Custo__60A75C0F");
+        });
+
+        modelBuilder.Entity<ServiceRequest>(entity =>
+        {
+            entity.HasKey(e => e.ServiceId).HasName("PK__ServiceR__C51BB00A318214CF");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.PaymentStatus).HasDefaultValue("Unpaid");
+            entity.Property(e => e.RequestedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Status).HasDefaultValue("Pending");
+
+            entity.HasOne(d => d.AirCon).WithMany(p => p.ServiceRequests)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_ServiceRequests_AirConUnits");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.ServiceRequests)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ServiceRequests_Customers");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.ServiceRequests)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_ServiceRequests_Technicians");
         });
 
         modelBuilder.Entity<ServiceTechnician>(entity =>
@@ -188,6 +275,16 @@ public partial class DBContext : DbContext
                 .HasConstraintName("FK__ServiceWa__Servi__571DF1D5");
         });
 
+        modelBuilder.Entity<Technician>(entity =>
+        {
+            entity.HasKey(e => e.TechnicianId).HasName("PK__Technici__301F812179B040B3");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.IsAvailable).HasDefaultValue(true);
+            entity.Property(e => e.JoinDate).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.TechnicianRole).HasDefaultValue("Technician");
+        });
+
         modelBuilder.Entity<TechnicianBonuse>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Technici__3214EC077E748D2E");
@@ -210,6 +307,17 @@ public partial class DBContext : DbContext
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
 
             entity.HasOne(d => d.Technician).WithMany(p => p.Users).HasConstraintName("FK__Users__Technicia__70DDC3D8");
+        });
+
+        modelBuilder.Entity<Warranty>(entity =>
+        {
+            entity.HasKey(e => e.WarrantyId).HasName("PK__Warranti__2ED3181363C9D683");
+
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+
+            entity.HasOne(d => d.AirCon).WithOne(p => p.Warranty)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Warranties_AirConUnits");
         });
 
         OnModelCreatingPartial(modelBuilder);

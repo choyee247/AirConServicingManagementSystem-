@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AirConServicingManagementSystem.Models;
+using AirConServicingManagementSystem.ViewsModels;
 
 namespace AirConServicingManagementSystem.Controllers
 {
@@ -42,23 +43,72 @@ namespace AirConServicingManagementSystem.Controllers
         // GET: Customer/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new CustomerLocationViewModel();
+            return View(vm);
         }
 
         // POST: Customer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Phone,Email,Address")] Customer customer)
+        public async Task<IActionResult> Create(CustomerLocationViewModel vm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                customer.CreatedAt = DateTime.Now;
+                // 1️⃣ Save Customer first
+                var customer = new Customer
+                {
+                    Name = vm.Name,
+                    Phone = vm.Phone,
+                    //Email = vm.Email,
+                    Address = vm.Address,
+                    CreatedAt = DateTime.Now
+                };
+
                 _context.Add(customer);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // customer.Id generate ဖြစ်ပါမယ်
+
+                // 2️⃣ Save CustomerLocation
+                if (vm.Latitude.HasValue && vm.Longitude.HasValue)
+                {
+                    var location = new CustomerLocation
+                    {
+                        CustomerId = customer.Id,
+                        Latitude = vm.Latitude,
+                        Longitude = vm.Longitude,
+                        MapAddress = vm.MapAddress,
+                        CreatedAt = DateTime.Now
+                    };
+
+                    _context.Add(location);
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(customer);
+
+            return View(vm);
         }
+
+        // GET: Customer/Create
+        //public IActionResult Create()
+        //{
+        //    return View();
+        //}
+
+        //// POST: Customer/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([Bind("Name,Phone,Email,Address")] Customer customer)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        customer.CreatedAt = DateTime.Now;
+        //        _context.Add(customer);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(customer);
+        //}
 
         // GET: Customer/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -40,9 +40,6 @@ public partial class ServiceTechnician
     public DateTime? DeletedAt { get; set; }
 
     [InverseProperty("Technician")]
-    public virtual ICollection<ServiceRecord> ServiceRecords { get; set; } = new List<ServiceRecord>();
-
-    [InverseProperty("Technician")]
     public virtual ICollection<TechnicianBonuse> TechnicianBonuses { get; set; } = new List<TechnicianBonuse>();
 
     [InverseProperty("Technician")]

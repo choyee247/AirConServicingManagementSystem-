@@ -1,0 +1,110 @@
+﻿@model List<AirConServicingManagementSystem.Models.ServiceRecord>
+
+@{
+    ViewData["Title"] = "Service History";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header text-white"
+             style="background:#2c8c99;">
+            <h3 class="mb-0">
+                <i class="fas fa-history me-2"></i>
+                Service History
+            </h3>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.Any())
+            {
+                <div class="row">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="card border-0 shadow-sm h-100 rounded-4">
+
+                                <div class="card-header bg-light">
+                                    <strong>
+                                        @item.ServiceType
+                                    </strong>
+                                </div>
+
+                                <div class="card-body">
+
+                                    <p>
+                                        <strong>Technician:</strong>
+                                        @item.Technician?.Name
+                                    </p>
+
+                                    @* <p>
+                                        <strong>AirCon Model:</strong>
+                                        @(item.AirConUnit?.Model ?? "-")
+                                    </p> *@
+
+                                    <p>
+                                        <strong>Service Date:</strong>
+                                        @item.ServiceDate?.ToString("dd MMM yyyy hh:mm tt")
+                                    </p>
+
+                                    <p>
+                                        <strong>Status:</strong>
+                                        @if (item.Status == "Completed")
+                                        {
+                                            <span class="badge bg-success">
+                                                Completed
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge"
+                                                  style="background:#2c8c99;">
+                                                In Progress
+                                            </span>
+                                        }
+                                    </p>
+                                    <p>
+                                        <strong>Technician Message:</strong><br />
+                                        @(string.IsNullOrWhiteSpace(item.Remarks)
+                                            ? "No remarks."
+                                            : item.Remarks)
+                                    </p>
+
+                                    <p>
+                                        <strong>Next Service Due:</strong>
+                                        @if (item.NextServiceDue != null)
+                                        {
+                                            <span class="text-primary fw-bold">
+                                                @item.NextServiceDue?.ToString("dd MMM yyyy")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                Not scheduled yet
+                                            </span>
+                                        }
+                                    </p>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                    <h4>No Service History Found</h4>
+                    <p class="text-muted">
+                        You have not completed any services yet.
+                    </p>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

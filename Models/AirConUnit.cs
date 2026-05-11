@@ -24,9 +24,6 @@ public partial class AirConUnit
     [StringLength(20)]
     public string? CapacityHp { get; set; }
 
-    [StringLength(200)]
-    public string? Location { get; set; }
-
     [Column(TypeName = "datetime")]
     public DateTime? InstallationDate { get; set; }
 
@@ -41,6 +38,8 @@ public partial class AirConUnit
     [Column(TypeName = "datetime")]
     public DateTime? DeletedAt { get; set; }
 
+    public int? WarrantyPeriodMonths { get; set; }
+
     [ForeignKey("BrandId")]
     [InverseProperty("AirConUnits")]
     public virtual AirConBrand Brand { get; set; } = null!;
@@ -48,6 +47,9 @@ public partial class AirConUnit
     [ForeignKey("CustomerId")]
     [InverseProperty("AirConUnits")]
     public virtual Customer Customer { get; set; } = null!;
+
+    [InverseProperty("AirCon")]
+    public virtual ICollection<MaintenanceSchedule> MaintenanceSchedules { get; set; } = new List<MaintenanceSchedule>();
 
     [ForeignKey("ModelId")]
     [InverseProperty("AirConUnits")]
@@ -58,4 +60,10 @@ public partial class AirConUnit
 
     [InverseProperty("AirConUnit")]
     public virtual ICollection<ServiceReminder> ServiceReminders { get; set; } = new List<ServiceReminder>();
+
+    [InverseProperty("AirCon")]
+    public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
+
+    [InverseProperty("AirCon")]
+    public virtual Warranty? Warranty { get; set; }
 }

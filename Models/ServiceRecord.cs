@@ -40,6 +40,11 @@ public partial class ServiceRecord
     [Column(TypeName = "datetime")]
     public DateTime? DeletedAt { get; set; }
 
+    [StringLength(50)]
+    public string? Status { get; set; }
+
+    public int? ServiceRequestId { get; set; }
+
     [ForeignKey("AirConUnitId")]
     [InverseProperty("ServiceRecords")]
     public virtual AirConUnit AirConUnit { get; set; } = null!;
@@ -51,10 +56,14 @@ public partial class ServiceRecord
     [InverseProperty("ServiceRecord")]
     public virtual ICollection<ServicePhoto> ServicePhotos { get; set; } = new List<ServicePhoto>();
 
+    [ForeignKey("ServiceRequestId")]
+    [InverseProperty("ServiceRecords")]
+    public virtual ServiceRequest? ServiceRequest { get; set; }
+
     [InverseProperty("ServiceRecord")]
     public virtual ICollection<ServiceWarranty> ServiceWarranties { get; set; } = new List<ServiceWarranty>();
 
     [ForeignKey("TechnicianId")]
     [InverseProperty("ServiceRecords")]
-    public virtual ServiceTechnician Technician { get; set; } = null!;
+    public virtual Technician Technician { get; set; } = null!;
 }

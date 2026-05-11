@@ -1,0 +1,69 @@
+﻿@model IEnumerable<AirConServicingManagementSystem.Models.ServiceRequest>
+
+@{
+    ViewData["Title"] = "Completed Jobs";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<h3>Completed Jobs</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Location</th>
+            <th>Service Type</th>
+            <th>Completed At</th>
+            <th>Warranty</th>
+            <th>Payment</th>
+            <th>Discount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.Customer?.Name</td>
+                <td>@s.Location</td>
+                <td>@s.ServiceType</td>
+                <td>@(s.CompletedAt.HasValue ? s.CompletedAt.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</td>
+
+                <!-- Warranty Status -->
+                <td>
+                    @if (s.IsWarrantyApplied)
+                    {
+                        <span class="badge bg-success">Warranty</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">No</span>
+                    }
+                </td>
+
+                <!-- Payment Status -->
+                <td>
+                    @if (s.IsFreeService)
+                    {
+                        <span class="badge bg-success">Free</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">Paid</span>
+                    }
+                </td>
+
+                <!-- Discount Amount -->
+                <td>
+                    @if (s.DiscountAmount > 0)
+                    {
+                        @String.Format("{0:N2}", s.DiscountAmount)
+                    }
+                    else
+                    {
+                        <span class="text-muted">0</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

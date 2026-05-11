@@ -1,0 +1,97 @@
+﻿@model AirConServicingManagementSystem.Models.AirConUnit
+
+@{
+    ViewData["Title"] = "AirCon Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // adjust if needed
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">AirCon Details</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Customer</dt>
+                <dd class="col-sm-9">@Model.Customer?.Name</dd>
+
+                <dt class="col-sm-3">Brand</dt>
+                <dd class="col-sm-9">@Model.Brand?.BrandName</dd>
+
+                <dt class="col-sm-3">Model</dt>
+                <dd class="col-sm-9">@Model.Model?.ModelName</dd>
+
+                <dt class="col-sm-3">Serial Number</dt>
+                <dd class="col-sm-9">@Model.SerialNumber</dd>
+
+                <dt class="col-sm-3">Capacity (HP)</dt>
+                <dd class="col-sm-9">@Model.CapacityHp</dd>
+
+                <dt class="col-sm-3">Installation Date</dt>
+                <dd class="col-sm-9">
+                    @(Model.InstallationDate.HasValue ? Model.InstallationDate.Value.ToString("yyyy-MM-dd") : "N/A")
+                </dd>
+
+                <dt class="col-sm-3">Warranty Period (Months)</dt>
+                <dd class="col-sm-9">@Model.WarrantyPeriodMonths</dd>
+
+                <dt class="col-sm-3">Created At</dt>
+                <dd class="col-sm-9">
+                    @(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")
+                </dd>
+
+                <dt class="col-sm-3">Updated At</dt>
+                <dd class="col-sm-9">
+                    @(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")
+                </dd>
+
+                <dt class="col-sm-3">Deleted At</dt>
+                <dd class="col-sm-9">
+                    @(Model.DeletedAt.HasValue ? Model.DeletedAt.Value.ToString("yyyy-MM-dd HH:mm") : "Not Deleted")
+                </dd>
+            </dl>
+
+            <div class="mt-3">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <h5 class="mt-3">Warranty Information</h5>
+
+    @if (Model.Warranty != null)
+    {
+        <dl class="row">
+            <dt class="col-sm-3">Warranty Start Date</dt>
+            <dd class="col-sm-9">
+                @Model.Warranty.StartDate.ToString("yyyy-MM-dd")
+            </dd>
+
+            <dt class="col-sm-3">Warranty End Date</dt>
+            <dd class="col-sm-9">
+                @Model.Warranty.EndDate.ToString("yyyy-MM-dd")
+            </dd>
+
+            <dt class="col-sm-3">Warranty Status</dt>
+            <dd class="col-sm-9">
+                @if (Model.Warranty.EndDate >= DateTime.Now)
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Expired</span>
+                }
+            </dd>
+        </dl>
+    }
+    else
+    {
+        <p class="text-muted">No warranty information available.</p>
+    }
+</div>

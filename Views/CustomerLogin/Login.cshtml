@@ -1,0 +1,408 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Customer Login - AirCon Management System";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c8c99;
+            --primary-dark: #1e6a75;
+            --primary-light: #e1f5f8;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff9f43;
+            --text-color: #333;
+            --light-text: #6c757d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: linear-gradient(to bottom right, #f0f9ff, #e6f7ff);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .login-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(44, 140, 153, 0.15);
+            overflow: hidden;
+            border: none;
+        }
+
+        .login-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .login-header::before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+                opacity: 0.3;
+                z-index: 0;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+                font-weight: 600;
+                margin-bottom: 5px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .login-header p {
+                font-size: 14px;
+                opacity: 0.9;
+                position: relative;
+                z-index: 1;
+            }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            background-color: white;
+            color: var(--primary-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .system-name {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .login-body {
+            padding: 30px;
+        }
+
+        .alert-danger {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+            .alert-danger i {
+                margin-right: 8px;
+                font-size: 16px;
+            }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+            .form-control:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(44, 140, 153, 0.2);
+            }
+
+        .input-group-icon {
+            position: relative;
+        }
+
+            .input-group-icon i {
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--primary-color);
+                z-index: 10;
+            }
+
+            .input-group-icon input {
+                padding-left: 45px;
+            }
+
+        .btn-login {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 10px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-login:hover {
+                background-color: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(44, 140, 153, 0.3);
+            }
+
+            .btn-login i {
+                margin-right: 8px;
+            }
+
+        .btn-register {
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-register:hover {
+                background-color: var(--primary-light);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(44, 140, 153, 0.2);
+            }
+
+            .btn-register i {
+                margin-right: 8px;
+            }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--light-text);
+        }
+
+            .divider::before, .divider::after {
+                content: "";
+                flex: 1;
+                border-bottom: 1px solid #eee;
+            }
+
+            .divider span {
+                padding: 0 15px;
+                font-size: 14px;
+            }
+
+        .login-footer {
+            text-align: center;
+            padding: 20px 30px;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            font-size: 14px;
+        }
+
+            .login-footer a {
+                color: var(--primary-dark);
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+                .login-footer a:hover {
+                    text-decoration: underline;
+                }
+
+        .ac-icon {
+            color: var(--primary-color);
+            margin-right: 5px;
+        }
+
+        @@media (max-width: 576px) {
+            .login-container
+
+        {
+            padding: 10px;
+        }
+
+        .login-header {
+            padding: 20px;
+        }
+
+        .login-body {
+            padding: 25px;
+        }
+
+        }
+    </style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.3.3/css/intlTelInput.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.3.3/js/intlTelInput.min.js"></script>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-fan"></i>
+                    </div>
+                    <div class="system-name">AirCon Management System</div>
+                </div>
+                <h1>Customer Login</h1>
+                <p>Access your air conditioning management account</p>
+            </div>
+
+            <!-- Body -->
+            <div class="login-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> @ViewBag.Error
+                    </div>
+                }
+
+                <form asp-action="Login" method="post">
+                    <div class="mb-4">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-group-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" name="email" class="form-control" placeholder="Enter your email address" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Phone Number</label>
+                        <div class="input-group-icon">
+                            @* <i class="fas fa-phone"></i> *@
+                            <input type="tel" id="loginPhone" name="phone" class="form-control" placeholder="Enter your phone number" required />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Login to Account
+                    </button>
+
+                    <div class="divider">
+                        <span>New to AirCon System?</span>
+                    </div>
+
+                    <a asp-action="Register" class="btn-register">
+                        <i class="fas fa-user-plus"></i> Create New Account
+                    </a>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p><i class="fas fa-question-circle ac-icon"></i> Need help? <a href="#">Contact Support</a> or call 09123456789</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+             const loginPhoneInput = document.querySelector("#loginPhone");
+
+        if (loginPhoneInput) {
+            const itiLogin = window.intlTelInput(loginPhoneInput, {
+                initialCountry: "mm",
+                separateDialCode: true,
+                preferredCountries: ["mm", "th", "sg", "jp", "us"],
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.3.3/js/utils.js",
+                customContainer: 'w-100',
+                autoPlaceholder: "polite",
+                formatOnDisplay: true
+            });
+
+            // Submit 时 full number save
+            loginPhoneInput.form.addEventListener("submit", function () {
+                loginPhoneInput.value = itiLogin.getNumber();
+            });
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.form-control');
+
+            inputs.forEach(input => {
+                // Add focus effect
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+
+            // Add a subtle animation to the login button
+            const loginBtn = document.querySelector('.btn-login');
+            if (loginBtn) {
+                loginBtn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+
+                loginBtn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

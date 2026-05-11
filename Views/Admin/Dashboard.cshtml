@@ -1,57 +1,342 @@
-﻿@{
+﻿@model AirConServicingManagementSystem.ViewsModels.AdminDashboardViewModel
+
+@{
     ViewData["Title"] = "Admin Dashboard";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 class="mb-4">Admin Dashboard</h2>
+<style>
+    :root {
+        --primary-color: #2c8c99;
+        --primary-light: #4ca6b3;
+        --primary-dark: #1a6b77;
+        --text-light: #ffffff;
+        --shadow-color: rgba(44, 140, 153, 0.15);
+        --gradient-start: #2c8c99;
+        --gradient-end: #34a8b6;
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: var(--text-light);
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 25px var(--shadow-color);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+        .dashboard-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.75rem;
+        }
+
+        .dashboard-header .subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+    .dashboard-card {
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border: none;
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px var(--shadow-color);
+        border: 1px solid rgba(44, 140, 153, 0.1);
+    }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(44, 140, 153, 0.25);
+        }
+
+    .dashboard-icon-container {
+        width: 70px;
+        height: 70px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 6px 15px rgba(44, 140, 153, 0.3);
+        transition: transform 0.3s ease;
+    }
+
+    .dashboard-card:hover .dashboard-icon-container {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .dashboard-icon-container i {
+        font-size: 28px;
+        color: var(--text-light);
+    }
+
+    .dashboard-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-count {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-trend {
+        font-size: 12px;
+        color: #28a745;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+        .dashboard-trend.negative {
+            color: #dc3545;
+        }
+
+    .section-title {
+        font-weight: 600;
+        color: var(--primary-dark);
+        position: relative;
+        padding-bottom: 0.75rem;
+        margin: 2.5rem 0 1.5rem;
+    }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 3px;
+        }
+
+    .overview-card {
+        background: linear-gradient(135deg, #f8fdff, #ffffff);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(44, 140, 153, 0.15);
+        box-shadow: 0 6px 20px rgba(44, 140, 153, 0.1);
+        margin-bottom: 2rem;
+    }
+
+        .overview-card p {
+            color: #495057;
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+    .feature-alert {
+        background: linear-gradient(135deg, rgba(44, 140, 153, 0.1), rgba(52, 168, 182, 0.05));
+        border: 1px solid rgba(44, 140, 153, 0.2);
+        border-left: 4px solid var(--primary-color);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-top: 2rem;
+    }
+
+        .feature-alert i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-header
+
+    {
+        padding: 1.25rem;
+    }
+
+    .dashboard-header h3 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-count {
+        font-size: 1.875rem;
+    }
+
+    .dashboard-icon-container {
+        width: 60px;
+        height: 60px;
+    }
+
+        .dashboard-icon-container i {
+            font-size: 24px;
+        }
+
+    }
+
+    @@media (max-width: 576px) {
+        .dashboard-card
+
+    {
+        padding: 1.25rem;
+    }
+
+    .overview-card {
+        padding: 1.5rem;
+    }
+
+    .section-title {
+        margin: 2rem 0 1rem;
+    }
+
+    }
+</style>
+
+<div class="dashboard-header">
+    <h3>Admin Dashboard</h3>
+    <div class="subtitle">Welcome back! Here's what's happening with your system today.</div>
+</div>
 
 <div class="row g-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <i class="fa-solid fa-users fa-2x text-primary mb-2"></i>
-                <h5>Total Customers</h5>
-                <h3>120</h3>
+
+    <!-- Customers -->
+    <div class="col-xl-3 col-lg-4 col-md-6">
+        <a asp-controller="Customer" asp-action="Index" class="text-decoration-none text-reset">
+        <div class="dashboard-card">
+            <div class="dashboard-icon-container">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="dashboard-title">Total Customers</div>
+            <div class="dashboard-count">@Model.TotalCustomers</div>
+            <div class="dashboard-trend">
+                <i class="fa-solid fa-arrow-up"></i>
+                <span>Growing daily</span>
             </div>
         </div>
+        </a>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <i class="fa-solid fa-user-gear fa-2x text-success mb-2"></i>
-                <h5>Technicians</h5>
-                <h3>15</h3>
+    <!-- Technicians -->
+    <div class="col-xl-3 col-lg-4 col-md-6">
+        <a asp-controller="Technicians" asp-action="Index" class="text-decoration-none text-reset">
+        <div class="dashboard-card">
+            <div class="dashboard-icon-container">
+                <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div class="dashboard-title">Active Technicians</div>
+            <div class="dashboard-count">@Model.TotalTechnicians</div>
+            <div class="dashboard-trend">
+                <i class="fa-solid fa-users"></i>
+                <span>Ready for service</span>
             </div>
         </div>
+        </a>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <i class="fa-solid fa-screwdriver-wrench fa-2x text-warning mb-2"></i>
-                <h5>Active Services</h5>
-                <h3>32</h3>
+    <!-- Services -->
+    <div class="col-xl-3 col-lg-4 col-md-6">
+        <a asp-controller="ServiceRecords" asp-action="Index" class="text-decoration-none text-reset">
+        <div class="dashboard-card">
+            <div class="dashboard-icon-container">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+            </div>
+            <div class="dashboard-title">Service Records</div>
+            <div class="dashboard-count">@Model.ActiveServices</div>
+            <div class="dashboard-trend">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Active this month</span>
             </div>
         </div>
+        </a>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <i class="fa-solid fa-shield-halved fa-2x text-danger mb-2"></i>
-                <h5>Warranty Cases</h5>
-                <h3>8</h3>
+    <!-- Warranty -->
+    <div class="col-xl-3 col-lg-4 col-md-6">
+        <a asp-controller="Warranty" asp-action="Index" class="text-decoration-none text-reset">
+        <div class="dashboard-card">
+            <div class="dashboard-icon-container">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="dashboard-title">Warranty Cases</div>
+            <div class="dashboard-count">@Model.WarrantyCases</div>
+            <div class="dashboard-trend">
+                <i class="fa-solid fa-clock"></i>
+                <span>Require attention</span>
+            </div>
+        </div>
+        </a>
+    </div>
+
+</div>
+
+<h5 class="section-title">System Overview</h5>
+
+<div class="overview-card">
+    <p>
+        Welcome to the <strong style="color: var(--primary-dark);">Air Con Servicing Management System</strong> Admin Panel.
+        From here, you can efficiently manage customers, technicians, service records,
+        warranty tracking, reminders, and monitor overall system performance.
+    </p>
+    <p class="mt-3 mb-0">
+        The dashboard provides real-time insights into your operations with key metrics
+        displayed in an intuitive format. Use these metrics to make informed decisions
+        and optimize your service delivery.
+    </p>
+</div>
+
+<!-- Future Ready Section -->
+<div class="feature-alert">
+    <div class="d-flex align-items-start">
+        <i class="fa-solid fa-circle-info me-3 mt-1"></i>
+        <div>
+            <h6 class="mb-2" style="color: var(--primary-dark);">Upcoming Features</h6>
+            <p class="mb-2">We're continuously improving your experience. Coming soon:</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="fa-solid fa-chart-pie me-2" style="color: var(--primary-color); font-size: 0.875rem;"></i>
+                        <span>Monthly service analytics</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="fa-solid fa-bell me-2" style="color: var(--primary-color); font-size: 0.875rem;"></i>
+                        <span>Warranty expiry alerts</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="fa-solid fa-chart-bar me-2" style="color: var(--primary-color); font-size: 0.875rem;"></i>
+                        <span>Technician performance charts</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="fa-solid fa-envelope me-2" style="color: var(--primary-color); font-size: 0.875rem;"></i>
+                        <span>Automated reminder notifications</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<hr />
-
-<h4 class="mt-4">System Overview</h4>
-<p>
-    Welcome to the Air Con Servicing Management System Admin Panel.
-    You can manage customers, technicians, services, warranty, reminders,
-    and view monthly analytics from this dashboard.
-</p>

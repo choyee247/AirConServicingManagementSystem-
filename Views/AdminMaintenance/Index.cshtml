@@ -1,0 +1,41 @@
+﻿@model IEnumerable<MaintenanceSchedule>
+@{
+    ViewData["Title"] = "Maintenance Schedules";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3>Maintenance Schedules</h3>
+
+<a asp-action="Create" class="btn btn-success mb-3">Add Maintenance</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>AirCon</th>
+            <th>Customer</th>
+            <th>Technician</th>
+            <th>Scheduled Date</th>
+            <th>Status</th>
+            <th>Completed Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.AirCon.Brand.BrandName - @m.AirCon.Model.ModelName</td>
+                <td>@m.AirCon.Customer.Name</td>
+                <td>@(m.Technician?.Name ?? "Not Assigned")</td>
+                <td>@m.ScheduledDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@m.Status</td>
+                <td>@(m.CompletedDate.HasValue ? m.CompletedDate.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@m.MaintenanceId" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@m.MaintenanceId" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete this schedule?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

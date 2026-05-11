@@ -1,4 +1,5 @@
 using AirConServicingManagementSystem.Models;
+using AirConServicingManagementSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,10 +14,13 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
 
 // Register DBContext
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<QrService>();
 
 var app = builder.Build();
 
@@ -39,6 +43,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=AdminLogin}/{action=Login}/{id?}");
+    pattern: "{controller=Admin}/{action=Dashboard}/{id?}");
 
 app.Run();

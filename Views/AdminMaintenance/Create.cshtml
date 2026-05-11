@@ -1,0 +1,39 @@
+﻿@model AirConServicingManagementSystem.Models.MaintenanceSchedule
+
+@{
+    ViewData["Title"] = "Create Maintenance";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3>Create Maintenance</h3>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label>AirCon</label>
+        <select asp-for="AirConId" class="form-select" required>
+            <option value="">Select AirCon</option>
+            @foreach (var a in ViewBag.AirCons)
+            {
+                <option value="@a.Id">@a.Brand.BrandName - @a.Model.ModelName - @a.SerialNumber</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Technician</label>
+        <select asp-for="TechnicianId" class="form-select">
+            <option value="">Select Technician</option>
+            @foreach (var t in ViewBag.Technicians)
+            {
+                <option value="@t.TechnicianId">@t.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Scheduled Date</label>
+        <input asp-for="ScheduledDate" type="datetime-local" class="form-control" required />
+    </div>
+
+    <button class="btn btn-success">Save</button>
+</form>

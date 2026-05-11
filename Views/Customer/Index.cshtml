@@ -99,7 +99,7 @@
                             <i class="fas fa-check-circle fa-lg text-primary"></i>
                         </div>
                         <div>
-                            <h3 class="h2 fw-bold mb-0">24</h3>
+                            <h3 class="h2 fw-bold mb-0">0</h3>
                             <small class="text-muted">Active Today</small>
                         </div>
                     </div>
@@ -114,7 +114,7 @@
                             <i class="fas fa-calendar-check fa-lg text-primary"></i>
                         </div>
                         <div>
-                            <h3 class="h2 fw-bold mb-0">156</h3>
+                            <h3 class="h2 fw-bold mb-0">0</h3>
                             <small class="text-muted">Monthly Services</small>
                         </div>
                     </div>
@@ -129,7 +129,7 @@
                             <i class="fas fa-star fa-lg text-primary"></i>
                         </div>
                         <div>
-                            <h3 class="h2 fw-bold mb-0">4.8</h3>
+                            <h3 class="h2 fw-bold mb-0">0</h3>
                             <small class="text-muted">Avg Rating</small>
                         </div>
                     </div>
@@ -200,7 +200,7 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr class="customer-row" data-name="@item.Name.ToLower()" data-email="@item.Email.ToLower()">
+                            <tr class="customer-row" data-name="@item.Name.ToLower()"@*  data-email="@item.Email.ToLower()" *@>
                                 <td class="ps-4">
                                     <div class="form-check">
                                         <input class="form-check-input customer-checkbox" type="checkbox" value="@item.Id">
@@ -220,7 +220,7 @@
                                 <td>
                                     <div class="d-flex flex-column">
                                         <small class="fw-medium">@item.Phone</small>
-                                        <small class="text-primary-opacity-75">@item.Email</small>
+                                        @* <small class="text-primary-opacity-75">@item.Email</small> *@
                                     </div>
                                 </td>
                                 <td>
@@ -265,7 +265,7 @@
                 <div class="list-group list-group-flush">
                     @foreach (var item in Model)
                     {
-                        <div class="list-group-item border-0 customer-row" data-name="@item.Name.ToLower()" data-email="@item.Email.ToLower()">
+                        <div class="list-group-item border-0 customer-row" data-name="@item.Name.ToLower()" @* data-email="@item.Email.ToLower()" *@>
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div class="d-flex align-items-center">
                                     <div class="form-check me-3">
@@ -285,9 +285,9 @@
                             </div>
 
                             <div class="mb-2">
-                                <small class="text-primary-opacity-75 d-block mb-1">
+                               @*  <small class="text-primary-opacity-75 d-block mb-1">
                                     <i class="fas fa-envelope me-2"></i>@item.Email
-                                </small>
+                                </small> *@
                                 <small class="text-primary-opacity-75 d-block">
                                     <i class="fas fa-map-marker-alt me-2"></i>@item.Address
                                 </small>
