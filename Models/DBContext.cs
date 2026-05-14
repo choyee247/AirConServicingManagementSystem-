@@ -51,6 +51,8 @@ public partial class DBContext : DbContext
 
     public virtual DbSet<TechnicianBonuse> TechnicianBonuses { get; set; }
 
+    public virtual DbSet<TechnicianSchedulePlan> TechnicianSchedulePlans { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Warranty> Warranties { get; set; }
@@ -296,6 +298,21 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.Technician).WithMany(p => p.TechnicianBonuses)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Technicia__Techn__5BE2A6F2");
+        });
+
+        modelBuilder.Entity<TechnicianSchedulePlan>(entity =>
+        {
+            entity.HasKey(e => e.PlanId).HasName("PK__Technici__755C22B7CCEE96D0");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.TechnicianSchedulePlans).HasConstraintName("FK_TechnicianSchedulePlans_Customers");
+
+            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.TechnicianSchedulePlans).HasConstraintName("FK_Plan_ServiceRequest");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.TechnicianSchedulePlans)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Plan_Technician");
         });
 
         modelBuilder.Entity<User>(entity =>

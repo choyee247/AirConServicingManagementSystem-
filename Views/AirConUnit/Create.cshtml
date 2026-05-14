@@ -95,15 +95,35 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                   @*  <div class="col-md-6 mb-3">
                         <label class="form-label">Serial Number</label>
                         <input asp-for="SerialNumber" class="form-control" />
                         <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                    </div> *@
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">AirCon Type</label>
+                        <select asp-for="AirConType" class="form-select">
+                            <option value="">-- Select Type --</option>
+                            <option value="Window">Window</option>
+                            <option value="Stand">Stand</option>
+                            <option value="Wall Split">Wall Split</option>
+                            <option value="Cassette">Cassette</option>
+                            <option value="Ceiling Duct">Ceiling Duct</option>
+                            <option value="Floor Standing">Floor Standing</option>
+                        </select>
+                        <span asp-validation-for="AirConType" class="text-danger"></span>
                     </div>
-
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Capacity (HP)</label>
-                        <input asp-for="CapacityHp" class="form-control" />
+                        <select asp-for="CapacityHp" class="form-select">
+                            <option value="">-- Select HP --</option>
+                            <option value="0.5">0.5</option>
+                            <option value="1">1</option>
+                            <option value="1.5">1.5</option>
+                            <option value="2">2</option>
+                            <option value="2.5">2.5</option>
+                            <option value="3">3</option>
+                        </select>
                         <span asp-validation-for="CapacityHp" class="text-danger"></span>
                     </div>
                 </div>

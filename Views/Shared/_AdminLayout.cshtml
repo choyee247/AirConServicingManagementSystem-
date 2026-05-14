@@ -664,10 +664,15 @@
                 <i class="fa-solid fa-chevron-down submenu-icon"></i>
             </a>
             <ul class="submenu">
-                <a asp-controller="Appointment" asp-action="Calendar">
+
+                <a asp-controller="AdminService" asp-action="Calendar">
                     <i class="fa-solid fa-calendar"></i>
                     <span class="link-text">Calendar</span>
                 </a>
+               @*  <a asp-controller="AdminService" asp-action="CreatePlan">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="link-text">Create Plan</span>
+                </a> *@
                 <a asp-controller="TechnicianService" asp-action="Availability">
                     <i class="fa-solid fa-user-clock"></i>
                     <span class="link-text">Technician Availability</span>

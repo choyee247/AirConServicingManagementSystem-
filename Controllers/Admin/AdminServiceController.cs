@@ -110,56 +110,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
 
             return RedirectToAction("Index");
         }
-        // GET: Assign Technician
-        //public async Task<IActionResult> Assign(int id)
-        //{
-        //    ViewBag.Technicians = await _context.Technicians
-        //        .Where(t => t.IsAvailable == true)
-        //        .ToListAsync();
-
-        //    var service = await _context.ServiceRequests
-        //        .Include(s => s.Customer)
-        //        .Include(s => s.AirCon)
-        //        .FirstOrDefaultAsync(s => s.ServiceId == id);
-
-        //    if (service == null)
-        //        return NotFound();
-
-        //    return View(service);
-        //}
-
-        //// POST: Assign Technician
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Assign(int id, int technicianId)
-        //{
-        //    var service = await _context.ServiceRequests.FindAsync(id);
-        //    if (service == null)
-        //        return NotFound();
-
-        //    service.TechnicianId = technicianId;
-        //    service.Status = ServiceStatus.Assigned;
-
-        //    // Technician becomes unavailable
-        //    var tech = await _context.Technicians.FindAsync(technicianId);
-        //    if (tech != null)
-        //    {
-        //        tech.IsAvailable = false;
-        //    }
-
-        //    _context.ServiceRecords.Add(new ServiceRecord
-        //    {
-        //        CustomerId = service.CustomerId,
-        //        AirConUnitId = (int)service.AirConId,
-        //        TechnicianId = technicianId,
-        //        ServiceDate = DateTime.Now,
-        //        ServiceType = "General Service",
-        //        CreatedAt = DateTime.Now
-        //    });
-
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction("Index");
-        //}
+   
         public async Task<IActionResult> Records(string search)
         {
             ViewData["CurrentFilter"] = search;
@@ -199,6 +150,72 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             TempData["SuccessMessage"] = "Record deleted successfully.";
 
             return RedirectToAction(nameof(Records));
+        }
+        public async Task<IActionResult> Calendar()
+        {
+            var plans = await _context.TechnicianSchedulePlans
+                .Include(p => p.Technician)
+                .ToListAsync();
+
+            return View(plans);
+        }
+        public async Task<IActionResult> GetPlans()
+        {
+            var plans = await _context.TechnicianSchedulePlans
+                .Select(p => new
+                {
+                    title = p.Technician.Name + " - " + p.CustomerName,
+                    start = p.PlannedDate
+                })
+                .ToListAsync();
+
+            return Json(plans);
+        }
+        public async Task<IActionResult> CreatePlan(int serviceId)
+        {
+            var service = await _context.ServiceRequests
+                .Include(s => s.Customer)
+                .FirstOrDefaultAsync(s => s.ServiceId == serviceId);
+
+            if (service == null)
+                return NotFound();
+
+            ViewBag.Technicians = await _context.Technicians
+                .Where(t => !t.IsDeleted)
+                .ToListAsync();
+
+            return View(service);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePlan(TechnicianSchedulePlan model)
+        {
+            var service = await _context.ServiceRequests
+                .Include(s => s.Customer)
+                .FirstOrDefaultAsync(s => s.ServiceId == model.ServiceRequestId);
+
+            if (service == null)
+                return NotFound();
+
+            // ✅ FIX HERE (IMPORTANT)
+            model.PlannedDate = service?.RequestedAt ?? DateTime.Now;
+
+            model.CustomerId = service.CustomerId;
+            model.CustomerName = service.Customer.Name;
+            model.Location = service.Location;
+            model.PlanType = "Service";
+            model.Priority = "Normal";
+            model.Status = "Planned";
+            model.Title = $"Service for {service.Customer.Name}";
+            model.CreatedAt = DateTime.Now;
+
+            _context.TechnicianSchedulePlans.Add(model);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Plan created successfully.";
+
+            return RedirectToAction("Calendar");
         }
     }
 }

@@ -1,0 +1,160 @@
+﻿@model IEnumerable<AirConServicingManagementSystem.Models.TechnicianSchedulePlan>
+
+@{
+    ViewData["Title"] = "Calendar";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1" style="color:#2c8c99;">
+                Technician Schedule Calendar
+            </h3>
+            <p class="text-muted mb-0">
+                Manage technician schedule plans and upcoming visits
+            </p>
+        </div>
+
+        <!-- Create Plan Button -->
+        <a asp-controller="AdminService"
+           asp-action="Index"
+           class="btn btn-sm text-white"
+           style="background-color:#2c8c99;">
+            <i class="fa-solid fa-plus me-1"></i>
+            Create Plan
+        </a>
+
+    </div>
+
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+        </div>
+    }
+
+    <!-- Calendar Card -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <!-- Schedule List -->
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-white border-0">
+            <h5 class="mb-0 fw-bold" style="color:#2c8c99;">
+                Schedule Plan List
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead style="background-color:#f8f9fa;">
+                        <tr>
+                            <th>Technician</th>
+                            <th>Customer</th>
+                            <th>Location</th>
+                            <th>Planned Date</th>
+                            <th>Status</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.Technician?.Name</strong>
+                                    </td>
+                                    <td>@item.CustomerName</td>
+                                    <td>@item.Location</td>
+                                    <td>
+                                        @item.PlannedDate.ToString("dd MMM yyyy hh:mm tt")
+                                    </td>
+                                    <td>
+                                        @if (item.Status == "Completed")
+                                        {
+                                            <span class="badge bg-success">
+                                                Completed
+                                            </span>
+                                        }
+                                        else if (item.Status == "In Progress")
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                In Progress
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge"
+                                                  style="background-color:#2c8c99;">
+                                                Planned
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>@item.Notes</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6"
+                                    class="text-center text-muted py-4">
+                                    No schedule plans found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 700,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+
+            events: '/AdminService/GetPlans',
+
+            eventColor: '#2c8c99',
+
+            eventClick: function (info) {
+                if (info.event.url) {
+                    window.location.href = info.event.url;
+                    info.jsEvent.preventDefault();
+                }
+            }
+        });
+
+        calendar.render();
+    });
+</script>

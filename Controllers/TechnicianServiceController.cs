@@ -319,4 +319,7 @@ public class TechnicianServiceController : Controller
 
         return View("QrResult");
     }
+
+  
+
 }

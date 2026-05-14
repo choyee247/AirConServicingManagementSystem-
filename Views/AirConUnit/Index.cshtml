@@ -17,20 +17,28 @@
     <div class="card shadow-sm mb-4" style="border: 1px solid #2c8c99;">
         <div class="card-body">
             <div class="row g-3 align-items-end">
-                <div class="col-md-4">
+                <!-- Search -->
+                <div class="col-md-3">
                     <label class="form-label" style="color: #2c8c99;">Search</label>
                     <div class="input-group">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search by brand, model, serial..."
+                        <input type="text" id="searchInput" class="form-control"
+                               placeholder="Search by brand, model, serial..."
                                style="border: 1px solid #2c8c99;">
-                        <button class="btn" style="background-color: #2c8c99; color: white;" type="button" id="searchButton">
+                        <button class="btn"
+                                style="background-color: #2c8c99; color: white;"
+                                type="button"
+                                id="searchButton">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </div>
-                <div class="col-md-3">
+
+                <!-- Capacity -->
+                <div class="col-md-2">
                     <label class="form-label" style="color: #2c8c99;">Capacity</label>
                     <select id="capacityFilter" class="form-select" style="border: 1px solid #2c8c99;">
                         <option value="">All HP</option>
+                        <option value="0.5">0.5 HP</option>
                         <option value="1">1 HP</option>
                         <option value="1.5">1.5 HP</option>
                         <option value="2">2 HP</option>
@@ -38,7 +46,9 @@
                         <option value="3">3 HP</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+
+                <!-- Brand -->
+                <div class="col-md-2">
                     <label class="form-label" style="color: #2c8c99;">Brand</label>
                     <select id="brandFilter" class="form-select" style="border: 1px solid #2c8c99;">
                         <option value="">All Brands</option>
@@ -49,6 +59,7 @@
                             .Select(a => a.Brand.BrandName)
                             .Distinct()
                             .OrderBy(b => b);
+
                             foreach (var brand in brands)
                             {
                                 <option value="@brand">@brand</option>
@@ -56,8 +67,25 @@
                         }
                     </select>
                 </div>
+
+                <!-- AirCon Type -->
+                <div class="col-md-3">
+                    <label class="form-label" style="color: #2c8c99;">AirCon Type</label>
+                    <select id="typeFilter" class="form-select" style="border: 1px solid #2c8c99;">
+                        <option value="">All Types</option>
+                        <option value="Window">Window</option>
+                        <option value="Stand">Stand</option>
+                        <option value="Wall Split">Wall Split</option>
+                        <option value="Cassette">Cassette</option>
+                        <option value="Ceiling Duct">Ceiling Duct</option>
+                        <option value="Floor Standing">Floor Standing</option>
+                    </select>
+                </div>
+
+                <!-- Clear -->
                 <div class="col-md-2">
-                    <button class="btn w-100" style="background-color: #f8f9fa; border: 1px solid #2c8c99; color: #2c8c99;"
+                    <button class="btn w-100"
+                            style="background-color: #f8f9fa; border: 1px solid #2c8c99; color: #2c8c99;"
                             id="clearFilters">
                         <i class="fas fa-times me-2"></i>Clear
                     </button>
@@ -77,9 +105,10 @@
                             <th>Brand</th>
                             <th>Model</th>
                             <th>Serial Number</th>
+                            <th>AirCon Type</th>
                             <th>Capacity (HP)</th>
                             <th>Installation Date</th>
-                            <th>Warranty (Months)</th>
+                            <th>Warranty</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -93,28 +122,38 @@
                                     data-brand="@aircon.Brand?.BrandName?.ToLower()"
                                     data-model="@aircon.Model?.ModelName?.ToLower()"
                                     data-serial="@aircon.SerialNumber?.ToLower()"
-                                    data-capacity="@aircon.CapacityHp">
+                                    data-capacity="@aircon.CapacityHp"
+                                    data-type="@aircon.AirConType?.ToLower()">
+
                                     <td class="fw-bold">@index</td>
                                     <td>@aircon.Brand?.BrandName</td>
                                     <td>@aircon.Model?.ModelName</td>
-                                    <td><span class="badge bg-secondary">@aircon.SerialNumber</span></td>
+
                                     <td>
-                                        <span class="badge" style="background-color: #e6f7f9; color: #2c8c99; border: 1px solid #2c8c99;">
+                                        <span class="badge bg-secondary">
+                                            @aircon.SerialNumber
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-info text-dark">
+                                            @(string.IsNullOrEmpty(aircon.AirConType) ? "N/A" : aircon.AirConType)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge"
+                                              style="background-color: #e6f7f9; color: #2c8c99; border: 1px solid #2c8c99;">
                                             @aircon.CapacityHp HP
                                         </span>
                                     </td>
-                                    <td>@(aircon.InstallationDate.HasValue ? aircon.InstallationDate.Value.ToString("yyyy-MM-dd") : "N/A")</td>
-                                    @* <td>
-                                        @{
-                                            var warranty = aircon.WarrantyPeriodMonths ?? 0;
-                                            var warrantyClass = warranty > 24 ? "text-success fw-bold" :
-                                            warranty > 12 ? "text-warning fw-bold" : "text-danger fw-bold";
-                                            var warrantyIcon = warranty > 24 ? "fa-check-circle" :
-                                            warranty > 12 ? "fa-exclamation-circle" : "fa-times-circle";
-                                        }
-                                        <i class="fas @warrantyIcon me-1"></i>
-                                        <span class="@warrantyClass">@warranty</span>
-                                    </td> *@
+
+                                    <td>
+                                        @(aircon.InstallationDate.HasValue
+                                            ? aircon.InstallationDate.Value.ToString("yyyy-MM-dd")
+                                            : "N/A")
+                                    </td>
+
                                     <td>
                                         @if (aircon.Warranty != null)
                                         {
@@ -144,17 +183,28 @@
                                             <span class="text-secondary fw-bold">No Warranty</span>
                                         }
                                     </td>
+
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a asp-action="Details" asp-route-id="@aircon.Id" class="btn btn-sm text-white me-1"
-                                               style="background-color: #2c8c99;" title="View Details">
+                                            <a asp-action="Details"
+                                               asp-route-id="@aircon.Id"
+                                               class="btn btn-sm text-white me-1"
+                                               style="background-color: #2c8c99;"
+                                               title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a asp-action="Edit" asp-route-id="@aircon.Id" class="btn btn-sm text-white me-1"
-                                               style="background-color: #ffc107;" title="Edit">
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@aircon.Id"
+                                               class="btn btn-sm text-white me-1"
+                                               style="background-color: #ffc107;"
+                                               title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a asp-action="Delete" asp-route-id="@aircon.Id" class="btn btn-sm text-white"
+
+                                            <a asp-action="Delete"
+                                               asp-route-id="@aircon.Id"
+                                               class="btn btn-sm text-white"
                                                style="background-color: #dc3545;"
                                                onclick="return confirm('Are you sure you want to delete this aircon?');"
                                                title="Delete">
@@ -169,9 +219,10 @@
                         else
                         {
                             <tr>
-                                <td colspan="8" class="text-center py-4">
+                                <td colspan="9" class="text-center py-4">
                                     <div class="text-muted">
-                                        <i class="fas fa-wind fa-3x mb-3" style="color: #d1ecf1;"></i>
+                                        <i class="fas fa-wind fa-3x mb-3"
+                                           style="color: #d1ecf1;"></i>
                                         <h5 style="color: #2c8c99;">No aircon units found</h5>
                                         <p>Add your first aircon unit by clicking the "Add New Aircon" button</p>
                                     </div>
@@ -183,206 +234,70 @@
             </div>
         </div>
     </div>
-
-    <!-- Pagination -->
-    <div class="d-flex justify-content-between align-items-center mt-4">
-        <div class="text-muted">
-            Showing <span id="showingCount">0</span> of <span id="totalCount">@(Model?.Count() ?? 0)</span> records
-        </div>
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-end mb-0" id="paginationControls">
-                <!-- Pagination will be generated by JavaScript -->
-            </ul>
-        </nav>
-    </div>
 </div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
             const rows = $('.aircon-row');
-            const rowsPerPage = 10;
-            let currentPage = 1;
-            let filteredRows = rows;
 
-            // Initialize
-            updatePagination();
-            showPage(1);
-            updateCounts();
-
-            // Search function
             function performSearch() {
                 const searchTerm = $('#searchInput').val().toLowerCase().trim();
                 const capacityFilter = $('#capacityFilter').val();
                 const brandFilter = $('#brandFilter').val().toLowerCase().trim();
+                const typeFilter = $('#typeFilter').val().toLowerCase().trim();
 
-                filteredRows = rows.filter(function() {
-                    const $row = $(this);
-                    const brand = $row.data('brand') || '';
-                    const model = $row.data('model') || '';
-                    const serial = $row.data('serial') || '';
-                    const capacity = $row.data('capacity') || '';
+                rows.each(function () {
+                    const row = $(this);
+                    const brand = row.data('brand') || '';
+                    const model = row.data('model') || '';
+                    const serial = row.data('serial') || '';
+                    const capacity = (row.data('capacity') || '').toString();
+                    const type = row.data('type') || '';
 
-                    // Check search term
-                    const matchesSearch = !searchTerm ||
+                    const matchesSearch =
+                        !searchTerm ||
                         brand.includes(searchTerm) ||
                         model.includes(searchTerm) ||
                         serial.includes(searchTerm);
 
-                    // Check capacity filter
-                    const matchesCapacity = !capacityFilter ||
-                        capacity.toString() === capacityFilter;
+                    const matchesCapacity =
+                        !capacityFilter ||
+                        capacity === capacityFilter;
 
-                    // Check brand filter
-                    const matchesBrand = !brandFilter ||
+                    const matchesBrand =
+                        !brandFilter ||
                         brand.includes(brandFilter);
 
-                    return matchesSearch && matchesCapacity && matchesBrand;
+                    const matchesType =
+                        !typeFilter ||
+                        type === typeFilter;
+
+                    if (matchesSearch && matchesCapacity && matchesBrand && matchesType) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
                 });
-
-                currentPage = 1;
-                updatePagination();
-                showPage(currentPage);
-                updateCounts();
             }
 
-            // Show specific page
-            function showPage(page) {
-                // Hide all rows
-                rows.hide();
-
-                // Show filtered rows for current page
-                const startIndex = (page - 1) * rowsPerPage;
-                const endIndex = startIndex + rowsPerPage;
-
-                filteredRows.slice(startIndex, endIndex).show();
-
-                // Update active page button
-                $('#paginationControls .page-item').removeClass('active');
-                $(`#paginationControls .page-item[data-page="${page}"]`).addClass('active');
-            }
-
-            // Update pagination controls
-            function updatePagination() {
-                const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-                const pagination = $('#paginationControls');
-                pagination.empty();
-
-                if (totalPages <= 1) {
-                    return;
-                }
-
-                // Previous button
-                const prevDisabled = currentPage === 1 ? 'disabled' : '';
-                pagination.append(`
-                    <li class="page-item ${prevDisabled}" data-page="prev">
-                        <a class="page-link" href="#" aria-label="Previous" style="color: #2c8c99;">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                    </li>
-                `);
-
-                // Page numbers
-                let startPage = Math.max(1, currentPage - 2);
-                let endPage = Math.min(totalPages, currentPage + 2);
-
-                // Show first page if not in range
-                if (startPage > 1) {
-                    pagination.append(`
-                        <li class="page-item" data-page="1">
-                            <a class="page-link" href="#" style="color: #2c8c99;">1</a>
-                        </li>
-                        ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
-                    `);
-                }
-
-                // Show page range
-                for (let i = startPage; i <= endPage; i++) {
-                    const active = i === currentPage ? 'active' : '';
-                    const bgColor = i === currentPage ? 'style="background-color: #2c8c99; border-color: #2c8c99;"' : 'style="color: #2c8c99;"';
-                    pagination.append(`
-                        <li class="page-item ${active}" data-page="${i}">
-                            <a class="page-link" href="#" ${bgColor}>${i}</a>
-                        </li>
-                    `);
-                }
-
-                // Show last page if not in range
-                if (endPage < totalPages) {
-                    pagination.append(`
-                        ${endPage < totalPages - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
-                        <li class="page-item" data-page="${totalPages}">
-                            <a class="page-link" href="#" style="color: #2c8c99;">${totalPages}</a>
-                        </li>
-                    `);
-                }
-
-                // Next button
-                const nextDisabled = currentPage === totalPages ? 'disabled' : '';
-                pagination.append(`
-                    <li class="page-item ${nextDisabled}" data-page="next">
-                        <a class="page-link" href="#" aria-label="Next" style="color: #2c8c99;">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                    </li>
-                `);
-            }
-
-            // Update record counts
-            function updateCounts() {
-                const totalRows = rows.length;
-                const showingRows = filteredRows.length;
-                const startIndex = (currentPage - 1) * rowsPerPage + 1;
-                const endIndex = Math.min(startIndex + rowsPerPage - 1, showingRows);
-
-                if (showingRows === 0) {
-                    $('#showingCount').text('0');
-                    $('#totalCount').text(totalRows);
-                } else {
-                    $('#showingCount').text(`${startIndex}-${endIndex}`);
-                    $('#totalCount').text(totalRows);
-                }
-            }
-
-            // Event Listeners
             $('#searchButton').on('click', performSearch);
-            $('#searchInput').on('keyup', function(e) {
+
+            $('#searchInput').on('keyup', function (e) {
                 if (e.key === 'Enter') {
                     performSearch();
                 }
             });
 
-            $('#capacityFilter, #brandFilter').on('change', performSearch);
+            $('#capacityFilter, #brandFilter, #typeFilter').on('change', performSearch);
 
-            $('#clearFilters').on('click', function() {
+            $('#clearFilters').on('click', function () {
                 $('#searchInput').val('');
                 $('#capacityFilter').val('');
                 $('#brandFilter').val('');
+                $('#typeFilter').val('');
                 performSearch();
             });
-
-            // Pagination click handler
-            $(document).on('click', '#paginationControls .page-item:not(.disabled)', function(e) {
-                e.preventDefault();
-
-                const action = $(this).data('page');
-                const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-
-                if (action === 'prev' && currentPage > 1) {
-                    currentPage--;
-                } else if (action === 'next' && currentPage < totalPages) {
-                    currentPage++;
-                } else if (typeof action === 'number') {
-                    currentPage = action;
-                }
-
-                showPage(currentPage);
-                updatePagination();
-                updateCounts();
-            });
-
-            // Initial counts
-            updateCounts();
         });
     </script>
 
@@ -391,18 +306,8 @@
             background-color: rgba(44, 140, 153, 0.1) !important;
         }
 
-        .page-link:hover {
-            background-color: #e6f7f9 !important;
-            color: #2c8c99 !important;
-        }
-
-        .page-item.active .page-link {
-            background-color: #2c8c99 !important;
-            border-color: #2c8c99 !important;
-            color: white !important;
-        }
-
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: #2c8c99 !important;
             box-shadow: 0 0 0 0.25rem rgba(44, 140, 153, 0.25) !important;
         }

@@ -1,0 +1,46 @@
+﻿@model AirConServicingManagementSystem.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Create Schedule Plan";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3>Create Technician Plan</h3>
+
+<form asp-action="CreatePlan" method="post">
+
+    <input type="hidden" name="ServiceRequestId" value="@Model.ServiceId" />
+
+    <div class="mb-3">
+        <label>Customer</label>
+        <input class="form-control" value="@Model.Customer.Name" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label>Location</label>
+        <input class="form-control" value="@Model.Location" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label>Technician</label>
+        <select name="TechnicianId" class="form-control">
+            @foreach (var tech in ViewBag.Technicians)
+            {
+                <option value="@tech.TechnicianId">@tech.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Schedule Date</label>
+        <input type="date" name="ScheduledDate" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Notes</label>
+        <textarea name="Notes" class="form-control"></textarea>
+    </div>
+
+    <button class="btn btn-primary">Create Plan</button>
+
+</form>

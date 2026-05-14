@@ -70,4 +70,7 @@ public partial class ServiceRequest
     [ForeignKey("TechnicianId")]
     [InverseProperty("ServiceRequests")]
     public virtual Technician? Technician { get; set; }
+
+    [InverseProperty("ServiceRequest")]
+    public virtual ICollection<TechnicianSchedulePlan> TechnicianSchedulePlans { get; set; } = new List<TechnicianSchedulePlan>();
 }

@@ -51,4 +51,7 @@ public partial class Customer
 
     [InverseProperty("Customer")]
     public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
+
+    [InverseProperty("Customer")]
+    public virtual ICollection<TechnicianSchedulePlan> TechnicianSchedulePlans { get; set; } = new List<TechnicianSchedulePlan>();
 }
