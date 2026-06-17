@@ -3,7 +3,14 @@
 @{
     ViewData["Title"] = "Technician Dashboard";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+
+    var totalTasks = Model.AssignedCount + Model.PendingCount + Model.AcceptedCount + Model.CompletedCount;
+
+    var completionRate = totalTasks > 0
+        ? (Model.CompletedCount * 100 / totalTasks)
+        : 0;
 }
+
 @functions {
     string StatusStyle(string status)
     {
@@ -19,294 +26,983 @@
     }
 }
 
-<div class="container-fluid px-0">
-    <!-- Header -->
-    <div class="dashboard-header bg-white py-3 border-bottom">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h3 mb-1 fw-bold">Technician Dashboard</h1>
-                <p class="text-muted mb-0">Welcome to your service management panel</p>
-            </div>
-            <div class="text-end">
-                <div class="text-muted small">@DateTime.Now.ToString("dd/MM/yyyy")</div>
-                <div class="text-muted small">@DateTime.Now.ToString("hh:mm tt")</div>
-            </div>
+<div class="container-fluid dashboard-container">
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+
+        <div>
+            <h1 class="dashboard-title">
+                Technician Dashboard
+            </h1>
+
+            <p class="dashboard-subtitle">
+                Welcome to your service management panel
+            </p>
         </div>
+
+        <div class="dashboard-date">
+            <div>@DateTime.Now.ToString("dd MMM yyyy")</div>
+            <div>@DateTime.Now.ToString("hh:mm tt")</div>
+        </div>
+
     </div>
 
-    <!-- Main Content -->
-    <div class="container-fluid py-4">
-        <!-- Stats Cards -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="text-muted mb-2">Assigned</h6>
-                                <h2 class="mb-0 fw-bold">@Model.AssignedCount</h2>
-                                <small class="text-muted">Tasks waiting</small>
-                            </div>
-                            <div class="rounded-circle p-3" style="background-color: rgba(44, 140, 153, 0.1);">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#2c8c99">
-                                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM10 17H8V7H10V17ZM16 17H14V7H16V17Z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- STATS -->
+    <div class="row g-3 mb-4">
 
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="text-muted mb-2">Pending</h6>
-                                <h2 class="mb-0 fw-bold">@Model.PendingCount</h2>
-                                <small class="text-muted">Awaiting action</small>
-                            </div>
-                            <div class="rounded-circle p-3" style="background-color: rgba(255, 152, 0, 0.1);">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff9800">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM13 7H11V13L16.25 16.15L17 14.92L12.5 12.25V7Z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Assigned -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="dashboard-card">
 
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="text-muted mb-2">Accepted</h6>
-                                <h2 class="mb-0 fw-bold">@Model.AcceptedCount</h2>
-                                <small class="text-muted">In progress</small>
-                            </div>
-                            <div class="rounded-circle p-3" style="background-color: rgba(76, 175, 80, 0.1);">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#4caf50">
-                                    <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div class="card-top">
 
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="text-muted mb-2">Completed</h6>
-                                <h2 class="mb-0 fw-bold">@Model.CompletedCount</h2>
-                                <small class="text-muted">Finished tasks</small>
-                            </div>
-                            <div class="rounded-circle p-3" style="background-color: rgba(33, 150, 243, 0.1);">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#2196f3">
-                                    <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17ZM20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" />
-                                </svg>
-                            </div>
+                    <div>
+                        <div class="card-label">
+                            Assigned
+                        </div>
+
+                        <div class="card-number">
+                            @Model.AssignedCount
+                        </div>
+
+                        <div class="card-text">
+                            Tasks waiting
                         </div>
                     </div>
+
+                    <div class="card-icon assigned-icon">
+
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#0dcaf0">
+                            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3Z" />
+                        </svg>
+
+                    </div>
+
                 </div>
+
             </div>
         </div>
 
-        <!-- Progress Summary -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-8">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-3">Task Progress Summary</h6>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <small>Completion Rate</small>
-                                <small class="fw-bold">@(Model.CompletedCount > 0 ? (Model.CompletedCount * 100 / (Model.AssignedCount + Model.PendingCount + Model.AcceptedCount + Model.CompletedCount)).ToString("0") : 0)%</small>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar" role="progressbar" style="width: @(Model.CompletedCount > 0 ? (Model.CompletedCount * 100 / (Model.AssignedCount + Model.PendingCount + Model.AcceptedCount + Model.CompletedCount)).ToString("0") : 0)%; background-color: #2c8c99;"></div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <div class="me-2" style="width: 12px; height: 12px; background-color: #2c8c99; border-radius: 2px;"></div>
-                                    <small>Assigned</small>
-                                    <small class="ms-auto fw-bold">@Model.AssignedCount</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <div class="me-2" style="width: 12px; height: 12px; background-color: #ff9800; border-radius: 2px;"></div>
-                                    <small>Pending</small>
-                                    <small class="ms-auto fw-bold">@Model.PendingCount</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <div class="me-2" style="width: 12px; height: 12px; background-color: #4caf50; border-radius: 2px;"></div>
-                                    <small>Accepted</small>
-                                    <small class="ms-auto fw-bold">@Model.AcceptedCount</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <div class="me-2" style="width: 12px; height: 12px; background-color: #2196f3; border-radius: 2px;"></div>
-                                    <small>Completed</small>
-                                    <small class="ms-auto fw-bold">@Model.CompletedCount</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Pending -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="dashboard-card">
 
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-3">Quick Actions</h6>
-                        <div class="d-grid gap-2">
-                           @*  <button class="btn btn-sm d-flex align-items-center" style="background-color: #2c8c99; color: white;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="white" class="me-2">
-                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                                </svg>
-                                New Service Request
-                            </button> *@
-                            <button class="btn btn-sm btn-outline-secondary d-flex align-items-center">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="me-2">
-                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                                </svg>
-                                View Schedule
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary d-flex align-items-center">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="me-2">
-                                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM7 10H9V17H7V10ZM11 7H13V17H11V7ZM15 13H17V17H15V13Z" />
-                                </svg>
-                                Reports
-                            </button>
+                <div class="card-top">
+
+                    <div>
+                        <div class="card-label">
+                            Pending
+                        </div>
+
+                        <div class="card-number">
+                            @Model.PendingCount
+                        </div>
+
+                        <div class="card-text">
+                            Awaiting action
                         </div>
                     </div>
+
+                    <div class="card-icon pending-icon">
+
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ffc107">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22Z" />
+                        </svg>
+
+                    </div>
+
                 </div>
+
             </div>
         </div>
 
-        <!-- Recent Tasks -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0">Recent Tasks</h6>
-                    <a href="#" class="small text-decoration-none" style="color: #2c8c99;">View All</a>
+        <!-- Accepted -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="dashboard-card">
+
+                <div class="card-top">
+
+                    <div>
+                        <div class="card-label">
+                            Accepted
+                        </div>
+
+                        <div class="card-number">
+                            @Model.AcceptedCount
+                        </div>
+
+                        <div class="card-text">
+                            In progress
+                        </div>
+                    </div>
+
+                    <div class="card-icon accepted-icon">
+
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#198754">
+                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7Z" />
+                        </svg>
+
+                    </div>
+
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
+
+            </div>
+        </div>
+
+        <!-- Completed -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="dashboard-card">
+
+                <div class="card-top">
+
+                    <div>
+                        <div class="card-label">
+                            Completed
+                        </div>
+
+                        <div class="card-number">
+                            @Model.CompletedCount
+                        </div>
+
+                        <div class="card-text">
+                            Finished tasks
+                        </div>
+                    </div>
+
+                    <div class="card-icon completed-icon">
+
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#0d6efd">
+                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7Z" />
+                        </svg>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PROGRESS + QUICK ACTION -->
+    <div class="row g-3 mb-4">
+
+        <!-- Progress -->
+        <div class="col-12 col-lg-8">
+
+            <div class="dashboard-card h-100">
+
+                <div class="section-title">
+                    Task Progress Summary
+                </div>
+
+                <div class="mb-3">
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <small>Completion Rate</small>
+                        <small class="fw-bold">@completionRate%</small>
+                    </div>
+
+                    <div class="custom-progress">
+                        <div class="custom-progress-bar"
+                             style="width:@completionRate%">
+                        </div>
+                    </div>
+
+                </div>
+
+               @*  <div class="row g-3 mt-1">
+
+                    <!-- Assigned -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+
+                        <div class="summary-card assigned-card">
+
+                            <div class="summary-card-body">
+
+                                <div>
+
+                                    <div class="summary-label">
+                                        Assigned
+                                    </div>
+
+                                    <div class="summary-subtext">
+                                        Waiting Tasks
+                                    </div>
+
+                                </div>
+
+                                <div class="summary-right">
+
+                                    <div class="summary-icon assigned-icon">
+
+                                        <svg width="22"
+                                             height="22"
+                                             viewBox="0 0 24 24"
+                                             fill="#0dcaf0">
+
+                                            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3Z" />
+
+                                        </svg>
+
+                                    </div>
+
+                                    <div class="summary-count">
+                                        @Model.AssignedCount
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Pending -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+
+                        <div class="summary-card pending-card">
+
+                            <div class="summary-card-body">
+
+                                <div>
+
+                                    <div class="summary-label">
+                                        Pending
+                                    </div>
+
+                                    <div class="summary-subtext">
+                                        Awaiting Action
+                                    </div>
+
+                                </div>
+
+                                <div class="summary-right">
+
+                                    <div class="summary-icon pending-icon">
+
+                                        <svg width="22"
+                                             height="22"
+                                             viewBox="0 0 24 24"
+                                             fill="#ffc107">
+
+                                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22Z" />
+
+                                        </svg>
+
+                                    </div>
+
+                                    <div class="summary-count">
+                                        @Model.PendingCount
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Accepted -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+
+                        <div class="summary-card accepted-card">
+
+                            <div class="summary-card-body">
+
+                                <div>
+
+                                    <div class="summary-label">
+                                        Accepted
+                                    </div>
+
+                                    <div class="summary-subtext">
+                                        In Progress
+                                    </div>
+
+                                </div>
+
+                                <div class="summary-right">
+
+                                    <div class="summary-icon accepted-icon">
+
+                                        <svg width="22"
+                                             height="22"
+                                             viewBox="0 0 24 24"
+                                             fill="#198754">
+
+                                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7Z" />
+
+                                        </svg>
+
+                                    </div>
+
+                                    <div class="summary-count">
+                                        @Model.AcceptedCount
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Completed -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+
+                        <div class="summary-card completed-card">
+
+                            <div class="summary-card-body">
+
+                                <div>
+
+                                    <div class="summary-label">
+                                        Completed
+                                    </div>
+
+                                    <div class="summary-subtext">
+                                        Finished Tasks
+                                    </div>
+
+                                </div>
+
+                                <div class="summary-right">
+
+                                    <div class="summary-icon completed-icon">
+
+                                        <svg width="22"
+                                             height="22"
+                                             viewBox="0 0 24 24"
+                                             fill="#0d6efd">
+
+                                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7Z" />
+
+                                        </svg>
+
+                                    </div>
+
+                                    <div class="summary-count">
+                                        @Model.CompletedCount
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div> *@
+
+
+            </div>
+
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-12 col-lg-4">
+
+            <div class="dashboard-card h-100">
+
+                <div class="section-title">
+                    Quick Actions
+                </div>
+
+                <div class="d-grid gap-3">
+
+                    <button class="btn custom-btn-outline">
+                        View Schedule
+                    </button>
+
+                    <button class="btn custom-btn-outline">
+                        Reports
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RECENT TASKS -->
+    <div class="dashboard-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+            <div class="section-title mb-0">
+                Recent Tasks
+            </div>
+
+            <a asp-controller="AdminService"
+               asp-action="Records"
+               class="view-all-link">
+                View All
+            </a>
+
+        </div>
+
+        <!-- MOBILE CARD VIEW -->
+        <div class="mobile-task-list d-block d-md-none">
+
+            @if (!Model.RecentServices.Any())
+            {
+                <div class="text-center text-muted py-4">
+                    No service requests
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Model.RecentServices)
+                {
+                    <div class="task-mobile-card">
+
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+
+                            <div>
+                                <div class="fw-bold">
+                                    #AC-@item.ServiceId
+                                </div>
+
+                                <div class="small text-muted">
+                                    @item.Customer?.Name
+                                </div>
+                            </div>
+
+                            <span class="badge rounded-pill"
+                                  style="@StatusStyle(item?.Status ?? "")">
+                                @item.Status
+                            </span>
+
+                        </div>
+
+                        <div class="small text-muted mb-1">
+                            📍 @item.Customer?.Address
+                        </div>
+
+                        <div class="small">
+                            📅 @item.CreatedAt.ToString("dd MMM yyyy")
+                        </div>
+
+                    </div>
+                }
+            }
+
+        </div>
+
+        <!-- DESKTOP TABLE -->
+        <div class="table-responsive d-none d-md-block">
+
+            <table class="table align-middle table-hover">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (!Model.RecentServices.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No service requests
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.RecentServices)
+                        {
                             <tr>
-                                <th class="small text-muted">ID</th>
-                                <th class="small text-muted">Customer</th>
-                                <th class="small text-muted">Location</th>
-                                <th class="small text-muted">Status</th>
-                                <th class="small text-muted">Date</th>
+
+                                <td>
+                                    #AC-@item.ServiceId
+                                </td>
+
+                                <td>
+                                    @item.Customer?.Name
+                                </td>
+
+                                <td>
+                                    @item.Customer?.Address
+                                </td>
+
+                                <td>
+                                    <span class="badge rounded-pill"
+                                          style="@StatusStyle(item.Status)">
+                                        @item.Status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @item.CreatedAt.ToString("dd MMM yyyy")
+                                </td>
+
                             </tr>
-                        </thead>
-                        <tbody>
-                            @if (!Model.RecentServices.Any())
-                            {
-                                <tr>
-                                    <td colspan="5" class="text-center small text-muted">
-                                        No service requests
-                                    </td>
-                                </tr>
-                            }
-                            else
-                            {
-                                @foreach (var item in Model.RecentServices)
-                                {
-                                    <tr>
-                                        <td class="small">#AC-@item.ServiceId</td>
-                                        <td class="small">@item.Customer?.Name</td>
-                                        <td class="small">@item.Customer?.Address</td>
-                                        <td>
-                                            <span class="badge rounded-pill"
-                                                  style="@StatusStyle(item.Status)">
-                                                @item.Status
-                                            </span>
-                                        </td>
-                                        <td class="small">
-                                            @item.CreatedAt.ToString("dd MMM yyyy")
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
         </div>
+
     </div>
+
 </div>
 
 <style>
+
+    /* =========================
+           BODY
+        ========================== */
+
     body {
-        background-color: #f8f9fa;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        background: #f4f7fb;
+        font-family: 'Segoe UI', sans-serif;
+        overflow-x: hidden;
     }
 
-    .card {
-        border-radius: 12px;
-        transition: transform 0.2s ease;
+    /* =========================
+           CONTAINER
+        ========================== */
+
+    .dashboard-container {
+        padding: 20px;
     }
 
-        .card:hover {
-            transform: translateY(-2px);
-        }
+    /* =========================
+           HEADER
+        ========================== */
 
-    .progress {
-        background-color: #e9ecef;
-        border-radius: 4px;
+    .dashboard-header {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 22px;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     }
 
-    .progress-bar {
-        border-radius: 4px;
+    .dashboard-title {
+        font-size: 30px;
+        font-weight: 800;
+        margin-bottom: 6px;
+        color: #111827;
     }
 
-    .btn {
-        border-radius: 8px;
+    .dashboard-subtitle {
+        color: #6b7280;
+        margin-bottom: 0;
         font-size: 14px;
-        padding: 8px 16px;
-        transition: all 0.2s ease;
     }
 
-        .btn:hover {
-            transform: translateY(-1px);
+    .dashboard-date {
+        text-align: right;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* =========================
+           CARD
+        ========================== */
+
+    .dashboard-card {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 20px;
+        border: 1px solid #eef2f7;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
         }
+
+    /* =========================
+           TOP CARD
+        ========================== */
+
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .card-label {
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .card-number {
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1;
+        color: #111827;
+    }
+
+    .card-text {
+        color: #9ca3af;
+        font-size: 13px;
+        margin-top: 6px;
+    }
+
+    /* =========================
+           ICON
+        ========================== */
+
+    .card-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .assigned-icon {
+        background: rgba(13,202,240,0.15);
+    }
+
+    .pending-icon {
+        background: rgba(255,193,7,0.18);
+    }
+
+    .accepted-icon {
+        background: rgba(25,135,84,0.15);
+    }
+
+    .completed-icon {
+        background: rgba(13,110,253,0.15);
+    }
+
+    /* =========================
+           SECTION TITLE
+        ========================== */
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        color: #111827;
+    }
+
+    /* =========================
+           PROGRESS BAR
+        ========================== */
+
+    .custom-progress {
+        height: 10px;
+        background: #e5e7eb;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .custom-progress-bar {
+        height: 100%;
+        border-radius: 20px;
+        background: linear-gradient(to right, #0dcaf0, #0d6efd);
+    }
+
+    /* =========================
+           SUMMARY ITEM
+        ========================== */
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f9fafb;
+        border: 1px solid #eef2f7;
+        padding: 15px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        min-height: 82px;
+    }
+
+        .summary-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        }
+
+    .summary-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .summary-color {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .assigned-bg {
+        background: #0dcaf0;
+    }
+
+    .pending-bg {
+        background: #ffc107;
+    }
+
+    .accepted-bg {
+        background: #198754;
+    }
+
+    .completed-bg {
+        background: #0d6efd;
+    }
+
+    .summary-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .summary-subtitle {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+
+    .summary-count {
+        font-size: 30px;
+        font-weight: 800;
+        color: #0d6efd;
+        min-width: 45px;
+        text-align: right;
+    }
+
+    /* =========================
+           BUTTON
+        ========================== */
+
+    .custom-btn-outline {
+        border-radius: 14px;
+        padding: 12px;
+        border: 1px solid #dbe3ec;
+        background: #ffffff;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .custom-btn-outline:hover {
+            background: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+    /* =========================
+           VIEW ALL
+        ========================== */
+
+    .view-all-link {
+        color: #0d6efd;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+        .view-all-link:hover {
+            text-decoration: underline;
+        }
+
+    /* =========================
+           TABLE
+        ========================== */
 
     .table {
-        font-size: 14px;
+        margin-bottom: 0;
     }
 
         .table th {
-            font-weight: 600;
-            border-bottom: 2px solid #dee2e6;
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 700;
+            border-bottom: 2px solid #e5e7eb;
+            padding: 14px 10px;
         }
 
         .table td {
-            border-bottom: 1px solid #f1f1f1;
+            font-size: 14px;
             vertical-align: middle;
+            padding: 14px 10px;
+            border-bottom: 1px solid #f1f5f9;
         }
 
+    /* =========================
+           BADGE
+        ========================== */
+
     .badge {
+        padding: 7px 12px;
         font-size: 11px;
-        font-weight: 500;
-        padding: 4px 10px;
+        font-weight: 600;
+        border-radius: 50px;
     }
 
-    .dashboard-header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: white;
+    /* =========================
+           MOBILE TASK CARD
+        ========================== */
+
+    .task-mobile-card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 16px;
+        margin-bottom: 15px;
+        border: 1px solid #eef2f7;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
     }
+
+    /* =========================
+           RESPONSIVE
+        ========================== */
+
+    @@media(max-width:992px) {
+
+        .dashboard-container {
+            padding: 16px;
+        }
+
+        .dashboard-title {
+            font-size: 27px;
+        }
+
+        .card-number {
+            font-size: 30px;
+        }
+
+        .summary-count {
+            font-size: 28px;
+        }
+    }
+
+    @@media(max-width:768px) {
+
+        .dashboard-container {
+            padding: 12px;
+        }
+
+        .dashboard-header {
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+        }
+
+        .dashboard-subtitle {
+            font-size: 13px;
+        }
+
+        .dashboard-date {
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .dashboard-card {
+            padding: 16px;
+            border-radius: 18px;
+        }
+
+        .card-number {
+            font-size: 28px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .section-title {
+            font-size: 16px;
+        }
+
+        .summary-item {
+            padding: 13px;
+            min-height: 76px;
+        }
+
+        .summary-count {
+            font-size: 25px;
+        }
+
+        .custom-btn-outline {
+            font-size: 14px;
+        }
+
+        .table td,
+        .table th {
+            white-space: nowrap;
+        }
+    }
+
+    @@media(max-width:576px) {
+
+        .dashboard-title {
+            font-size: 22px;
+        }
+
+        .dashboard-card {
+            padding: 14px;
+        }
+
+        .card-number {
+            font-size: 24px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+        }
+
+        .summary-item {
+            padding: 12px;
+        }
+
+        .summary-title {
+            font-size: 14px;
+        }
+
+        .summary-subtitle {
+            font-size: 11px;
+        }
+
+        .summary-count {
+            font-size: 22px;
+        }
+
+        .task-mobile-card {
+            padding: 14px;
+        }
+    }
+
 </style>

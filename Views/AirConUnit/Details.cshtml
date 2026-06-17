@@ -2,96 +2,185 @@
 
 @{
     ViewData["Title"] = "AirCon Details";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // adjust if needed
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">AirCon Details</h4>
+<div class="container py-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-0" style="color:#2c8c99;">
+                <i class="fas fa-snowflake me-2"></i>AirCon Details
+            </h3>
+            <small class="text-muted">Complete unit information overview</small>
         </div>
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3">Customer</dt>
-                <dd class="col-sm-9">@Model.Customer?.Name</dd>
 
-                <dt class="col-sm-3">Brand</dt>
-                <dd class="col-sm-9">@Model.Brand?.BrandName</dd>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id"
+               class="btn text-white me-2"
+               style="background:#2c8c99;">
+                <i class="fas fa-edit me-1"></i> Edit
+            </a>
 
-                <dt class="col-sm-3">Model</dt>
-                <dd class="col-sm-9">@Model.Model?.ModelName</dd>
-
-                <dt class="col-sm-3">Serial Number</dt>
-                <dd class="col-sm-9">@Model.SerialNumber</dd>
-
-                <dt class="col-sm-3">Capacity (HP)</dt>
-                <dd class="col-sm-9">@Model.CapacityHp</dd>
-
-                <dt class="col-sm-3">Installation Date</dt>
-                <dd class="col-sm-9">
-                    @(Model.InstallationDate.HasValue ? Model.InstallationDate.Value.ToString("yyyy-MM-dd") : "N/A")
-                </dd>
-
-                <dt class="col-sm-3">Warranty Period (Months)</dt>
-                <dd class="col-sm-9">@Model.WarrantyPeriodMonths</dd>
-
-                <dt class="col-sm-3">Created At</dt>
-                <dd class="col-sm-9">
-                    @(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")
-                </dd>
-
-                <dt class="col-sm-3">Updated At</dt>
-                <dd class="col-sm-9">
-                    @(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")
-                </dd>
-
-                <dt class="col-sm-3">Deleted At</dt>
-                <dd class="col-sm-9">
-                    @(Model.DeletedAt.HasValue ? Model.DeletedAt.Value.ToString("yyyy-MM-dd HH:mm") : "Not Deleted")
-                </dd>
-            </dl>
-
-            <div class="mt-3">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
-                </a>
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-            </div>
+            <a asp-action="Index"
+               class="btn btn-light border">
+                <i class="fas fa-arrow-left me-1"></i> Back
+            </a>
         </div>
     </div>
-    <hr />
-    <h5 class="mt-3">Warranty Information</h5>
 
-    @if (Model.Warranty != null)
-    {
-        <dl class="row">
-            <dt class="col-sm-3">Warranty Start Date</dt>
-            <dd class="col-sm-9">
-                @Model.Warranty.StartDate.ToString("yyyy-MM-dd")
-            </dd>
+    <div class="row g-4">
 
-            <dt class="col-sm-3">Warranty End Date</dt>
-            <dd class="col-sm-9">
-                @Model.Warranty.EndDate.ToString("yyyy-MM-dd")
-            </dd>
+        <!-- LEFT INFO CARD -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-white"
+                     style="background:#2c8c99;">
+                    <strong>Unit Information</strong>
+                </div>
 
-            <dt class="col-sm-3">Warranty Status</dt>
-            <dd class="col-sm-9">
-                @if (Model.Warranty.EndDate >= DateTime.Now)
-                {
-                    <span class="badge bg-success">Active</span>
-                }
-                else
-                {
-                    <span class="badge bg-danger">Expired</span>
-                }
-            </dd>
-        </dl>
-    }
-    else
-    {
-        <p class="text-muted">No warranty information available.</p>
-    }
+                <div class="card-body">
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="text-muted">Customer</label>
+                            <div class="fw-semibold">@Model.Customer?.Name</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted">Brand</label>
+                            <div class="fw-semibold">@Model.Brand?.BrandName</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted">Model</label>
+                            <div class="fw-semibold">@Model.Model?.ModelName</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted">Type</label>
+                            <div>
+                                <span class="badge bg-info text-dark">
+                                    @(string.IsNullOrEmpty(Model.AirConType) ? "N/A" : Model.AirConType)
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted">Capacity</label>
+                            <div>
+                                <span class="badge"
+                                      style="background:#e6f7f9;color:#2c8c99;border:1px solid #2c8c99;">
+                                    @(Model.CapacityHp ?? "N/A") HP
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted">Installation Date</label>
+                            <div class="fw-semibold">
+                                @(Model.InstallationDate.HasValue
+                                    ? Model.InstallationDate.Value.ToString("yyyy-MM-dd")
+                                    : "N/A")
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted">Next Service</label>
+                            <div>
+                                <span class="badge bg-primary">
+                                    @(Model.NextServiceOption.HasValue
+                                        ? Model.NextServiceOption + " Months"
+                                        : "N/A")
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted">Warranty Period</label>
+                            <div class="fw-semibold">
+                                @(Model.WarrantyPeriodMonths.HasValue
+                                    ? Model.WarrantyPeriodMonths + " Months"
+                                    : "N/A")
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT STATUS CARD -->
+        <div class="col-lg-4">
+
+            <!-- WARRANTY -->
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-header text-white" style="background:#2c8c99;">
+                    Warranty Status
+                </div>
+
+                <div class="card-body">
+
+                    @if (Model.Warranty != null)
+                    {
+                        bool active = Model.Warranty.EndDate >= DateTime.Now;
+
+                        <div class="text-center">
+                            <div class="mb-2">
+                                <i class="fas @(active ? "fa-check-circle text-success" : "fa-times-circle text-danger") fa-2x"></i>
+                            </div>
+
+                            <h5 class="fw-bold @(active ? "text-success" : "text-danger")">
+                                @(active ? "Active" : "Expired")
+                            </h5>
+
+                            <hr />
+
+                            <small class="text-muted">Start</small>
+                            <div>@Model.Warranty.StartDate.ToString("yyyy-MM-dd")</div>
+
+                            <small class="text-muted">End</small>
+                            <div>@Model.Warranty.EndDate.ToString("yyyy-MM-dd")</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No warranty data</p>
+                    }
+
+                </div>
+            </div>
+
+            <!-- TIMELINE -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-white" style="background:#2c8c99;">
+                    System Info
+                </div>
+
+                <div class="card-body small">
+
+                    <div class="mb-2">
+                        <span class="text-muted">Created</span><br />
+                        @Model.CreatedAt?.ToString("yyyy-MM-dd HH:mm")
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Updated</span><br />
+                        @Model.UpdatedAt?.ToString("yyyy-MM-dd HH:mm")
+                    </div>
+
+                    <div>
+                        <span class="text-muted">Deleted</span><br />
+                        @(Model.DeletedAt.HasValue
+                            ? Model.DeletedAt.Value.ToString("yyyy-MM-dd HH:mm")
+                            : "Not Deleted")
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>

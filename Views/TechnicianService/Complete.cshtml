@@ -1,51 +1,551 @@
-﻿@model AirConServicingManagementSystem.ViewModels.CompleteServiceViewModel
-
-@{
+﻿@{
     ViewData["Title"] = "Complete Service";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Complete Service</title>
+    <!-- Google Font & simple reset for better consistency -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (free icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<div class="container py-4">
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-header text-white"
-             style="background:#2c8c99;">
-            <h4 class="mb-0">Complete Service</h4>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fc; /* soft tech background */
+            line-height: 1.5;
+            padding: 1.25rem;
+        }
+
+        /* main container full width, with max-width for large screens */
+        .service-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* card design with modern rounded corners, subtle shadow, and border */
+        .modern-card {
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+            .service-item:hover {
+                border-color: #2c8c99;
+                box-shadow: 0 3px 10px rgba(44,140,153,0.15);
+            }
+
+            .service-item input {
+                transform: scale(1.2);
+                accent-color: #2c8c99;
+            }
+
+                .service-item input:checked + span {
+                    font-weight: 600;
+                    color: #2c8c99;
+                }
+        /* header with brand color #2c8c99, gradient accent */
+        .card-header-custom {
+            background: linear-gradient(135deg, #2c8c99 0%, #247a85 100%);
+            padding: 1.4rem 1.8rem;
+            border-bottom: none;
+        }
+
+            .card-header-custom h4 {
+                font-size: 1.6rem;
+                font-weight: 600;
+                letter-spacing: -0.3px;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                color: white;
+            }
+
+                .card-header-custom h4 i {
+                    font-size: 1.8rem;
+                    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+                }
+
+        /* body padding - responsive */
+        .card-body-custom {
+            padding: 2rem 2rem 2rem 2rem;
+        }
+
+        /* form grid system using flex/grid for responsiveness */
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .form-col {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* label style */
+        .form-label-custom {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: #1f2e3a;
+            letter-spacing: -0.2px;
+        }
+
+            .form-label-custom i {
+                color: #2c8c99;
+                width: 1.4rem;
+                margin-right: 6px;
+            }
+
+        /* inputs, selects, textarea */
+        .form-control-custom, select.form-control-custom, textarea.form-control-custom {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            font-size: 0.95rem;
+            font-family: 'Inter', monospace;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 18px;
+            background-color: #fff;
+            transition: all 0.2s;
+            outline: none;
+            color: #1e293b;
+        }
+
+            .form-control-custom:focus, select.form-control-custom:focus, textarea.form-control-custom:focus {
+                border-color: #2c8c99;
+                box-shadow: 0 0 0 4px rgba(44, 140, 153, 0.15);
+            }
+
+        textarea.form-control-custom {
+            resize: vertical;
+        }
+
+        /* specific select arrow custom */
+        select.form-control-custom {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c8c99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        /* cost field specific */
+        .input-group-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .cost-symbol {
+            position: absolute;
+            left: 1rem;
+            font-weight: 600;
+            color: #2c8c99;
+            pointer-events: none;
+            font-size: 1rem;
+        }
+
+        .cost-input {
+            padding-left: 2rem !important;
+        }
+
+        /* button modern */
+        .btn-complete {
+            background: #2c8c99;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.25s;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(44, 140, 153, 0.25);
+        }
+
+            .btn-complete:hover {
+                background: #236e78;
+                transform: translateY(-2px);
+                box-shadow: 0 12px 20px -8px rgba(44, 140, 153, 0.4);
+            }
+
+            .btn-complete:active {
+                transform: translateY(1px);
+            }
+
+        /* helper spacing and dividers */
+        .divider-light {
+            height: 1px;
+            background: linear-gradient(to right, #e2e8f0, transparent);
+            margin: 0.6rem 0 1rem 0;
+        }
+
+        /* responsive adjustments for mobile */
+        @@media (max-width: 768px) {
+            body
+
+        {
+            padding: 0.8rem;
+        }
+
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+
+        .card-header-custom {
+            padding: 1rem 1.5rem;
+        }
+
+            .card-header-custom h4 {
+                font-size: 1.35rem;
+            }
+
+                .card-header-custom h4 i {
+                    font-size: 1.4rem;
+                }
+
+        .form-row {
+            gap: 1.2rem;
+        }
+
+        .btn-complete {
+            width: 100%;
+            justify-content: center;
+            padding: 0.85rem;
+        }
+
+        .form-label-custom {
+            font-size: 0.85rem;
+        }
+
+        }
+
+        @@media (max-width: 640px) {
+            .form-col
+
+        {
+            min-width: 100%;
+        }
+
+        .card-body-custom {
+            padding: 1.2rem;
+        }
+
+        }
+
+        /* custom tooltip / optional style for note */
+        .info-hint {
+            font-size: 0.7rem;
+            color: #5b6e8c;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        footer small {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: #6c7e97;
+            font-size: 0.75rem;
+        }
+
+        .required-star:after {
+            content: " *";
+            color: #e53e3e;
+        }
+    </style>
+</head>
+<body>
+    <div class="service-container">
+        <div class="modern-card">
+            <div class="card-header-custom">
+                <h4>
+                    <i class="fas fa-clipboard-check"></i>
+                    Complete Service Report
+                    <span style="font-size: 0.9rem; font-weight: 400; margin-left: auto; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 40px;">
+                        <i class="fas fa-wrench"></i> Technician
+                    </span>
+                </h4>
+            </div>
+            <div class="card-body-custom">
+
+                <form asp-action="Complete" method="post" id="completeServiceForm">
+                    @Html.AntiForgeryToken()
+                   @*  <input name="__RequestVerificationToken" type="hidden" value="simulated-token-for-demo" /> *@
+
+                    <!-- hidden service id field -->
+                    <input type="hidden" name="ServiceId" value="@Model.ServiceId" />
+
+                    <div class="form-grid">
+                        <!-- Summary + Condition row (selects) -->
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label class="form-label-custom">
+                                    <i class="fas fa-list-ul"></i> Service Summary
+                                </label>
+
+                                <div class="service-grid">
+
+                                    <label class="service-item">
+                                        <input type="checkbox" name="ServiceTypeList" value="General cleaning completed" />
+                                        <span>General cleaning completed</span>
+                                    </label>
+
+                                    <label class="service-item">
+                                        <input type="checkbox" name="ServiceTypeList" value="Gas refilled and tested" />
+                                        <span>Gas refilled and tested</span>
+                                    </label>
+
+                                    <label class="service-item">
+                                        <input type="checkbox" name="ServiceTypeList" value="Filter cleaned" />
+                                        <span>Filter cleaned</span>
+                                    </label>
+
+                                    <label class="service-item">
+                                        <input type="checkbox" name="ServiceTypeList" value="Indoor/outdoor units cleaned" />
+                                        <span>Indoor/Outdoor cleaned</span>
+                                    </label>
+
+                                    <label class="service-item">
+                                        <input type="checkbox" name="ServiceTypeList" value="Electrical wiring checked" />
+                                        <span>Electrical checked</span>
+                                    </label>
+
+                                    <label class="service-item">
+                                        <input type="checkbox" name="ServiceTypeList" value="Water leakage fixed" />
+                                        <span>Water leakage fixed</span>
+                                    </label>
+
+                                    <label class="service-item">
+                                        <input type="checkbox" name="ServiceTypeList" value="Routine maintenance completed" />
+                                        <span>Routine maintenance</span>
+                                    </label>
+                                    <label class="service-item">
+                                        <input type="checkbox" name="ServiceTypeList" value="Other" />
+                                        <span>Other</span>
+                                    </label>
+                                </div>
+
+                                <div class="info-hint">
+                                    <i class="fas fa-info-circle"></i> Select performed actions
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <label class="form-label-custom" for="ACCondition">
+                                    <i class="fas fa-temperature-low"></i> AC Condition
+                                </label>
+                                <select id="ACCondition" name="ACCondition" class="form-control-custom">
+                                    <option value="">-- Select Condition --</option>
+                                    <option value="Good">Good (Healthy AC)</option>
+                                    <option value="Normal">Normal (Minor Issue)</option>
+                                    <option value="Bad">Bad (Serious Issue)</option>
+                                </select>
+                                <div class="info-hint"><i class="fas fa-chart-line"></i> Overall unit health</div>
+                            </div>
+                        </div>
+
+                        <!-- Problem Found & Repair Action (side by side) -->
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label class="form-label-custom" for="ProblemFound">
+                                    <i class="fas fa-exclamation-triangle"></i> Problem Found
+                                </label>
+                                <textarea id="ProblemFound" name="ProblemFound" class="form-control-custom" rows="3" placeholder="e.g., Low refrigerant, dirty coils, fan motor noise..."></textarea>
+                            </div>
+                            <div class="form-col">
+                                <label class="form-label-custom" for="RepairAction">
+                                    <i class="fas fa-screwdriver-wrench"></i> Repair Action
+                                </label>
+                                <textarea id="RepairAction" name="RepairAction" class="form-control-custom" rows="3" placeholder="e.g., Recharged gas, cleaned coils, tightened connections..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Parts Replaced & Technician Note -->
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label class="form-label-custom" for="PartsReplaced">
+                                    <i class="fas fa-microchip"></i> Parts Replaced
+                                </label>
+                                <textarea id="PartsReplaced" name="PartsReplaced" class="form-control-custom" rows="3" placeholder="List any components replaced (capacitor, fan motor, PCB...)."></textarea>
+                            </div>
+                            <div class="form-col">
+                                <label class="form-label-custom" for="TechnicianNote">
+                                    <i class="fas fa-pen-alt"></i> Technician Note
+                                </label>
+                                <textarea id="TechnicianNote" name="TechnicianNote" class="form-control-custom" rows="3" placeholder="Additional recommendations, observations, or customer advice..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Service Cost & Next Service Due Date -->
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label class="form-label-custom" for="ServiceCost">
+                                    <i class="fas fa-dollar-sign"></i> Service Cost
+                                </label>
+                                <div class="input-group-icon">
+                                    @* <span class="cost-symbol">$</span> *@
+                                    <input type="number" id="ServiceCost" name="ServiceCost" class="form-control-custom cost-input" placeholder="eg. 10000">
+                                </div>
+                                <div class="info-hint"><i class="fas fa-receipt"></i> Include parts & labor</div>
+                            </div>
+                            <div class="form-col">
+                                <label class="form-label-custom" for="NextServiceDue">
+                                    <i class="far fa-calendar-alt"></i> Optional Next Service Date
+                                </label>
+                                <input type="date" id="NextServiceDue" name="NextServiceDue" class="form-control-custom" readonly/>
+                                <div class="info-hint"><i class="fas fa-bell"></i> Recommend for preventive maintenance</div>
+                            </div>
+                        </div>
+
+                        <div class="divider-light"></div>
+
+                        <!-- Submit button area with extra flex row -->
+                        <div class="form-row" style="justify-content: flex-end;">
+                            <div class="form-col" style="flex: 0 1 auto;">
+                                <button type="submit" class="btn-complete">
+                                    <i class="fas fa-check-circle"></i> Complete Service
+                                </button>
+                            </div>
+                            <div class="form-col" style="flex: 0 1 auto; text-align: right;">
+                                <button type="reset" class="btn-complete" style="background: #b0c4ce; box-shadow: none;" onclick="return false;">
+                                    <i class="fas fa-undo-alt"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <div class="card-body">
-            <form asp-action="Complete" method="post">
-                @Html.AntiForgeryToken()
-
-                <input type="hidden" asp-for="ServiceId" />
-
-                <div class="mb-3">
-                    <label asp-for="SummaryOption" class="form-label"></label>
-                    <select asp-for="SummaryOption" class="form-select">
-                        <option value="">-- Select Summary --</option>
-                        <option>General cleaning completed</option>
-                        <option>Gas refilled and tested</option>
-                        <option>Filter cleaned</option>
-                        <option>Indoor and outdoor units cleaned</option>
-                        <option>Electrical wiring checked</option>
-                        <option>Water leakage fixed</option>
-                        <option>Routine maintenance completed</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="AdditionalRemarks" class="form-label"></label>
-                    <textarea asp-for="AdditionalRemarks"
-                              class="form-control"
-                              rows="5"
-                              placeholder="Enter additional details..."></textarea>
-                </div>
-
-                <button type="submit"
-                        class="btn text-white"
-                        style="background:#2c8c99;">
-                    Complete & Generate QR
-                </button>
-            </form>
-        </div>
+        
     </div>
-</div>
+
+    <!-- Simple client-side reset (optional, just for better UX) -->
+    <script>
+        (function () {
+
+            const formEl = document.getElementById('completeServiceForm');
+
+            if (!formEl) return;
+
+            formEl.addEventListener('submit', function (ev) {
+
+                // ❌ DO NOT BLOCK NORMAL SUBMIT (IMPORTANT FIX)
+                // ev.preventDefault();  <-- removed
+
+                // ✔ OPTIONAL: show loading (can keep or remove)
+                const btn = formEl.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    btn.disabled = true;
+                }
+
+                // ✔ Collect checkbox values (for debugging only)
+                const selectedServices = [...document.querySelectorAll('input[name="ServiceTypeList"]:checked')]
+                    .map(x => x.value);
+
+                console.log("=== SUBMIT DATA DEBUG ===");
+                console.log("ServiceId:", document.getElementById('ServiceId')?.value);
+                console.log("ACCondition:", document.getElementById('ACCondition')?.value);
+                console.log("ServiceTypeList:", selectedServices);
+                console.log("ProblemFound:", document.getElementById('ProblemFound')?.value);
+                console.log("RepairAction:", document.getElementById('RepairAction')?.value);
+                console.log("PartsReplaced:", document.getElementById('PartsReplaced')?.value);
+                console.log("TechnicianNote:", document.getElementById('TechnicianNote')?.value);
+                console.log("ServiceCost:", document.getElementById('ServiceCost')?.value);
+                console.log("NextServiceDue:", document.getElementById('NextServiceDue')?.value);
+
+                // ✔ IMPORTANT:
+                // DO NOT prevent submit → ASP.NET Controller WILL RECEIVE DATA
+                // Form will post automatically to:
+                // [HttpPost] Complete(CompleteServiceViewModel model)
+
+            });
+
+        })();
+
+                document.addEventListener("DOMContentLoaded", function () {
+
+            const condition = document.getElementById("ACCondition");
+            const nextService = document.getElementById("NextServiceDue");
+
+            condition.addEventListener("change", function () {
+
+                let monthsToAdd = 0;
+
+                switch (this.value) {
+                    case "Good":
+                        monthsToAdd = 6;
+                        break;
+
+                    case "Normal":
+                        monthsToAdd = 3;
+                        break;
+
+                    case "Bad":
+                        monthsToAdd = 1;
+                        break;
+
+                    default:
+                        nextService.value = "";
+                        return;
+                }
+
+                let today = new Date();
+                today.setMonth(today.getMonth() + monthsToAdd);
+
+                // format YYYY-MM-DD
+                let formatted = today.toISOString().split('T')[0];
+
+                nextService.value = formatted;
+            });
+
+        });
+    </script>
+</body>
+</html>

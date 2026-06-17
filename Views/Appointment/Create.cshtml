@@ -1,0 +1,77 @@
+﻿@model Appointment
+
+@{
+    ViewData["Title"] = "Create Appointment";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<div class="container py-4">
+
+    <div class="card shadow-sm rounded-3">
+        <div class="card-header bg-white">
+            <h3 style="color:#2c8c99;font-weight:700;">
+                Create Appointment
+            </h3>
+            <p class="text-muted mb-0">
+                Schedule customer service visit
+            </p>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Customer -->
+                <div class="mb-3">
+                    <label class="form-label">Customer</label>
+                    <select asp-for="CustomerId" class="form-select" required>
+                        <option value="">-- Select Customer --</option>
+                        @foreach (var c in ViewBag.Customers)
+                        {
+                            <option value="@c.Id">
+                                @c.Name (@c.Phone)
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Date -->
+                <div class="mb-3">
+                    <label class="form-label">Scheduled Date</label>
+                    <input asp-for="ScheduledDate"
+                           type="datetime-local"
+                           class="form-control"
+                           required />
+                </div>
+
+                <!-- Location -->
+                <div class="mb-3">
+                    <label class="form-label">Location</label>
+                    <input asp-for="Location"
+                           class="form-control"
+                           placeholder="Customer address / location"
+                           required />
+                </div>
+
+                <!-- Notes -->
+                <div class="mb-3">
+                    <label class="form-label">Notes</label>
+                    <textarea asp-for="Notes"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Optional details"></textarea>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit"
+                        class="btn w-100 text-white"
+                        style="background:#2c8c99;">
+                    Create Appointment
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>

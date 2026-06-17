@@ -45,6 +45,9 @@ public partial class AirConUnit
 
     public int? NextServiceOption { get; set; }
 
+    [StringLength(50)]
+    public string? InstallationType { get; set; }
+
     [ForeignKey("BrandId")]
     [InverseProperty("AirConUnits")]
     public virtual AirConBrand Brand { get; set; } = null!;

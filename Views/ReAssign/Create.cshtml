@@ -1,0 +1,121 @@
+﻿@model AirConServicingManagementSystem.Models.Appointment
+
+@{
+    ViewData["Title"] = "ReAssign Technician";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container py-4">
+
+    <div class="card shadow-sm border-0">
+
+        <!-- HEADER -->
+        <div class="card-header text-white"
+             style="background-color:#2c8c99;">
+            <h4 class="mb-0">ReAssign Technician</h4>
+            <small>Change assigned technician for this appointment</small>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Create" method="post">
+
+                <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+
+                <!-- APPOINTMENT INFO -->
+                <div class="row g-3">
+
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Customer</label>
+                        <input class="form-control"
+                               value="@Model.Customer?.Name"
+                               readonly />
+                    </div>
+
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Phone</label>
+                        <input class="form-control"
+                               value="@Model.Customer?.Phone"
+                               readonly />
+                    </div>
+
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Current Technician</label>
+                        <input class="form-control text-success fw-bold"
+                               value="@Model.Technician?.Name  " Not Assigned""
+                               readonly />
+                    </div>
+
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Location</label>
+                        <input class="form-control"
+                               value="@Model.Location"
+                               readonly />
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- NEW TECHNICIAN -->
+                <div class="row g-3">
+
+                    <div class="col-md-6 col-12">
+                        <label class="form-label fw-semibold">
+                            Select New Technician
+                        </label>
+
+                        <select name="newTechnicianId"
+                                class="form-select"
+                                required>
+
+                            <option value="">-- Select Technician --</option>
+                            
+                            @foreach (var tech in ViewBag.Technicians)
+                            {
+                                if (tech.TechnicianId != Model.TechnicianId)
+                                {
+                                    <option value="@tech.TechnicianId">
+                                        @tech.Name
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 col-12">
+                        <label class="form-label fw-semibold">
+                            Reason (Optional)
+                        </label>
+
+                        <textarea name="reason"
+                                  class="form-control"
+                                  rows="1"
+                                  placeholder="Why are you reassigning?"></textarea>
+                    </div>
+
+                </div>
+
+                <div class="mt-4 d-flex flex-column flex-md-row gap-2">
+
+                    <button type="submit"
+                            class="btn text-white px-4"
+                            style="background-color:#2c8c99;">
+                        ✔ Confirm ReAssign
+                    </button>
+
+                    <a asp-controller="Appointment"
+                       asp-action="Index"
+                       class="btn btn-secondary px-4">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

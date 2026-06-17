@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Create Customer";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
 <link rel="stylesheet"
       href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -60,7 +60,7 @@
                         <span asp-validation-for="Phone" class="validation-message"></span>
                     </div>
 
-                    <div class="form-group">
+                    @* <div class="form-group">
                         <label asp-for="Email" class="form-label">Email Address</label>
                         <div class="input-with-icon">
                             <i class="input-icon">
@@ -72,7 +72,7 @@
                             <input asp-for="Email" class="modern-input" placeholder="customer@example.com" />
                         </div>
                         <span asp-validation-for="Email" class="validation-message"></span>
-                    </div>
+                    </div> *@
                 </div>
 
                 <div class="form-row">
@@ -89,6 +89,32 @@
                         </div>
                         <span asp-validation-for="Address" class="validation-message"></span>
                     </div>
+                </div>
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>State Division</label>
+
+                        <input type="text"
+                               id="StateDivisionName"
+                               class="modern-input"
+                               readonly />
+
+                        <input type="hidden" asp-for="StateDivisionPkid" id="StateDivisionPkid" />
+
+                    </div>
+
+                    <div class="form-group">
+                        <label>Township</label>
+
+                        <input type="text"
+                               id="TownshipName"
+                               class="modern-input"
+                               readonly />
+
+                        <input type="hidden" asp-for="TownshipPkid" id="TownshipPkid" />
+                    </div>
+
                 </div>
                 <!-- MAP SECTION -->
                 <div class="form-row">
@@ -425,40 +451,107 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        var map = L.map('map').setView([16.8409, 96.1735], 13);
 
-              var map = L.map('map').setView([16.8409, 96.1735], 13); // Yangon
+           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+               attribution: '© OpenStreetMap'
+           }).addTo(map);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+           var marker = L.marker([16.8409, 96.1735], { draggable: true }).addTo(map);
 
-        var marker = L.marker([16.8409, 96.1735], { draggable: true }).addTo(map);
+           // -------------------------
+           // UPDATE FROM MAP → ADDRESS
+           // -------------------------
+           function reverseGeocode(lat, lng) {
+               document.getElementById("Latitude").value = lat;
+               document.getElementById("Longitude").value = lng;
 
-        function updateLocation(lat, lng) {
-            document.getElementById("Latitude").value = lat;
-            document.getElementById("Longitude").value = lng;
+               fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+                   .then(res => res.json())
+                   .then(data => {
+                console.log("ADDRESS API:", data.address);
+                       if (data.display_name) {
 
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.display_name) {
-                        document.getElementById("Address").value = data.display_name;
-                        document.getElementById("MapAddress").value = data.display_name;
-                    }
-                });
-        }
+                           // 🔥 FIX: use Address field correctly
+                           let addressInput = document.querySelector("[name='Address']");
 
-        marker.on('dragend', function () {
-            var pos = marker.getLatLng();
-            updateLocation(pos.lat, pos.lng);
-        });
+                           if (addressInput) {
+                               addressInput.value = data.display_name;
+                           }
 
-        map.on('click', function (e) {
-            marker.setLatLng(e.latlng);
-            updateLocation(e.latlng.lat, e.latlng.lng);
-        });
+                           document.getElementById("MapAddress").value = data.display_name;
+                       }
+                        if (data.address) {
 
-        updateLocation(16.8409, 96.1735);
+                               let township =
+            data.address.town ||
+            data.address.suburb ||
+            data.address.city ||
+            data.address.city_district ||
+            "";
+
+        let state =
+            data.address.state_district ||
+            data.address.state ||
+            data.address.region ||
+            "";
+
+                        $("#TownshipName").val(township);
+                        $("#StateDivisionName").val(state);
+
+                        // 👉 call backend to get IDs
+                        loadStateTownship(state, township);
+                        }
+                   });
+           }
+
+           marker.on('dragend', function () {
+               var pos = marker.getLatLng();
+               reverseGeocode(pos.lat, pos.lng);
+           });
+
+           map.on('click', function (e) {
+               marker.setLatLng(e.latlng);
+               reverseGeocode(e.latlng.lat, e.latlng.lng);
+           });
+
+           // -------------------------
+           // UPDATE FROM ADDRESS → MAP
+           // -------------------------
+           let typingTimer;
+           const addressInput = document.querySelector("[name='Address']");
+
+           if (addressInput) {
+               addressInput.addEventListener("keyup", function () {
+                   clearTimeout(typingTimer);
+
+                   typingTimer = setTimeout(() => {
+                       let query = addressInput.value;
+
+                       if (query.length < 3) return;
+
+                       fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                           .then(res => res.json())
+                           .then(data => {
+                               if (data && data.length > 0) {
+                                   let lat = data[0].lat;
+                                   let lon = data[0].lon;
+
+                                   map.setView([lat, lon], 15);
+                                   marker.setLatLng([lat, lon]);
+
+                                   document.getElementById("Latitude").value = lat;
+                                   document.getElementById("Longitude").value = lon;
+                                   document.getElementById("MapAddress").value = data[0].display_name;
+                               }
+                           });
+
+                   }, 800); // debounce
+               });
+           }
+
+           // default load
+           reverseGeocode(16.8409, 96.1735);
 
         // Add focus effects to inputs
         document.addEventListener('DOMContentLoaded', function() {
@@ -495,5 +588,23 @@
                 });
             }
         });
+
+               function loadStateTownship(state, township) {
+
+            $.get('/Customer/GetTownshipInfo', { township: township }, function (res) {
+
+                console.log("DB RES:", res);
+
+                if (!res) return;
+
+                // ✅ IDs (HIDDEN INPUTS)
+                document.getElementById("StateDivisionPkid").value = res.stateDivisionPkid;
+                document.getElementById("TownshipPkid").value = res.townshipPkid;
+
+                // ✅ TEXT (READONLY INPUTS)
+                $("#StateDivisionName").val(res.stateDivisionName || state);
+                $("#TownshipName").val(res.townshipName || township);
+            });
+        }
     </script>
 }

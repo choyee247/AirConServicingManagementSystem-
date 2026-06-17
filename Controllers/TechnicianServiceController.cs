@@ -1,5 +1,6 @@
 ﻿using AirConServicingManagementSystem.Models;
 using AirConServicingManagementSystem.Services;
+using AirConServicingManagementSystem.ViewModels;
 using AirConServicingManagementSystem.ViewsModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,7 @@ public class TechnicianServiceController : Controller
                 .Where(s =>
                     s.Status == ServiceStatus.Pending ||        // Pending (TechnicianId = NULL)
                     s.TechnicianId == techId)                  // Technician jobs
-                .OrderByDescending(s => s.ServiceId)
+                .OrderByDescending(x => x.CreatedAt)
                 .Take(5)
                 .ToListAsync()
         };
@@ -51,33 +52,24 @@ public class TechnicianServiceController : Controller
     {
         int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
-        var data = await _context.ServiceRequests
-            .Include(s => s.Customer)
-            .Include(s => s.AirCon)
-            .Where(s => s.TechnicianId == techId && s.Status == ServiceStatus.Assigned)
-            .ToListAsync();
+        if (techId == 0)
+            return Content("Technician session missing ❌");
 
-        return View(data);
+        var list = await _context.ServiceRequests
+             .Include(x => x.Customer)
+             .Include(x => x.AirCon)
+                 .ThenInclude(a => a.Brand)
+             .Include(x => x.AirCon)
+                 .ThenInclude(a => a.Model)
+             .Where(x =>
+                 x.TechnicianId == techId &&
+                 x.Status == "In Progress")
+             .OrderByDescending(x => x.RequestedAt)
+             .ToListAsync();
+
+        return View(list);
     }
 
-    //[HttpPost]
-    //public async Task<IActionResult> Assign(int serviceId, int technicianId)
-    //{
-    //    var service = await _context.ServiceRequests
-    //        .FirstOrDefaultAsync(s => s.ServiceId == serviceId);
-
-    //    var technician = await _context.Technicians
-    //        .FirstOrDefaultAsync(t => t.TechnicianId == technicianId);
-
-    //    service.TechnicianId = technicianId;
-    //    service.Status = ServiceStatus.Assigned;
-
-    //    technician.IsAvailable = false;
-
-    //    await _context.SaveChangesAsync();
-
-    //    return RedirectToAction("Assigned");
-    //}
 
     // =========================
     // Pending Jobs (Not Assigned)
@@ -207,89 +199,191 @@ public class TechnicianServiceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Complete(
-    AirConServicingManagementSystem.ViewModels.CompleteServiceViewModel model)
+    public async Task<IActionResult> Complete(CompleteServiceViewModel model)
     {
         int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
         if (techId == 0)
-            return Content("Invalid Technician Session");
+            return RedirectToAction("Login", "Account");
 
         var service = await _context.ServiceRequests
-            .FirstOrDefaultAsync(s => s.ServiceId == model.ServiceId);
+            .FirstOrDefaultAsync(x =>
+                x.ServiceId == model.ServiceId &&
+                x.TechnicianId == techId);
 
-        if (service == null || service.TechnicianId != techId)
+        if (service == null)
             return NotFound();
 
         if (service.Status == "Completed")
             return Content("Already Completed");
 
-        // 1. Update ServiceRequest
+        // ❗ VALIDATION FIX (IMPORTANT)
+        if (!service.AirConId.HasValue)
+            return Content("AirCon not assigned yet ❌");
+
+        // =========================
+        // 1. COMPLETE SERVICE REQUEST
+        // =========================
         service.Status = "Completed";
         service.CompletedAt = DateTime.Now;
 
-        // 2. Build remarks text
-        string remarks = "";
-
-        if (!string.IsNullOrWhiteSpace(model.SummaryOption))
-            remarks += model.SummaryOption;
-
-        if (!string.IsNullOrWhiteSpace(model.AdditionalRemarks))
+        // =========================
+        // 2. NEXT SERVICE CALC
+        // =========================
+        DateTime nextServiceDate = model.ACCondition switch
         {
-            if (!string.IsNullOrWhiteSpace(remarks))
-                remarks += Environment.NewLine + Environment.NewLine;
+            "Good" => DateTime.Now.AddMonths(6),
+            "Normal" => DateTime.Now.AddMonths(3),
+            "Bad" => DateTime.Now.AddMonths(1),
+            _ => DateTime.Now.AddMonths(3)
+        };
 
-            remarks += model.AdditionalRemarks;
-        }
-
-        // 3. Update ServiceRecord
+        // =========================
+        // 3. SERVICE RECORD (FIXED)
+        // =========================
         var record = await _context.ServiceRecords
-            .FirstOrDefaultAsync(r =>
-                r.ServiceRequestId == model.ServiceId &&
-                r.TechnicianId == techId &&
-                r.CustomerId == service.CustomerId &&
-                r.AirConUnitId == service.AirConId &&
-                r.Status != "Completed");
+            .FirstOrDefaultAsync(r => r.ServiceRequestId == service.ServiceId);
 
-        if (record != null)
+        if (record == null)
         {
-            record.Status = "Completed";
-            record.Remarks = remarks;
-            record.UpdatedAt = DateTime.Now;
-            record.NextServiceDue = DateTime.Now.AddMonths(3);
+            record = new ServiceRecord
+            {
+                ServiceRequestId = service.ServiceId,
+                CustomerId = service.CustomerId,
+                AirConUnitId = service.AirConId.Value,   // ✅ SAFE NOW
+                TechnicianId = techId,
+                CreatedAt = DateTime.Now,
+                IsDeleted = false
+            };
+
+            _context.ServiceRecords.Add(record);
         }
 
-        // 4. Technician available again
+        record.Status = "Completed";
+        record.TechnicianNote = model.TechnicianNote;
+        record.ProblemFound = model.ProblemFound;
+        record.RepairAction = model.RepairAction;
+        record.PartsReplaced = model.PartsReplaced;
+        record.ServiceCost = model.ServiceCost;
+
+        record.ServiceType = (model.ServiceTypeList != null && model.ServiceTypeList.Any())
+            ? string.Join(", ", model.ServiceTypeList)
+            : "";
+
+        record.NextServiceDue = model.NextServiceDue ?? nextServiceDate;
+        record.UpdatedAt = DateTime.Now;
+
+        // =========================
+        // 4. TECH STATUS RESET
+        // =========================
         var technician = await _context.Technicians
             .FirstOrDefaultAsync(t => t.TechnicianId == techId);
 
         if (technician != null)
             technician.IsAvailable = true;
 
-        // 5. Generate QR token
-        var token = Guid.NewGuid().ToString("N");
+        var appointment = await _context.Appointments
+        .FirstOrDefaultAsync(a => a.AppointmentId == service.AppointmentId);
 
-        _context.CustomerQrTokens.Add(new CustomerQrToken
+        if (appointment != null)
         {
-            CustomerId = service.CustomerId,
-            Token = token,
-            CreatedAt = DateTime.Now,
-            ExpiredAt = DateTime.Now.AddDays(7),
-            IsUsed = false
-        });
-
-        // 6. Save all changes
+            appointment.Status = "Completed";
+        }   
+        // =========================
+        // 5. SAVE ALL
+        // =========================
         await _context.SaveChangesAsync();
 
-        // 7. Generate QR image
-        var url = Url.Action("Verify", "Qr",
-            new { token }, Request.Scheme);
+        TempData["Success"] = "Service Completed Successfully";
 
-        ViewBag.QrImage = "data:image/png;base64," +
-            Convert.ToBase64String(_qrService.GenerateQr(url));
-
-        return View("QrResult");
+        return RedirectToAction("Records", "AdminService");
     }
+
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> Complete(
+    //AirConServicingManagementSystem.ViewModels.CompleteServiceViewModel model)
+    //{
+    //    int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
+
+    //    if (techId == 0)
+    //        return Content("Invalid Technician Session");
+
+    //    var service = await _context.ServiceRequests
+    //        .FirstOrDefaultAsync(s => s.ServiceId == model.ServiceId);
+
+    //    if (service == null || service.TechnicianId != techId)
+    //        return NotFound();
+
+    //    if (service.Status == "Completed")
+    //        return Content("Already Completed");
+
+    //    // 1. Update ServiceRequest
+    //    service.Status = "Completed";
+    //    service.CompletedAt = DateTime.Now;
+
+    //    // 2. Build remarks text
+    //    string remarks = "";
+
+    //    if (!string.IsNullOrWhiteSpace(model.SummaryOption))
+    //        remarks += model.SummaryOption;
+
+    //    if (!string.IsNullOrWhiteSpace(model.AdditionalRemarks))
+    //    {
+    //        if (!string.IsNullOrWhiteSpace(remarks))
+    //            remarks += Environment.NewLine + Environment.NewLine;
+
+    //        remarks += model.AdditionalRemarks;
+    //    }
+
+    //    // 3. Update ServiceRecord
+    //    var record = await _context.ServiceRecords
+    //        .FirstOrDefaultAsync(r =>
+    //            r.ServiceRequestId == model.ServiceId &&
+    //            r.TechnicianId == techId &&
+    //            r.CustomerId == service.CustomerId &&
+    //            r.AirConUnitId == service.AirConId &&
+    //            r.Status != "Completed");
+
+    //    if (record != null)
+    //    {
+    //        record.Status = "Completed";
+    //        record.Remarks = remarks;
+    //        record.UpdatedAt = DateTime.Now;
+    //        record.NextServiceDue = DateTime.Now.AddMonths(3);
+    //    }
+
+    //    // 4. Technician available again
+    //    var technician = await _context.Technicians
+    //        .FirstOrDefaultAsync(t => t.TechnicianId == techId);
+
+    //    if (technician != null)
+    //        technician.IsAvailable = true;
+
+    //    // 5. Generate QR token
+    //    var token = Guid.NewGuid().ToString("N");
+
+    //    _context.CustomerQrTokens.Add(new CustomerQrToken
+    //    {
+    //        CustomerId = service.CustomerId,
+    //        Token = token,
+    //        CreatedAt = DateTime.Now,
+    //        ExpiredAt = DateTime.Now.AddDays(7),
+    //        IsUsed = false
+    //    });
+
+    //    // 6. Save all changes
+    //    await _context.SaveChangesAsync();
+
+    //    // 7. Generate QR image
+    //    var url = Url.Action("Verify", "Qr",
+    //        new { token }, Request.Scheme);
+
+    //    ViewBag.QrImage = "data:image/png;base64," +
+    //        Convert.ToBase64String(_qrService.GenerateQr(url));
+
+    //    return View("QrResult");
+    //}
     public async Task<IActionResult> GenerateQR(int customerId)
     {
         var customer = await _context.Customers

@@ -15,53 +15,137 @@ namespace AirConServicingManagementSystem.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Create()
-        {
-            int customerId = HttpContext.Session.GetInt32("CustomerId") ?? 0;
+        //public async Task<IActionResult> Create(int appointmentId)
+        //{
+        //    var appointment = await _context.Appointments
+        //        .Include(a => a.Customer)
+        //        .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
-            ViewBag.AirCons = await _context.AirConUnits
-                .Where(a => a.CustomerId == customerId && a.IsDeleted != true)
-                
-                .Include(a => a.Brand)
-                .Include(a => a.Model)
+        //    if (appointment == null)
+        //        return NotFound();
+
+        //    ViewBag.AppointmentId = appointmentId;
+        //    ViewBag.CustomerName = appointment.Customer.Name;
+        //    ViewBag.CustomerId = appointment.CustomerId;
+        //    ViewBag.Location = appointment.Location;
+
+        //    return View();
+        //}
+        public async Task<IActionResult> Index()
+        {
+            int technicianId =
+                HttpContext.Session.GetInt32("TechnicianId") ?? 0;
+
+            var services = await _context.ServiceRequests
+             .Include(x => x.Customer)
+             .Include(x => x.AirCon)
+             .Where(x => x.TechnicianId == technicianId)
+             .Select(x => new ServiceRequestCreateVM
+             {
+                 ServiceRequest = x,
+                 AirCons = _context.AirConUnits
+                     .Where(a => a.CustomerId == x.CustomerId)
+                     .ToList()
+             })
+             .ToListAsync();
+
+            return View(services);
+        }
+        public async Task<IActionResult> Create(int? appointmentId)
+        {
+            ViewBag.Customers = await _context.Customers
+                .Where(c => c.IsDeleted != true)
                 .ToListAsync();
 
-            return View();
+            var model = new ServiceRequest();
+
+            if (appointmentId.HasValue)
+            {
+                var appointment = await _context.Appointments
+                    .Include(a => a.Customer)
+                    .Include(a => a.Technician)
+                    .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId.Value);
+
+                if (appointment != null)
+                {
+                    ViewBag.Appointment = appointment;
+
+                    // Auto Fill
+                    model.CustomerId = appointment.CustomerId;
+                    model.TechnicianId = appointment.TechnicianId;
+                    model.Location = appointment.Location;
+                    model.Notes = appointment.Notes;
+                }
+            }
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ServiceRequest model)
+        public async Task<IActionResult> Create(ServiceRequest model, int appointmentId)
         {
-            int customerId = HttpContext.Session.GetInt32("CustomerId") ?? 0;
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
-            model.CustomerId = customerId;
-            model.Status = ServiceStatus.Pending;
+            if (appointment == null)
+                return NotFound();
+
+            model.CustomerId = appointment.CustomerId;
+            model.TechnicianId = appointment.TechnicianId;
+            model.Location = appointment.Location;
+            model.Notes = appointment.Notes;
+            model.Status = "In Progress";
             model.RequestedAt = DateTime.Now;
+            model.CreatedAt = DateTime.Now;
             model.PaymentStatus = "Unpaid";
-
-            // Urgent fee
-            if (model.IsUrgent)
-                model.Fee = 15000;
-            else
-                model.Fee = 10000;
-
-            // ===== Warranty Check =====
-            var aircon = await _context.AirConUnits
-                .Include(a => a.Warranty)
-                .FirstOrDefaultAsync(a => a.Id == model.AirConId);
-
-            if (aircon != null && aircon.Warranty != null && aircon.Warranty.IsActive)
-            {
-                model.IsWarrantyApplied = true;
-                model.PaymentStatus = "Free";
-                model.Fee = 0;
-            }
+            model.AirConId = null;
+            model.AppointmentId = appointmentId;
 
             _context.ServiceRequests.Add(model);
+
+            appointment.Status = "In Progress";
+
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(MyRequests));
+            return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> Details(int appointmentId)
+        {
+            var service = await _context.ServiceRequests
+                .Include(x => x.Customer)
+                .Include(x => x.Technician)
+                .Include(x => x.AirCon)
+                    .ThenInclude(x => x.Brand)
+                .Include(x => x.AirCon)
+                    .ThenInclude(x => x.Model)
+                .FirstOrDefaultAsync(x => x.AppointmentId == appointmentId);
+
+            if (service == null)
+                return NotFound();
+
+            var record = await _context.ServiceRecords
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == service.ServiceId);
+
+            ViewBag.Record = record;
+
+            return View(service);
+        }
+        public async Task<IActionResult> GetAirConsByCustomer(int customerId)
+        {
+            var aircons = await _context.AirConUnits
+                .Where(a => a.CustomerId == customerId && a.IsDeleted != true)
+                .Include(a => a.Brand)
+                .Include(a => a.Model)
+                .Select(a => new
+                {
+                    id = a.Id,
+                    brand = a.Brand.BrandName,
+                    model = a.Model.ModelName
+                })
+                .ToListAsync();
+
+            return Json(aircons);
         }
         public async Task<IActionResult> MyRequests()
         {

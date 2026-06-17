@@ -1,0 +1,105 @@
+﻿@model List<AirConServicingManagementSystem.ViewsModels.ServiceRequestCreateVM>
+@{
+    ViewData["Title"] = "My Services";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+<table class="table table-hover">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>@item.ServiceRequest.ServiceId</td>
+
+                <td>@item.ServiceRequest.Customer?.Name</td>
+
+                <td>@item.ServiceRequest.Location</td>
+
+                <td>
+
+                    <span class="badge
+                    @(item.ServiceRequest.Status=="Pending" ? "bg-warning" :
+                      item.ServiceRequest.Status=="In Progress" ? "bg-primary" :
+                      item.ServiceRequest.Status=="Completed" ? "bg-success" :
+                      "bg-secondary")">
+
+                        @item.ServiceRequest.Status
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    @if (item.ServiceRequest.Status == "Pending")
+                    {
+                        <a asp-action="Edit"
+                           asp-route-id="@item.ServiceRequest.ServiceId"
+                           class="btn btn-sm text-white"
+                           style="background:#2c8c99;">
+                            Start Service
+                        </a>
+                    }
+
+                    @if (item.ServiceRequest.Status == "In Progress")
+                    {
+                        if (item.ServiceRequest.AirConId == null)
+                        {
+                            <!-- FIRST TIME -->
+                            <a asp-controller="AirConUnit"
+                               asp-action="Create"
+                               asp-route-serviceId="@item.ServiceRequest.ServiceId"
+                               class="btn btn-sm btn-success">
+                                Fill AirCon Detail
+                            </a>
+                        }
+                        else
+                        {
+                            <!-- ALREADY EXISTS -->
+                            <a asp-controller="AirConUnit"
+                               asp-action="Edit"
+                               asp-route-id="@item.ServiceRequest.AirConId"
+                               class="btn btn-sm btn-primary">
+                                Edit AirCon Detail
+                            </a>
+                            <a asp-controller="AirConUnit"
+                               asp-action="Create"
+                               asp-route-serviceId="@item.ServiceRequest.ServiceId"
+                               asp-route-isAnother="true"
+                               class="btn btn-sm btn-warning">
+                                + Another AC
+                            </a>
+                        }
+
+                        <!-- ALWAYS SHOW -->
+                        
+                    }
+                    @if (item.ServiceRequest.Status == "Completed")
+                    {
+                        <a asp-controller="ServiceRequest"
+                           asp-action="Details"
+                           asp-route-appointmentId="@item.ServiceRequest.AppointmentId"
+                           class="btn btn-warning btn-sm">
+                            View Service
+                        </a>
+                    }
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

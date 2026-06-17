@@ -1,0 +1,169 @@
+﻿@model IEnumerable<Appointment>
+
+@{
+    ViewData["Title"] = "Appointments";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<div class="container py-4">
+
+    <div class="card shadow-sm border-0">
+
+        <!-- HEADER -->
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <h3 style="color:#2c8c99;font-weight:700;">Appointments</h3>
+                <p class="text-muted mb-0">Manage customer bookings</p>
+            </div>
+
+            <a asp-action="Create"
+               class="btn text-white"
+               style="background:#2c8c99;">
+                + New Appointment
+            </a>
+        </div>
+
+        <!-- TABLE -->
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Technician</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <!-- ID -->
+                                <td>@item.AppointmentId</td>
+
+                                <!-- Customer -->
+                                <td>@item.Customer?.Name</td>
+
+                                <!-- Phone -->
+                                <td>@item.Customer?.Phone</td>
+
+                                <!-- Technician -->
+                                <td>
+                                    @if (item.Technician != null)
+                                    {
+                                        <span class="text-success">
+                                            @item.Technician.Name
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not Assigned</span>
+                                    }
+                                </td>
+
+                                <!-- Date -->
+                                <td>
+                                    @item.ScheduledDate.ToString("dd-MM-yyyy HH:mm")
+                                </td>
+
+                                <!-- Location -->
+                                <td>@item.Location</td>
+
+                                <!-- Status -->
+                                <td>
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <span class="badge bg-warning">Pending</span>
+                                    }
+                                    else if (item.Status == "Assigned")
+                                    {
+                                        <span class="badge bg-info">Assigned</span>
+                                    }
+
+                                    else if (item.Status == "Completed")
+                                    {
+                                        <span class="badge bg-info">✔ Finished</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                </td>
+
+                                <!-- ACTIONS -->
+                                <td class="d-flex gap-1">
+
+                                    <!-- Assign Technician -->
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <a asp-controller="AdminService" asp-action="Assign"
+                                           asp-route-id="@item.AppointmentId"
+                                           class="btn btn-primary btn-sm">
+                                            Assign
+                                        </a>
+                                    }
+
+                                    <!-- Start Service -->
+                                    @if (item.Status == "Assigned")
+                                    {
+                                        <a asp-controller="ServiceRequest"
+                                           asp-action="Create"
+                                           asp-route-appointmentId="@item.AppointmentId"
+                                           class="btn btn-success btn-sm">
+                                            Start Service
+                                        </a>
+                                    }
+                                    @if (item.Status == "Assigned")
+                                    {
+                                        <a asp-controller="ReAssign"
+                                           asp-action="Create"
+                                           asp-route-appointmentId="@item.AppointmentId"
+                                           class="btn btn-warning btn-sm">
+                                            ReAssign
+                                        </a>
+                                    }
+                                    @if (item.Status == "In Progress")
+                                    {
+                                        <a asp-controller="ServiceRequest"
+                                           asp-action="Details"
+                                           asp-route-appointmentId="@item.AppointmentId"
+                                           class="btn btn-warning btn-sm">
+                                            View Service
+                                        </a>
+                                    }
+                                    @if (item.Status == "Completed")
+                                    {
+                                        <a asp-controller="ServiceRequest"
+                                           asp-action="Details"
+                                           asp-route-appointmentId="@item.AppointmentId"
+                                           class="btn btn-warning btn-sm">
+                                            View Service
+                                        </a>
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

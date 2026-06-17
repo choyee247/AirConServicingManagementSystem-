@@ -1,4 +1,4 @@
-﻿@model AirConServicingManagementSystem.Models.ServiceRequest
+﻿@model AirConServicingManagementSystem.Models.Appointment
 
 @{
     ViewData["Title"] = "Assign Technician";
@@ -6,73 +6,113 @@
 }
 
 <div class="container py-4">
+
     <div class="card shadow-sm rounded-3">
+
+        <!-- HEADER -->
         <div class="card-header bg-white">
             <h3 class="mb-0" style="color:#2c8c99; font-weight:700;">
                 Assign Technician
             </h3>
-            <p class="text-muted mb-0">Assign a technician to this service request</p>
+            <p class="text-muted mb-0">
+                Assign a technician for this appointment
+            </p>
         </div>
 
         <div class="card-body">
+
             <div class="row g-4">
+
+                <!-- LEFT: APPOINTMENT DETAILS -->
                 <div class="col-md-6">
+
                     <div class="p-3 border rounded-3">
-                        <h5 style="color:#2c8c99;">Service Details</h5>
+
+                        <h5 style="color:#2c8c99;">Appointment Details</h5>
                         <hr />
 
                         <div class="mb-2">
                             <strong>Customer:</strong>
-                            <p class="mb-1">@Model.Customer.Name</p>
+                            <p class="mb-1">
+                                @Model.Customer?.Name 
+                            </p>
                         </div>
 
                         <div class="mb-2">
                             <strong>Location:</strong>
-                            <p class="mb-1">@Model.Location</p>
+                            <p class="mb-1">
+                                @Model.Location 
+                            </p>
                         </div>
 
                         <div class="mb-2">
-                            <strong>Service Type:</strong>
-                            <p class="mb-1">@Model.ServiceType</p>
+                            <strong>Scheduled Date:</strong>
+                            <p class="mb-1">
+                                @Model.ScheduledDate.ToString("dd-MM-yyyy HH:mm")
+                            </p>
                         </div>
 
                         <div class="mb-2">
                             <strong>Status:</strong>
-                            <p class="mb-1">@Model.Status</p>
+                            <p class="mb-1">
+                                <span class="badge bg-warning text-dark">
+                                    @Model.Status
+                                </span>
+                            </p>
                         </div>
+
                     </div>
+
                 </div>
 
+                <!-- RIGHT: ASSIGN FORM -->
                 <div class="col-md-6">
+
                     <div class="p-3 border rounded-3">
+
                         <h5 style="color:#2c8c99;">Select Technician</h5>
                         <hr />
 
                         <form asp-action="Assign" method="post">
-                            <input type="hidden" asp-for="ServiceId" />
+
+                            <!-- IMPORTANT FIX -->
+                            <input type="hidden" name="id" value="@Model.AppointmentId" />
 
                             <div class="mb-3">
                                 <label class="form-label">Technician</label>
-                                <select asp-for="TechnicianId" class="form-select" required>
+
+                                <select name="technicianId"
+                                        class="form-select"
+                                        required>
+
                                     <option value="">-- Select Technician --</option>
+
                                     @foreach (var tech in (List<AirConServicingManagementSystem.Models.Technician>)ViewBag.Technicians)
                                     {
                                         <option value="@tech.TechnicianId">
-                                            @tech.Name  (@tech.PhoneNumber)
+                                            @tech.Name (@tech.PhoneNumber)
                                         </option>
                                     }
+
                                 </select>
                             </div>
 
-                            <button type="submit" class="btn btn-success w-100"
-                                    style="background:#2c8c99; border:none;">
+                            <button type="submit"
+                                    class="btn w-100 text-white"
+                                    style="background:#2c8c99;">
                                 Assign Technician
                             </button>
+
                         </form>
+
                     </div>
+
                 </div>
+
             </div>
 
         </div>
+
     </div>
+
 </div>

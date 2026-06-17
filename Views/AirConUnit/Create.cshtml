@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Add New Aircon";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
 
 <div class="container-fluid">
@@ -18,27 +18,63 @@
             <i class="fas fa-info-circle"></i>
             Fill in the details of the air conditioning unit. Fields marked with * are required.
         </div>
-
+        @if (ViewBag.IsAnother == true)
+        {
+            <div class="alert alert-warning">
+                <i class="fas fa-plus-circle"></i>
+                You are adding <strong>another Air Conditioner</strong> for this service request.
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                Add the primary Air Conditioner for this service request.
+            </div>
+        }
         <!-- Form -->
-        <form asp-action="Create" method="post" id="addAirconForm">
+        <form asp-controller="AirConUnit" asp-action="Create" method="post" id="addAirconForm">
+      
+            <input type="hidden" name="serviceId" value="@ViewBag.ServiceId" />
             <div class="form-section">
-                <div class="section-title">
-                    <i class="fas fa-user"></i> Customer Information
+
+                <div class="section-title d-flex align-items-center gap-2">
+                    <i class="fas fa-user text-white p-2 rounded-circle"
+                       style="background:#2c8c99;"></i>
+                    <span>Customer Information</span>
                 </div>
 
-                <div class="mb-4">
-                    <label class="form-label field-required">Customer</label>
-                    <select asp-for="CustomerId" class="form-select" required>
-                        <option value="">-- Select Customer --</option>
-                        @foreach (var customer in ViewBag.Customers)
-                        {
-                            <option value="@customer.Id">
-                                @customer.Name
-                            </option>
-                        }
-                    </select>
-                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                <div class="p-3 mt-3 rounded-3 border bg-light">
+
+                    <div class="d-flex align-items-center">
+
+                        <!-- Avatar -->
+                        <div class="rounded-circle d-flex justify-content-center align-items-center text-white fw-bold"
+                             style="width:45px;height:45px;background:#2c8c99;">
+                            @(ViewBag.CustomerName?.Substring(0, 1).ToUpper())
+                        </div>
+
+                        <!-- Info -->
+                        <div class="ms-3">
+
+                            <div class="fw-bold fs-6 text-dark">
+                                @ViewBag.CustomerName
+                            </div>
+
+                            <div class="text-muted small">
+                                <i class="fas fa-phone me-1"></i>
+                                @ViewBag.CustomerPhone
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
+                <!-- Hidden fields -->
+                <input type="hidden" asp-for="CustomerId" />
+
             </div>
 
 
@@ -93,13 +129,30 @@
                 <div class="section-title">
                     <i class="fas fa-cog"></i> Unit Details
                 </div>
+                <div class="row mb-3">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">Installation Type</label>
+
+                        <select id="InstallationType" class="form-select">
+                            <option value="Existing">Existing AirCon</option>
+                            <option value="New">New AirCon Installation</option>
+                        </select>
+
+                    </div>
+                    <div class="col-md-6 mb-3" id="installationDateDiv" style="display:none;">
+                        <label class="form-label">Installation Date</label>
+                        <input asp-for="InstallationDate"
+                               id="InstallationDate"
+                               type="date"
+                               class="form-control" />
+                    </div>
+
+                </div>
 
                 <div class="row">
-                   @*  <div class="col-md-6 mb-3">
-                        <label class="form-label">Serial Number</label>
-                        <input asp-for="SerialNumber" class="form-control" />
-                        <span asp-validation-for="SerialNumber" class="text-danger"></span>
-                    </div> *@
+
                     <div class="col-md-6 mb-3">
                         <label class="form-label">AirCon Type</label>
                         <select asp-for="AirConType" class="form-select">
@@ -128,25 +181,37 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    @* <div class="col-md-6 mb-3">
-                        <label class="form-label">Location</label>
-                        <input asp-for="Location" class="form-control" />
-                        <span asp-validation-for="Location" class="text-danger"></span>
-                    </div> *@
+                @* <div class="row">
+                   
+                    <div class="col-md-6 mb-3" id="installationDateDiv" style="display:none;">
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Created Date</label>
-                        <input asp-for="InstallationDate" type="date" class="form-control" />
-                        <span asp-validation-for="InstallationDate" class="text-danger"></span>
+                        <label class="form-label">Installation Date</label>
+
+                        <input asp-for="InstallationDate"
+                               id="InstallationDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="InstallationDate"
+                              class="text-danger"></span>
+
                     </div>
+                 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Warranty Period (Months)</label>
-                        <input asp-for="WarrantyPeriodMonths" type="number" class="form-control" min="0" />
-                        <span asp-validation-for="WarrantyPeriodMonths" class="text-danger"></span>
+                        <label class="form-label">Next Service (Months)</label>
+                        <select asp-for="NextServiceOption" class="form-select" required>
+                            <option value="">-- Select Next Service --</option>
+                            <option value="1">1 Month</option>
+                            <option value="3">3 Months</option>
+                            <option value="6">6 Months</option>
+                            <option value="12">12 Months</option>
+                            <option value="18">18 Months</option>
+                            <option value="24">24 Months</option>
+                        </select>
+                        <span asp-validation-for="NextServiceOption" class="text-danger"></span>
                     </div>
                 </div>
-            </div>
+            </div> *@
 
             <!-- Footer -->
             <div class="form-footer">
@@ -275,6 +340,27 @@
                 $('.btn-custom').html('<i class="fas fa-spinner fa-spin"></i> Saving...')
                                  .prop('disabled', true);
             });
+
+
+            toggleInstallationFields();
+
+            $("#InstallationType").change(function () {
+                toggleInstallationFields();
+            });
+
+            function toggleInstallationFields() {
+
+                var type = $("#InstallationType").val();
+
+                if (type === "New") {
+                    $("#installationDateDiv").show();
+                }
+                else {
+                    $("#installationDateDiv").hide();
+                    $("#InstallationDate").val("");
+                }
+            }
+
         });
     </script>
 }

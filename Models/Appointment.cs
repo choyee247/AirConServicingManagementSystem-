@@ -27,9 +27,15 @@ public partial class Appointment
     [StringLength(500)]
     public string? Notes { get; set; }
 
+    [InverseProperty("Appointment")]
+    public virtual ICollection<AppointmentReassign> AppointmentReassigns { get; set; } = new List<AppointmentReassign>();
+
     [ForeignKey("CustomerId")]
     [InverseProperty("Appointments")]
     public virtual Customer Customer { get; set; } = null!;
+
+    [InverseProperty("Appointment")]
+    public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
 
     [ForeignKey("TechnicianId")]
     [InverseProperty("Appointments")]

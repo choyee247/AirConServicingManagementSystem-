@@ -54,6 +54,12 @@ public partial class Technician
     [Column(TypeName = "decimal(10, 7)")]
     public decimal? Longitude { get; set; }
 
+    [InverseProperty("NewTechnician")]
+    public virtual ICollection<AppointmentReassign> AppointmentReassignNewTechnicians { get; set; } = new List<AppointmentReassign>();
+
+    [InverseProperty("OldTechnician")]
+    public virtual ICollection<AppointmentReassign> AppointmentReassignOldTechnicians { get; set; } = new List<AppointmentReassign>();
+
     [InverseProperty("Technician")]
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 

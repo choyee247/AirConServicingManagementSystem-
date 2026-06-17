@@ -1,0 +1,343 @@
+﻿@model AirConServicingManagementSystem.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Service Details";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<div class="container py-4">
+
+    <div class="card border-0 shadow-lg rounded-4">
+
+        <div class="card-header border-0 text-white"
+             style="background:#2c8c99;">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h3 class="fw-bold mb-1">
+                        <i class="fas fa-tools"></i>
+                        Service Details
+                    </h3>
+
+                    <p class="mb-0 opacity-75">
+                        Complete Service Information
+                    </p>
+
+                </div>
+
+                @if (Model.Status == "Completed")
+                {
+                    <span class="badge bg-success fs-6 px-4 py-2">
+                        ✔ Completed
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark fs-6 px-4 py-2">
+                        In Progress
+                    </span>
+                }
+
+            </div>
+
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="row">
+
+                <div class="col-lg-6 mb-4">
+
+                    <div class="card border-0 bg-light h-100">
+
+                        <div class="card-body">
+
+                            <h5 class="mb-4 text-primary">
+                                Customer Information
+                            </h5>
+
+                            <table class="table table-borderless">
+
+                                <tr>
+                                    <td width="35%"><strong>Name</strong></td>
+                                    <td>@Model.Customer.Name</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Location</strong></td>
+                                    <td>@Model.Location</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Requested</strong></td>
+                                    <td>@Model.RequestedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Completed</strong></td>
+                                    <td>
+                                        @(Model.CompletedAt?.ToString("dd MMM yyyy HH:mm") ?? "-")
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6 mb-4">
+
+                    <div class="card border-0 bg-light h-100">
+
+                        <div class="card-body">
+
+                            <h5 class="mb-4 text-primary">
+                                Air Conditioner
+                            </h5>
+
+                            <table class="table table-borderless">
+
+                                <tr>
+
+                                    <td width="35%">
+                                        <strong>Brand</strong>
+                                    </td>
+
+                                    <td>
+                                        @Model.AirCon.Brand.BrandName
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <strong>Model</strong>
+                                    </td>
+
+                                    <td>
+                                        @Model.AirCon.Model.ModelName
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <strong>Service Type</strong>
+                                    </td>
+
+                                    <td>
+                                        @Model.ServiceType
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <strong>Status</strong>
+                                    </td>
+
+                                    <td>
+
+                                        @if (Model.Status == "Completed")
+                                        {
+                                            <span class="badge bg-success">
+                                                Completed
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                In Progress
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <h4 class="mb-4 fw-bold"
+                style="color:#2c8c99;">
+                Service Report
+            </h4>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Problem Found
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @ViewBag.Record?.ProblemFound
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Repair Action
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @ViewBag.Record?.RepairAction
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Parts Replaced
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @ViewBag.Record?.PartsReplaced
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Service Cost
+                    </label>
+
+                    <div class="form-control bg-light">
+                        $ @ViewBag.Record?.ServiceCost
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Technician Note
+                    </label>
+
+                    <div class="form-control bg-light"
+                         style="min-height:100px;">
+                        @ViewBag.Record?.TechnicianNote
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Next Service Due
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @(ViewBag.Record?.NextServiceDue?.ToString("dd MMM yyyy"))
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Service Type Performed
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @ViewBag.Record?.ServiceType
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Payment Status
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @Model.PaymentStatus
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="mt-4 d-flex justify-content-between">
+
+                <a asp-action="Index"
+                   class="btn btn-secondary rounded-pill px-4">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Back
+
+                </a>
+
+                <button class="btn text-white rounded-pill px-4"
+                        style="background:#2c8c99;">
+
+                    <i class="fas fa-print"></i>
+
+                    Print Report
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<style>
+     .card {
+         border-radius: 20px;
+     }
+
+     .form-control {
+         border: none;
+         background: #f8f9fa;
+         font-weight: 500;
+     }
+
+     .table td {
+         padding: .8rem;
+         vertical-align: middle;
+     }
+
+     .bg-light {
+         background: #f7fbfb !important;
+     }
+
+     .text-primary {
+         color: #2c8c99 !important;
+     }
+
+     .btn-primary {
+         background: #2c8c99;
+         border: none;
+     }
+
+         .btn-primary:hover {
+             background: #23727d;
+         }
+</style>

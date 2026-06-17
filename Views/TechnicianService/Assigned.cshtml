@@ -6,30 +6,44 @@
 }
 
 <style>
+
     body {
-        background: #f4f8fa;
+        background: #f4f7fb;
     }
 
+    /* =========================
+           PAGE TITLE
+        ========================== */
+
     .page-title {
+        font-size: 22px;
+        font-weight: 800;
         color: #2c8c99;
-        font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
+
+    /* =========================
+           CARD CONTAINER
+        ========================== */
 
     .card-container {
         background: #fff;
         border-radius: 18px;
-        box-shadow: 0 8px 25px rgba(0,0,0,.08);
+        box-shadow: 0 6px 20px rgba(0,0,0,.06);
         overflow: hidden;
     }
 
     .card-header {
         background: linear-gradient(135deg,#2c8c99,#45a8b5);
         color: #fff;
-        padding: 18px 25px;
-        font-size: 18px;
-        font-weight: 600;
+        padding: 16px 20px;
+        font-size: 16px;
+        font-weight: 700;
     }
+
+    /* =========================
+           TABLE
+        ========================== */
 
     .table thead {
         background: #eef7f8;
@@ -37,26 +51,31 @@
 
         .table thead th {
             color: #2c8c99;
-            font-weight: 600;
-            border: none;
-            padding: 16px;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 14px;
         }
 
     .table td {
-        padding: 16px;
+        padding: 14px;
         vertical-align: middle;
-        border-top: 1px solid #edf2f4;
+        font-size: 14px;
     }
 
     .table tbody tr:hover {
         background: #f8fcfc;
     }
 
+    /* =========================
+           BADGES
+        ========================== */
+
     .badge-custom {
-        padding: 8px 14px;
-        border-radius: 25px;
+        padding: 7px 12px;
+        border-radius: 20px;
         font-size: 12px;
         font-weight: 600;
+        display: inline-block;
     }
 
     .badge-warranty {
@@ -84,6 +103,10 @@
         color: #636e72;
     }
 
+    /* =========================
+           BUTTON
+        ========================== */
+
     .btn-complete {
         background: #2c8c99;
         border: none;
@@ -91,18 +114,77 @@
         border-radius: 25px;
         padding: 6px 14px;
         font-size: 13px;
-        transition: .3s;
+        transition: 0.3s;
     }
 
         .btn-complete:hover {
             background: #226f7a;
             color: #fff;
+            transform: translateY(-1px);
         }
 
-    .status-text {
-        font-weight: 600;
-        color: #2d3436;
+    /* =========================
+           MOBILE CARD VIEW
+        ========================== */
+
+    .service-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #eef2f7;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.04);
     }
+
+    .service-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .service-title {
+        font-weight: 700;
+        font-size: 15px;
+        color: #111827;
+    }
+
+    .service-sub {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 3px;
+    }
+
+    .service-row {
+        font-size: 13px;
+        margin-bottom: 6px;
+        color: #374151;
+    }
+
+    .service-actions {
+        margin-top: 10px;
+        text-align: right;
+    }
+
+    /* =========================
+           RESPONSIVE
+        ========================== */
+
+    @@media(max-width:768px) {
+
+        .table-responsive {
+            display: none;
+        }
+    }
+
+    @@media(min-width:769px) {
+
+        .mobile-list {
+            display: none;
+        }
+    }
+
 </style>
 
 <div class="container py-4">
@@ -115,71 +197,249 @@
             Service Requests
         </div>
 
+        <!-- =========================
+             MOBILE VIEW (CARDS)
+        ========================== -->
+
+        <div class="mobile-list p-3">
+
+            @foreach (var s in Model)
+            {
+                <div class="service-card">
+
+                    <div class="service-top">
+
+                        <div>
+                            <div class="service-title">
+                                @s.Customer.Name
+                            </div>
+
+                            <div class="service-sub">
+                                📍 @s.Location
+                            </div>
+                        </div>
+
+                        <span class="badge-custom badge-normal">
+                            @s.Status
+                        </span>
+
+                    </div>
+
+                    <div class="service-row">
+                        <b>Warranty:</b>
+
+                        @if (s.IsWarrantyApplied)
+                        {
+                            <span class="badge-custom badge-warranty">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="badge-custom badge-nowarranty">No</span>
+                        }
+                    </div>
+
+                    <div class="service-row">
+                        <b>Payment:</b>
+
+                        @if (s.IsFreeService)
+                        {
+                            <span class="badge-custom badge-free">Free</span>
+                        }
+                        else if (s.DiscountAmount > 0)
+                        {
+                            <span class="badge-custom badge-discount">
+                                Discount @s.DiscountAmount
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge-custom badge-normal">Normal</span>
+                        }
+                    </div>
+
+                    @if (s.Status != "Completed")
+                    {
+                        <div class="service-actions">
+                            <a asp-action="Complete"
+                               asp-route-id="@s.ServiceId"
+                               class="btn btn-complete">
+                                Complete
+                            </a>
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </div>
+
+        <!-- =========================
+             DESKTOP TABLE
+        ========================== -->
+
         <div class="table-responsive">
+
             <table class="table mb-0">
+
                 <thead>
                     <tr>
                         <th>Customer</th>
+                        <th>AirCon</th>
+                        <th>Type</th>
+                        <th>Capacity</th>
+                        <th>Installation Type</th>
+                        @* <th>Next Service</th> *@
                         <th>Location</th>
                         <th>Status</th>
-                        <th>Warranty</th>
-                        <th>Payment</th>
-                        <th>Action</th>
+                        <th width="120">Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
+
                     @foreach (var s in Model)
                     {
                         <tr>
-                            <td class="status-text">@s.Customer.Name</td>
-                            <td>@s.Location</td>
-                            <td class="status-text">@s.Status</td>
 
-                            <td>
-                                @if (s.IsWarrantyApplied)
-                                {
-                                    <span class="badge-custom badge-warranty">Warranty</span>
-                                }
-                                else
-                                {
-                                    <span class="badge-custom badge-nowarranty">No Warranty</span>
-                                }
+                            <td class="fw-bold">
+                                @s.Customer?.Name
                             </td>
 
                             <td>
-                                @if (s.IsFreeService)
+
+                                @if (s.AirCon != null)
                                 {
-                                    <span class="badge-custom badge-free">Free</span>
-                                }
-                                else if (s.DiscountAmount > 0)
-                                {
-                                    <span class="badge-custom badge-discount">
-                                        Discount @s.DiscountAmount
+                                    <span>
+                                        @s.AirCon.Brand?.BrandName
+                                        -
+                                        @s.AirCon.Model?.ModelName
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge-custom badge-normal">Normal</span>
+                                    <span class="text-danger">
+                                        No AirCon
+                                    </span>
                                 }
+
                             </td>
 
                             <td>
-                                @if (s.Status != "Completed")
+
+                                @if (s.AirCon != null)
                                 {
-                                    <a asp-action="Complete"
-                                       asp-route-id="@s.ServiceId"
-                                       class="btn btn-complete">
-                                        Complete
-                                    </a>
+                                    @s.AirCon.AirConType
                                 }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+
                             </td>
+
+                            <td>
+
+                                @if (s.AirCon != null)
+                                {
+                                    @s.AirCon.CapacityHp
+                                }
+
+                            </td>
+
+                            <td>
+
+                                @if (s.AirCon?.InstallationDate != null)
+                                {
+                                    @s.AirCon.InstallationDate?.ToString("dd-MM-yyyy")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        Existing AirCon
+                                    </span>
+                                }
+
+                            </td>
+
+                           @*  <td>
+
+                                @if (s.AirCon != null)
+                                {
+                                    if (s.AirCon.InstallationDate.HasValue &&
+                                    s.AirCon.NextServiceOption.HasValue)
+                                    {
+                                        var next =
+                                        s.AirCon.InstallationDate.Value.AddMonths(
+                                        s.AirCon.NextServiceOption.Value);
+
+                                        if (next >= DateTime.Now)
+                                        {
+                                            <span class="badge bg-success">
+                                                @next.ToString("dd-MM-yyyy")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                Due :
+                                                @next.ToString("dd-MM-yyyy")
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Schedule After Service
+                                        </span>
+                                    }
+                                }
+
+                            </td> *@
+
+                            <td>
+                                @s.Location
+                            </td>
+
+                            <td>
+
+                                @if (s.Status == "In Progress")
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        In Progress
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">
+                                        @s.Status
+                                    </span>
+                                }
+
+                            </td>
+
+                            <td>
+
+                                <a asp-action="Complete"
+                                   asp-route-id="@s.ServiceId"
+                                   class="btn btn-sm btn-success">
+
+                                    <i class="fas fa-check-circle"></i>
+
+                                    Complete
+
+                                </a>
+
+                            </td>
+
                         </tr>
                     }
+
                 </tbody>
 
             </table>
+
         </div>
 
     </div>
+
 </div>

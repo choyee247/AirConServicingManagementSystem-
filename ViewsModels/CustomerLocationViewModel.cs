@@ -12,5 +12,9 @@ namespace AirConServicingManagementSystem.ViewsModels
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public string? MapAddress { get; set; }
+        public int? StateDivisionPkid { get; set; }
+        public int? TownshipPkid { get; set; }
+        public string? StateDivisionName { get; set; }
+        public string? TownshipName { get; set; }
     }
 }

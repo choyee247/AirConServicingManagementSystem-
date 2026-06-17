@@ -1,75 +1,77 @@
-﻿@model ServiceRequest
+﻿@model AirConServicingManagementSystem.Models.ServiceRequest
 @{
-    ViewData["Title"] = "Request Service";
-    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    ViewData["Title"] = "Start Service";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+
+    var appt = ViewBag.Appointment as AirConServicingManagementSystem.Models.Appointment;
 }
 
 <div class="container py-4">
+
     <div class="card shadow-sm rounded-3">
+
         <div class="card-header bg-white">
-            <h3 class="mb-0" style="color:#2c8c99; font-weight:700;">
-                Request AirCon Service
+            <h3 style="color:#2c8c99;font-weight:700;">
+                🚀 Start Service
             </h3>
             <p class="text-muted mb-0">
-                Select your AirCon unit and service type
+                Confirm service details before starting work
             </p>
         </div>
 
         <div class="card-body">
+
+            <!-- READONLY APPOINTMENT INFO -->
+            <div class="p-3 border rounded mb-4">
+
+                <h5 style="color:#2c8c99;">Appointment Info</h5>
+
+                <p><b>Customer:</b> @appt?.Customer?.Name</p>
+                <p><b>Technician:</b> @appt?.Technician?.Name</p>
+                <p><b>Location:</b> @appt?.Location</p>
+                <p><b>Status:</b> @appt?.Status</p>
+
+            </div>
+
             <form asp-action="Create" method="post">
-                @Html.AntiForgeryToken()
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">AirCon Unit</label>
-                        <select asp-for="AirConId" class="form-select" required>
-                            <option value="">-- Select AirCon --</option>
+                <input type="hidden" name="appointmentId" value="@appt?.AppointmentId" />
 
-                            @if (ViewBag.AirCons != null)
-                            {
-                                foreach (var a in ViewBag.AirCons)
-                                {
-                                    <option value="@a.Id">
-                                        @(a.Brand?.BrandName) - @(a.Model?.ModelName)
-                                    </option>
-                                }
-                            }
-                        </select>
-                    </div>
+                <!-- HIDDEN AUTO VALUES -->
+                <input type="hidden" asp-for="CustomerId" />
+                <input type="hidden" asp-for="TechnicianId" />
 
-                    <div class="col-md-6">
-                        <label class="form-label">Service Type</label>
-                        <select asp-for="ServiceType" class="form-select" required>
-                            <option value="Normal">Normal</option>
-                            <option value="Urgent">Urgent</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <div class="form-check">
-                            <input asp-for="IsUrgent" class="form-check-input" />
-                            <label class="form-check-label">Urgent Service</label>
-                        </div>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Service Location</label>
-                        <input asp-for="Location" class="form-control" placeholder="Enter location" required />
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Notes</label>
-                        <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Add details or issues"></textarea>
-                    </div>
+                <!-- SERVICE TYPE -->
+                <div class="mb-3">
+                    <label>Service Type</label>
+                    <select asp-for="ServiceType" class="form-select">
+                        <option>Normal</option>
+                        <option>Urgent</option>
+                    </select>
                 </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary w-100"
-                            style="background:#2c8c99; border:none;">
-                        Confirm Service Request
-                    </button>
+                @* <!-- LOCATION (READONLY) --> *@
+                <div class="mb-3">
+                    <label>Location</label>
+                    <input asp-for="Location" class="form-control" readonly />
                 </div>
+
+                <!-- NOTES -->
+                <div class="mb-3">
+                    <label>Notes</label>
+                    <input asp-for="Notes" class="form-control" readonly>
+                </div>
+
+                <button type="submit"
+                        class="btn w-100 text-white"
+                        style="background:#2c8c99;">
+                    Start Service
+                </button>
+
             </form>
+
         </div>
+
     </div>
+
 </div>

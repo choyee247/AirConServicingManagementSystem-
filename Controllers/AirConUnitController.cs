@@ -17,12 +17,14 @@ namespace AirConServicingManagementSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var aircons = await _context.AirConUnits
-                .Include(a => a.Brand)
-                .Include(a => a.Model)
-                .Include(a => a.Customer)
-                .Include(a => a.Warranty)
-                .Where(a => a.IsDeleted != true)
-                .ToListAsync();
+             .AsNoTracking()
+             .Include(a => a.Brand)
+             .Include(a => a.Model)
+             .Include(a => a.Customer)
+             .Include(a => a.Warranty)
+             .Where(a => a.IsDeleted == false || a.IsDeleted == null)
+             .OrderByDescending(a => a.CreatedAt)
+             .ToListAsync();
 
             return View(aircons);
         }
@@ -42,62 +44,57 @@ namespace AirConServicingManagementSystem.Controllers
             return View(aircon);
         }
 
-        // GET: Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int serviceId, bool isAnother = false)
         {
-            ViewBag.Brands = await _context.AirConBrands
-                .Where(b => b.IsDeleted != true)
-                .ToListAsync();
+            ViewBag.ServiceId = serviceId;
+            ViewBag.IsAnother = isAnother;
 
-            ViewBag.Customers = await _context.Customers
-                .Where(c => c.IsDeleted != true)
+            var service = await _context.ServiceRequests
+                .Include(x => x.Appointment)
+                    .ThenInclude(a => a.Customer)
+                .FirstOrDefaultAsync(x => x.ServiceId == serviceId);
+
+            if (service == null)
+                return NotFound();
+
+            ViewBag.CustomerName = service.Appointment.Customer.Name;
+            ViewBag.CustomerPhone = service.Appointment.Customer.Phone;
+            ViewBag.AppointmentId = service.AppointmentId;
+
+            ViewBag.Brands = await _context.AirConBrands
+                .Where(x => x.IsDeleted != true)
                 .ToListAsync();
 
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AirConUnit aircon)
+        public async Task<IActionResult> Create(AirConUnit aircon, int serviceId)
         {
-            if (!ModelState.IsValid)
-            {
-                aircon.CreatedAt = DateTime.Now;
-                aircon.IsDeleted = false;
+            var serviceRequest = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x => x.ServiceId == serviceId);
 
-                _context.AirConUnits.Add(aircon);
-                await _context.SaveChangesAsync();
+            if (serviceRequest == null)
+                return NotFound("ServiceRequest not found");
 
-                // ⭐⭐⭐ WARRANTY CREATE ⭐⭐⭐
-                if (aircon.InstallationDate != null && aircon.WarrantyPeriodMonths != null)
-                {
-                    Warranty warranty = new Warranty
-                    {
-                        AirConId = aircon.Id,
-                        StartDate = aircon.InstallationDate.Value,
-                        EndDate = aircon.InstallationDate.Value
-                            .AddMonths(aircon.WarrantyPeriodMonths.Value),
-                        IsActive = true
-                    };
+            // ⭐ SAFE FIX (NO NAVIGATION)
+            aircon.CustomerId = serviceRequest.CustomerId;
 
-                    _context.Warranties.Add(warranty);
-                    await _context.SaveChangesAsync();
-                }
+            aircon.CreatedAt = DateTime.Now;
+            aircon.IsDeleted = false;
 
-                return RedirectToAction(nameof(Index));
-            }
+            _context.AirConUnits.Add(aircon);
+            await _context.SaveChangesAsync();
 
-            // Reload dropdowns
-            ViewBag.Brands = await _context.AirConBrands
-                .Where(b => b.IsDeleted != true)
-                .ToListAsync();
+            serviceRequest.AirConId = aircon.Id;
+            serviceRequest.Status = "In Progress";
 
-            ViewBag.Customers = await _context.Customers
-                .Where(c => c.IsDeleted != true)
-                .ToListAsync();
+            _context.ServiceRequests.Update(serviceRequest);
+            await _context.SaveChangesAsync();
 
-            return View(aircon);
+            return RedirectToAction("Assigned", "TechnicianService");
         }
-
 
         // POST: Create
         //[HttpPost]
@@ -174,45 +171,17 @@ namespace AirConServicingManagementSystem.Controllers
 
             if (aircon == null) return NotFound();
 
+            // UPDATE ONLY REQUIRED FIELDS
             aircon.BrandId = model.BrandId;
             aircon.ModelId = model.ModelId;
-            aircon.SerialNumber = model.SerialNumber;
+            aircon.AirConType = model.AirConType;
             aircon.CapacityHp = model.CapacityHp;
             aircon.InstallationDate = model.InstallationDate;
-            aircon.WarrantyPeriodMonths = model.WarrantyPeriodMonths;
+
             aircon.UpdatedAt = DateTime.Now;
 
-            // ⭐ Warranty Auto Update (Important)
-            if (aircon.InstallationDate.HasValue && aircon.WarrantyPeriodMonths.HasValue)
-            {
-                var startDate = aircon.InstallationDate.Value;
-                var endDate = startDate.AddMonths(aircon.WarrantyPeriodMonths.Value);
-
-                var warranty = await _context.Warranties
-                    .FirstOrDefaultAsync(w => w.AirConId == aircon.Id);
-
-                if (warranty == null)
-                {
-                    // Create new warranty record
-                    warranty = new Warranty
-                    {
-                        AirConId = aircon.Id,
-                        StartDate = startDate,
-                        EndDate = endDate,
-                        IsActive = endDate >= DateTime.Now
-                    };
-                    _context.Warranties.Add(warranty);
-                }
-                else
-                {
-                    // Update existing warranty record
-                    warranty.StartDate = startDate;
-                    warranty.EndDate = endDate;
-                    warranty.IsActive = endDate >= DateTime.Now;
-                }
-            }
-
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 

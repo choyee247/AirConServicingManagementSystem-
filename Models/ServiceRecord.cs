@@ -45,6 +45,21 @@ public partial class ServiceRecord
 
     public int? ServiceRequestId { get; set; }
 
+    [StringLength(1000)]
+    public string? ProblemFound { get; set; }
+
+    [StringLength(1000)]
+    public string? RepairAction { get; set; }
+
+    [StringLength(1000)]
+    public string? PartsReplaced { get; set; }
+
+    [StringLength(1000)]
+    public string? TechnicianNote { get; set; }
+
+    [Column(TypeName = "decimal(18, 2)")]
+    public decimal? ServiceCost { get; set; }
+
     [ForeignKey("AirConUnitId")]
     [InverseProperty("ServiceRecords")]
     public virtual AirConUnit AirConUnit { get; set; } = null!;

@@ -2,15 +2,20 @@
 
 @{
     ViewData["Title"] = "My AirCon Units";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+   @*  <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold" style="color: #2c8c99;">@ViewData["Title"]</h3>
-        <a asp-action="Create" class="btn text-white" style="background-color: #2c8c99; border: none;">
+        <a asp-action="Create"
+           asp-controller="AirConUnit"
+           asp-route-serviceId="@ViewBag.ServiceId"
+           class="btn text-white"
+           style="background-color:#2c8c99; border:none;">
+
             <i class="fas fa-plus me-2"></i> Add New Aircon
-        </a>
+        </a> *@
     </div>
 
     <!-- Search and Filter Section -->
@@ -33,20 +38,19 @@
                     </div>
                 </div>
 
-                <!-- Capacity -->
+            
                 <div class="col-md-2">
-                    <label class="form-label" style="color: #2c8c99;">Capacity</label>
-                    <select id="capacityFilter" class="form-select" style="border: 1px solid #2c8c99;">
-                        <option value="">All HP</option>
-                        <option value="0.5">0.5 HP</option>
-                        <option value="1">1 HP</option>
-                        <option value="1.5">1.5 HP</option>
-                        <option value="2">2 HP</option>
-                        <option value="2.5">2.5 HP</option>
-                        <option value="3">3 HP</option>
+                    <label class="form-label" style="color: #2c8c99;">Next Service</label>
+                    <select id="nextServiceFilter" class="form-select" style="border: 1px solid #2c8c99;">
+                        <option value="">All</option>
+                        <option value="1">1 Month</option>
+                        <option value="3">3 Months</option>
+                        <option value="6">6 Months</option>
+                        <option value="12">12 Months</option>
+                        <option value="18">18 Months</option>
+                        <option value="24">24 Months</option>
                     </select>
                 </div>
-
                 <!-- Brand -->
                 <div class="col-md-2">
                     <label class="form-label" style="color: #2c8c99;">Brand</label>
@@ -104,11 +108,9 @@
                             <th>#</th>
                             <th>Brand</th>
                             <th>Model</th>
-                            <th>Serial Number</th>
                             <th>AirCon Type</th>
                             <th>Capacity (HP)</th>
-                            <th>Installation Date</th>
-                            <th>Warranty</th>
+                            <th>Installation Type</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -121,19 +123,16 @@
                                 <tr class="aircon-row"
                                     data-brand="@aircon.Brand?.BrandName?.ToLower()"
                                     data-model="@aircon.Model?.ModelName?.ToLower()"
-                                    data-serial="@aircon.SerialNumber?.ToLower()"
+                                    
                                     data-capacity="@aircon.CapacityHp"
-                                    data-type="@aircon.AirConType?.ToLower()">
-
+                                    data-type="@aircon.AirConType?.ToLower()"
+                                    data-warranty="@aircon.Warranty"
+                                    data-nextservice="@aircon.NextServiceOption">
+                                 
                                     <td class="fw-bold">@index</td>
                                     <td>@aircon.Brand?.BrandName</td>
                                     <td>@aircon.Model?.ModelName</td>
 
-                                    <td>
-                                        <span class="badge bg-secondary">
-                                            @aircon.SerialNumber
-                                        </span>
-                                    </td>
 
                                     <td>
                                         <span class="badge bg-info text-dark">
@@ -147,43 +146,27 @@
                                             @aircon.CapacityHp HP
                                         </span>
                                     </td>
-
                                     <td>
-                                        @(aircon.InstallationDate.HasValue
-                                            ? aircon.InstallationDate.Value.ToString("yyyy-MM-dd")
-                                            : "N/A")
-                                    </td>
-
-                                    <td>
-                                        @if (aircon.Warranty != null)
+                                        @if (aircon.InstallationType == "New")
                                         {
-                                            if (aircon.Warranty.StartDate <= DateTime.Now &&
-                                            aircon.Warranty.EndDate >= DateTime.Now)
-                                            {
-                                                <i class="fas fa-check-circle text-success me-1"></i>
-                                                <span class="text-success fw-bold">Under Warranty</span>
-                                                <br />
-                                                <small class="text-muted">
-                                                    Exp: @aircon.Warranty.EndDate.ToString("yyyy-MM-dd")
-                                                </small>
-                                            }
-                                            else
-                                            {
-                                                <i class="fas fa-times-circle text-danger me-1"></i>
-                                                <span class="text-danger fw-bold">Expired</span>
-                                                <br />
-                                                <small class="text-muted">
-                                                    Exp: @aircon.Warranty.EndDate.ToString("yyyy-MM-dd")
-                                                </small>
-                                            }
+                                            <i class="fas fa-calendar text-primary me-1"></i>
+                                            <span class="fw-bold">New Installation</span>
+                                            <br />
+                                            <small class="text-muted">
+                                                Installed: @aircon.InstallationDate?.ToString("yyyy-MM-dd")
+                                            </small>
                                         }
                                         else
                                         {
-                                            <i class="fas fa-minus-circle text-secondary me-1"></i>
-                                            <span class="text-secondary fw-bold">No Warranty</span>
+                                            <i class="fas fa-tools text-secondary me-1"></i>
+                                            <span class="fw-bold text-secondary">Existing Unit</span>
+                                            <br />
+                                            <small class="text-muted">
+                                                No installation record
+                                            </small>
                                         }
                                     </td>
-
+                        
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a asp-action="Details"
@@ -238,7 +221,7 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
+                $(document).ready(function () {
             const rows = $('.aircon-row');
 
             function performSearch() {
@@ -246,14 +229,17 @@
                 const capacityFilter = $('#capacityFilter').val();
                 const brandFilter = $('#brandFilter').val().toLowerCase().trim();
                 const typeFilter = $('#typeFilter').val().toLowerCase().trim();
+                const nextServiceFilter = $('#nextServiceFilter').val();
 
                 rows.each(function () {
                     const row = $(this);
+
                     const brand = row.data('brand') || '';
                     const model = row.data('model') || '';
                     const serial = row.data('serial') || '';
                     const capacity = (row.data('capacity') || '').toString();
                     const type = row.data('type') || '';
+                    const nextService = (row.data('nextservice') || '').toString();
 
                     const matchesSearch =
                         !searchTerm ||
@@ -273,7 +259,15 @@
                         !typeFilter ||
                         type === typeFilter;
 
-                    if (matchesSearch && matchesCapacity && matchesBrand && matchesType) {
+                    const matchesNextService =
+                        !nextServiceFilter ||
+                        nextService === nextServiceFilter;
+
+                    if (matchesSearch &&
+                        matchesCapacity &&
+                        matchesBrand &&
+                        matchesType &&
+                        matchesNextService) {
                         row.show();
                     } else {
                         row.hide();
@@ -289,13 +283,15 @@
                 }
             });
 
-            $('#capacityFilter, #brandFilter, #typeFilter').on('change', performSearch);
+            $('#capacityFilter, #brandFilter, #typeFilter, #nextServiceFilter')
+                .on('change', performSearch);
 
             $('#clearFilters').on('click', function () {
                 $('#searchInput').val('');
                 $('#capacityFilter').val('');
                 $('#brandFilter').val('');
                 $('#typeFilter').val('');
+                $('#nextServiceFilter').val('');
                 performSearch();
             });
         });

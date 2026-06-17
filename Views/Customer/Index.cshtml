@@ -2,9 +2,10 @@
 
 @{
     ViewData["Title"] = "Customer Management";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
-
+@* @using System.Text.Json
+ *@
 <style>
     :root {
         --primary-color: #2c8c99; /* Teal Blue - Air Conditioning Theme */
@@ -163,6 +164,17 @@
                 </div>
                 <div class="col-md-3">
                     <input type="date" class="form-control" id="filterDate">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="stateFilter">
+                        <option value="">All States</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-select" id="townshipFilter">
+                        <option value="">All Townships</option>
+                    </select>
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-primary w-100" id="applyFilters">
@@ -468,145 +480,104 @@
 
 <!-- JavaScript for Interactive Features -->
 @section Scripts {
+   @*  <script>
+        var states = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.States));
+        // alert(JSON.stringify(states));
+        console.log("RAW STATES:", states);
+    </script> *@
+
     <script>
+        var states = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.States));
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+
+            const stateFilter = document.getElementById("stateFilter");
+            const townshipFilter = document.getElementById("townshipFilter");
+
+            // =========================
+            // LOAD STATES
+            // =========================
+            states.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.StateDivisionPkid;
+                opt.textContent = s.StateDivisionEn || s.StateDivision;
+                stateFilter.appendChild(opt);
             });
 
-            // Search functionality
-            const searchInput = document.getElementById('searchInput');
-            const clearSearch = document.getElementById('clearSearch');
-            const customerRows = document.querySelectorAll('.customer-row');
+            // =========================
+            // STATE CHANGE → LOAD TOWNSHIP
+            // =========================
+            stateFilter.addEventListener('change', function () {
 
-            searchInput.addEventListener('input', function () {
-                const searchTerm = this.value.toLowerCase();
-                filterCustomers(searchTerm);
+                const stateId = this.value;
+
+                townshipFilter.innerHTML =
+                    '<option value="">All Townships</option>';
+
+                if (!stateId) return;
+
+                fetch('/Customer/GetTownshipsByState?stateId=' + stateId)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        data.forEach(t => {
+
+                            const opt = document.createElement("option");
+                            opt.value = t.townshipPkid;
+                            opt.textContent = t.townshipEn;
+
+                            townshipFilter.appendChild(opt);
+                        });
+
+                    })
+                    .catch(err => console.log("Township load error:", err));
             });
 
-            clearSearch.addEventListener('click', function () {
-                searchInput.value = '';
-                filterCustomers('');
-            });
+        });
 
-            function filterCustomers(searchTerm) {
-                customerRows.forEach(row => {
-                    const name = row.getAttribute('data-name');
-                    const email = row.getAttribute('data-email');
+        document.getElementById("applyFilters").addEventListener("click", function () {
 
-                    if (name.includes(searchTerm) || email.includes(searchTerm) || searchTerm === '') {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            }
+            let search = document.getElementById("searchInput").value;
+            let stateId = document.getElementById("stateFilter").value;
+            let townshipId = document.getElementById("townshipFilter").value;
+            let filterDate = document.getElementById("filterDate").value;
 
-            // Select All functionality
-            const selectAllCheckbox = document.getElementById('selectAll');
-            const selectAllMobileCheckbox = document.getElementById('selectAllMobile');
-            const customerCheckboxes = document.querySelectorAll('.customer-checkbox');
-            const deleteSelectedBtn = document.getElementById('deleteSelected');
-            const exportSelectedBtn = document.getElementById('exportSelected');
+            let url = "/Customer/Index?";
 
-            selectAllCheckbox?.addEventListener('change', function () {
-                const isChecked = this.checked;
-                customerCheckboxes.forEach(checkbox => {
-                    checkbox.checked = isChecked;
-                });
-                updateSelectedButtons();
-            });
+            let params = [];
 
-            selectAllMobileCheckbox?.addEventListener('change', function () {
-                const isChecked = this.checked;
-                customerCheckboxes.forEach(checkbox => {
-                    checkbox.checked = isChecked;
-                });
-                updateSelectedButtons();
-            });
+            if (search)
+                params.push("search=" + encodeURIComponent(search));
 
-            customerCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateSelectedButtons);
-            });
+            if (stateId)
+                params.push("stateId=" + stateId);
 
-            function updateSelectedButtons() {
-                const checkedCount = document.querySelectorAll('.customer-checkbox:checked').length;
-                const hasSelection = checkedCount > 0;
+            if (townshipId)
+                params.push("townshipId=" + townshipId);
 
-                deleteSelectedBtn.disabled = !hasSelection;
-                exportSelectedBtn.disabled = !hasSelection;
+            if (filterDate)
+                params.push("filterDate=" + filterDate);
 
-                if (hasSelection) {
-                    deleteSelectedBtn.innerHTML = `<i class="fas fa-trash me-1"></i>Delete (${checkedCount})`;
-                    exportSelectedBtn.innerHTML = `<i class="fas fa-download me-1"></i>Export (${checkedCount})`;
-                } else {
-                    deleteSelectedBtn.innerHTML = `<i class="fas fa-trash me-1"></i>Delete Selected`;
-                    exportSelectedBtn.innerHTML = `<i class="fas fa-download me-1"></i>Export`;
-                }
-            }
+            url += params.join("&");
 
-            // Delete selected functionality
-            deleteSelectedBtn.addEventListener('click', function () {
-                const selectedIds = Array.from(document.querySelectorAll('.customer-checkbox:checked'))
-                    .map(checkbox => checkbox.value);
+            window.location.href = url;
+        });
 
-                if (selectedIds.length > 0) {
-                    if (confirm(`Are you sure you want to delete ${selectedIds.length} selected customer(s)?`)) {
-                        // Here you would typically make an API call to delete the selected customers
-                        console.log('Deleting customers:', selectedIds);
-                        // Reload the page or remove rows from DOM after successful deletion
-                        // location.reload();
-                    }
-                }
-            });
+                document.getElementById("clearSearch").addEventListener("click", function () {
+            window.location.href = "/Customer/Index";
+        });
 
-            // Export selected functionality
-            exportSelectedBtn.addEventListener('click', function () {
-                const selectedIds = Array.from(document.querySelectorAll('.customer-checkbox:checked'))
-                    .map(checkbox => checkbox.value);
+                let typingTimer;
 
-                if (selectedIds.length > 0) {
-                    console.log('Exporting customers:', selectedIds);
-                    // Here you would typically make an API call to export the selected customers
-                    alert(`Exporting ${selectedIds.length} customer(s) to CSV...`);
-                }
-            });
+        document.getElementById("searchInput").addEventListener("keyup", function () {
 
-            // Filter functionality
-            const applyFiltersBtn = document.getElementById('applyFilters');
-            const filterStatus = document.getElementById('filterStatus');
+            clearTimeout(typingTimer);
 
-            applyFiltersBtn.addEventListener('click', function () {
-                const status = filterStatus.value;
-                const date = document.getElementById('filterDate').value;
+            typingTimer = setTimeout(() => {
 
-                // Update status badges based on filter
-                const statusBadges = document.querySelectorAll('.badge');
-                statusBadges.forEach(badge => {
-                    if (status === '') {
-                        badge.style.display = '';
-                    } else {
-                        const badgeText = badge.textContent.toLowerCase();
-                        if (badgeText.includes(status)) {
-                            badge.style.display = '';
-                        } else {
-                            badge.closest('tr')?.style.display = 'none';
-                            badge.closest('.list-group-item')?.style.display = 'none';
-                        }
-                    }
-                });
-            });
+                document.getElementById("applyFilters").click();
 
-            // Reset filters when status is cleared
-            filterStatus.addEventListener('change', function() {
-                if (this.value === '') {
-                    customerRows.forEach(row => {
-                        row.style.display = '';
-                    });
-                }
-            });
+            }, 600); // debounce
         });
     </script>
 }

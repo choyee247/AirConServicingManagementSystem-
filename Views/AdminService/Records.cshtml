@@ -2,447 +2,401 @@
 
 @{
     ViewData["Title"] = "Service Records";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
-
 <style>
     :root {
-        --primary-color: #2c8c99;
-        --primary-dark: #24737d;
-        --light-bg: #f4fbfc;
-        --border-color: #e4eef0;
+        --theme: #2c8c99;
     }
 
     body {
-        background: #f7f9fb;
+        background: #f5f8fb;
     }
 
-    .page-title {
-        color: var(--primary-color);
-        font-weight: 700;
-        margin: 0;
+    .modern-input {
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px solid #ddd;
     }
 
-    .modern-card {
-        border: none;
-        border-radius: 18px;
-        overflow: hidden;
-        background: #fff;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-    }
-
-    /* .search-box {
-        border-radius: 14px;
-        overflow: hidden;
-        background: white;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-    }
-
-        .search-box .form-control {
-            border: none;
-            padding: 14px;
-            box-shadow: none;
+        .modern-input:focus {
+            border-color: var(--theme);
+            box-shadow: 0 0 0 .15rem rgba(44,140,153,.2);
         }
 
-    .search-btn {
-        background: var(--primary-color);
+    .btn-theme {
+        background: var(--theme);
         color: white;
-        border: none;
-        padding: 0 24px;
-        font-weight: 600;
+        border-radius: 12px;
+        padding: 10px;
     }
 
-        .search-btn:hover {
-            background: var(--primary-dark);
+        .btn-theme:hover {
+            background: #257681;
             color: white;
         }
 
-    .reset-btn {
-        border: none;
-        padding: 0 20px;
-    } */
-
-    .search-container {
-        width: 100%;
+    .modern-table thead {
+        background: #f8f9fa;
     }
 
-    .modern-search-box {
-        background: #ffffff;
-        border-radius: 18px;
-        padding: 12px 14px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-        border: 1px solid #eef3f4;
-        transition: 0.3s ease;
+    .modern-table th {
+        font-weight: 700;
+        padding: 18px;
     }
 
-        .modern-search-box:focus-within {
-            border-color: #2c8c99;
-            box-shadow: 0 10px 30px rgba(44,140,153,0.18);
+    .modern-table td {
+        padding: 18px;
+        vertical-align: middle;
+    }
+
+    .modern-table tbody tr {
+        transition: .25s;
+    }
+
+        .modern-table tbody tr:hover {
+            background: #eef9fa;
+            transform: scale(1.002);
         }
 
-    .search-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        background: rgba(44,140,153,0.12);
+    .badge-status-success {
+        background: #d4edda;
+        color: #198754;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .badge-status-warning {
+        background: #fff3cd;
+        color: #856404;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .btn-detail {
+        background: #2c8c99;
+        color: white;
+        border-radius: 10px;
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #2c8c99;
-        font-size: 18px;
     }
-
-    .modern-search-input {
-        flex: 1;
-        border: none;
-        outline: none;
-        font-size: 15px;
-        background: transparent;
-        color: #333;
-    }
-
-        .modern-search-input::placeholder {
-            color: #9aa7ad;
-        }
-
-    .modern-search-btn {
-        background: #2c8c99;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 22px;
-        font-weight: 600;
-        transition: 0.25s ease;
-    }
-
-        .modern-search-btn:hover {
-            background: #257782;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-    .modern-reset-btn {
-        background: #f1f5f6;
-        color: #555;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 20px;
-        font-weight: 600;
-        transition: 0.25s ease;
-    }
-
-        .modern-reset-btn:hover {
-            background: #e2ebed;
-            color: #222;
-        }
-
-    .table thead {
-        background: var(--primary-color);
-        color: white;
-    }
-
-        .table thead th {
-            border: none;
-            padding: 16px;
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: .3px;
-        }
-
-    .table tbody td {
-        padding: 16px;
-        vertical-align: middle;
-        border-color: var(--border-color);
-    }
-
-    .table tbody tr:hover {
-        background: var(--light-bg);
-        transition: 0.2s ease;
-    }
-
-    .status-completed {
-        background: #d1f5df;
-        color: #198754;
-        padding: 7px 14px;
-        border-radius: 30px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .status-progress {
-        background: rgba(44, 140, 153, 0.12);
-        color: var(--primary-color);
-        padding: 7px 14px;
-        border-radius: 30px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .btn-complete {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 7px 14px;
-        font-size: 13px;
-        font-weight: 600;
-        transition: 0.2s;
-    }
-
-        .btn-complete:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateY(-1px);
-        }
 
     .btn-delete {
+        background: #dc3545;
+        color: white;
         border-radius: 10px;
-        padding: 7px 14px;
-        font-size: 13px;
-        font-weight: 600;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .table-responsive {
+    .card {
         border-radius: 18px;
     }
-
-    .action-btn {
-        border: none;
-        border-radius: 12px;
-        padding: 8px 14px;
-        font-size: 13px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.25s ease;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-    }
-
-        .action-btn i {
-            font-size: 14px;
-        }
-
-    /* Complete button */
-    .complete-btn {
-        background: linear-gradient(135deg, #2c8c99, #36a9b8);
-        color: white;
-    }
-
-        .complete-btn:hover {
-            background: linear-gradient(135deg, #257782, #2c8c99);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(44, 140, 153, 0.25);
-        }
-
-    /* Delete button */
-    .delete-btn {
-        background: linear-gradient(135deg, #dc3545, #f05b6a);
-        color: white;
-    }
-
-        .delete-btn:hover {
-            background: linear-gradient(135deg, #bb2d3b, #dc3545);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(220, 53, 69, 0.25);
-        }
-
-    /* Completed badge */
-    .status-done {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 14px;
-        border-radius: 30px;
-        background: #d1f5df;
-        color: #198754;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-        .status-done i {
-            font-size: 14px;
-        }
 </style>
+<div class="container-fluid py-4">
 
-<div class="container py-4">
+    <div class="row mb-4">
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="page-title">Service Records</h2>
-            <small class="text-muted">
-                Manage all aircon servicing activities
-            </small>
+        <div class="col-md-8">
+
+            <h2 class="fw-bold mb-1" style="color:#2c8c99;">
+                <i class="fas fa-history me-2"></i>
+                Service Records
+            </h2>
+
+            <p class="text-muted mb-0">
+                View completed maintenance history and service reports
+            </p>
+
         </div>
-    </div>
 
-    <div class="search-container mb-4">
+        <div class="col-md-4">
 
-        <form method="get">
+            <div class="card border-0 shadow-sm rounded-4">
 
-            <div class="modern-search-box">
+                <div class="card-body text-center">
 
-                <!-- Search Icon -->
-                <div class="search-icon">
-                    <i class="fa fa-search"></i>
-                </div>
+                    <h3 class="fw-bold mb-0 text-success">
+                        @Model.Count()
+                    </h3>
 
-                <!-- Input -->
-                <input type="text"
-                       name="search"
-                       value="@ViewData["CurrentFilter"]"
-                       class="modern-search-input"
-                       placeholder="Search customer, technician, service type..." />
-
-                <!-- Buttons -->
-                <div class="d-flex gap-2">
-
-                    <button type="submit"
-                            class="btn modern-search-btn">
-                        Search
-                    </button>
-
-                    <a href="/AdminService/Records"
-                       class="btn modern-reset-btn">
-                        Reset
-                    </a>
+                    <small class="text-muted">
+                        Total Records
+                    </small>
 
                 </div>
 
             </div>
 
-        </form>
+        </div>
 
     </div>
 
-    <!-- TABLE CARD -->
-    <div class="modern-card">
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-5">
+
+                    <input type="text"
+                           class="form-control modern-input"
+                           placeholder="Search customer...">
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <button class="btn btn-theme w-100">
+
+                        <i class="fas fa-search"></i>
+
+                        Search
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow rounded-4 overflow-hidden">
+
+        <div class="card-header border-0 text-white"
+             style="background:#2c8c99;">
+
+            <h5 class="mb-0">
+
+                <i class="fas fa-tools me-2"></i>
+
+                Completed Services
+
+            </h5>
+
+        </div>
 
         <div class="table-responsive">
 
-            <table class="table align-middle mb-0">
+            <table class="table modern-table align-middle mb-0">
 
                 <thead>
+
                     <tr>
+
                         <th>Customer</th>
+
                         <th>Technician</th>
-                        <th>Date</th>
+
+                        <th>Air Conditioner</th>
+
+                        <th>Service Date</th>
+
                         <th>Status</th>
-                        <th>Type</th>
+
+                        <th>Service Type</th>
+
                         <th>Next Service</th>
-                        <th width="210">Actions</th>
+
+                        <th class="text-center">
+                            Action
+                        </th>
+
                     </tr>
+
                 </thead>
 
                 <tbody>
 
-                    @if (Model.Any())
+                    @foreach (var item in Model)
                     {
-                        @foreach (var item in Model)
-                        {
-                            <tr>
 
-                                <td>
-                                    <strong>@item.Customer?.Name</strong>
-                                </td>
+                        <tr>
 
-                                <td>
-                                    @item.Technician?.Name
-                                </td>
+                            <td>
 
-                                <td>
-                                    @item.ServiceDate?.ToString("dd MMM yyyy")
-                                </td>
+                                <div>
 
-                                <td>
-                                    @if (item.Status == "Completed")
-                                    {
-                                        <span class="status-completed">
-                                            Completed
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="status-progress">
-                                            In Progress
-                                        </span>
-                                    }
-                                </td>
+                                    <div class="fw-bold">
 
-                                <td>
-                                    @item.ServiceType
-                                </td>
-
-                                <td>
-                                    @(item.NextServiceDue?.ToString("dd MMM yyyy") ?? "-")
-                                </td>
-
-                                <td>
-                                    <div class="d-flex align-items-center gap-2 flex-wrap">
-
-                                        @* COMPLETE BUTTON *@
-                                        @if (item.Status != "Completed")
-                                        {
-                                            <form asp-action="Complete"
-                                                  asp-controller="TechnicianService"
-                                                  method="post"
-                                                  onsubmit="return confirm('Are you sure you want to mark this service as completed?');">
-
-                                                @Html.AntiForgeryToken()
-
-                                                <input type="hidden"
-                                                       name="id"
-                                                       value="@item.ServiceRequestId" />
-
-                                                <button type="submit" class="action-btn complete-btn">
-                                                    <i class="fa fa-check-circle"></i>
-                                                    <span>Complete</span>
-                                                </button>
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <span class="status-done">
-                                                <i class="fa fa-check-circle"></i>
-                                                Done
-                                            </span>
-                                        }
-
-                                        @* DELETE BUTTON *@
-                                        <form asp-action="Delete"
-                                              method="post"
-                                              onsubmit="return confirm('Are you sure you want to delete this record?');">
-
-                                            @Html.AntiForgeryToken()
-
-                                            <input type="hidden"
-                                                   name="id"
-                                                   value="@item.Id" />
-
-                                            <button type="submit" class="action-btn delete-btn">
-                                                <i class="fa fa-trash"></i>
-                                                <span>Delete</span>
-                                            </button>
-                                        </form>
+                                        @item.Customer?.Name
 
                                     </div>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="7" class="text-center py-5 text-muted">
-                                No service records found.
+
+                                    <small class="text-muted">
+
+                                        Customer
+
+                                    </small>
+
+                                </div>
+
                             </td>
+
+                            <td>
+
+                                <span class="fw-semibold">
+
+                                    @item.Technician?.Name
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                @if (item.AirConUnit != null)
+                                {
+
+                                    <div>
+
+                                        <strong>
+
+                                            @item.AirConUnit.Brand.BrandName
+
+                                        </strong>
+
+                                        <br>
+
+                                        <small class="text-muted">
+
+                                            @item.AirConUnit.Model.ModelName
+
+                                        </small>
+
+                                    </div>
+
+                                }
+                                else
+                                {
+
+                                    <span class="text-danger">
+
+                                        Not Assigned
+
+                                    </span>
+
+                                }
+
+                            </td>
+
+                            <td>
+
+                                @item.CreatedAt?.ToString("dd MMM yyyy")
+
+                            </td>
+
+                            <td>
+
+                                @if (item.Status == "Completed")
+                                {
+
+                                    <span class="badge-status-success">
+
+                                        Completed
+
+                                    </span>
+
+                                }
+                                else
+                                {
+
+                                    <span class="badge-status-warning">
+
+                                        In Progress
+
+                                    </span>
+
+                                }
+
+                            </td>
+
+                            <td>
+
+                                @item.ServiceType
+
+                            </td>
+
+                            <td>
+
+                                @(item.NextServiceDue?.ToString("dd MMM yyyy") ?? "-")
+
+                            </td>
+
+                            <td>
+
+                                <div class="d-flex justify-content-center gap-2">
+
+                                    <a asp-controller="ServiceRequest"
+                                       asp-action="Details"
+                                       asp-route-appointmentId="@item.ServiceRequest.Appointment.AppointmentId"
+                                       class="btn btn-sm btn-detail">
+
+                                        <i class="fas fa-eye"></i>
+
+                                    </a>
+                                  
+                                    <form asp-action="Delete"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@item.ServiceRequestId" />
+
+                                        <button class="btn btn-sm btn-delete">
+
+                                            <i class="fas fa-trash"></i>
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
                         </tr>
+
+                    }
+
+                    @if (!Model.Any())
+                    {
+
+                        <tr>
+
+                            <td colspan="8">
+
+                                <div class="text-center py-5">
+
+                                    <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+
+                                    <h5>No Service Records</h5>
+
+                                    <p class="text-muted">
+
+                                        No completed services available.
+
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
                     }
 
                 </tbody>

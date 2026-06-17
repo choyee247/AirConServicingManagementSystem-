@@ -23,6 +23,8 @@ public partial class DBContext : DbContext
 
     public virtual DbSet<Appointment> Appointments { get; set; }
 
+    public virtual DbSet<AppointmentReassign> AppointmentReassigns { get; set; }
+
     public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<CustomerLocation> CustomerLocations { get; set; }
@@ -46,6 +48,10 @@ public partial class DBContext : DbContext
     public virtual DbSet<ServiceTechnician> ServiceTechnicians { get; set; }
 
     public virtual DbSet<ServiceWarranty> ServiceWarranties { get; set; }
+
+    public virtual DbSet<TbStateDivision> TbStateDivisions { get; set; }
+
+    public virtual DbSet<TbTownship> TbTownships { get; set; }
 
     public virtual DbSet<Technician> Technicians { get; set; }
 
@@ -117,6 +123,23 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.Technician).WithMany(p => p.Appointments).HasConstraintName("FK_Appointments_Technicians");
         });
 
+        modelBuilder.Entity<AppointmentReassign>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Appointm__3214EC07C4607E13");
+
+            entity.Property(e => e.ChangedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Appointment).WithMany(p => p.AppointmentReassigns)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Appointme__Appoi__7E02B4CC");
+
+            entity.HasOne(d => d.NewTechnician).WithMany(p => p.AppointmentReassignNewTechnicians)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Appointme__NewTe__7FEAFD3E");
+
+            entity.HasOne(d => d.OldTechnician).WithMany(p => p.AppointmentReassignOldTechnicians).HasConstraintName("FK__Appointme__OldTe__7EF6D905");
+        });
+
         modelBuilder.Entity<Customer>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC077FC05282");
@@ -135,6 +158,10 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.Customer).WithMany(p => p.CustomerLocations)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CustomerL__Custo__68487DD7");
+
+            entity.HasOne(d => d.StateDivisionPk).WithMany(p => p.CustomerLocations).HasConstraintName("FK_CustomerLocation_StateDivision");
+
+            entity.HasOne(d => d.TownshipPk).WithMany(p => p.CustomerLocations).HasConstraintName("FK_CustomerLocation_Township");
         });
 
         modelBuilder.Entity<CustomerQrToken>(entity =>
@@ -246,6 +273,8 @@ public partial class DBContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_ServiceRequests_AirConUnits");
 
+            entity.HasOne(d => d.Appointment).WithMany(p => p.ServiceRequests).HasConstraintName("FK_ServiceRequests_Appointments");
+
             entity.HasOne(d => d.Customer).WithMany(p => p.ServiceRequests)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ServiceRequests_Customers");
@@ -275,6 +304,13 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.ServiceRecord).WithMany(p => p.ServiceWarranties)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ServiceWa__Servi__571DF1D5");
+        });
+
+        modelBuilder.Entity<TbTownship>(entity =>
+        {
+            entity.Property(e => e.TownshipEn).IsFixedLength();
+
+            entity.HasOne(d => d.StateDivisionPk).WithMany(p => p.TbTownships).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Technician>(entity =>

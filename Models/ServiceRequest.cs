@@ -53,9 +53,15 @@ public partial class ServiceRequest
     [Column(TypeName = "decimal(18, 2)")]
     public decimal DiscountAmount { get; set; }
 
+    public int? AppointmentId { get; set; }
+
     [ForeignKey("AirConId")]
     [InverseProperty("ServiceRequests")]
     public virtual AirConUnit? AirCon { get; set; }
+
+    [ForeignKey("AppointmentId")]
+    [InverseProperty("ServiceRequests")]
+    public virtual Appointment? Appointment { get; set; }
 
     [ForeignKey("CustomerId")]
     [InverseProperty("ServiceRequests")]
