@@ -27,12 +27,23 @@ public partial class Appointment
     [StringLength(500)]
     public string? Notes { get; set; }
 
+    public bool IsReAppointment { get; set; }
+
+    public int? ParentAppointmentId { get; set; }
+
     [InverseProperty("Appointment")]
     public virtual ICollection<AppointmentReassign> AppointmentReassigns { get; set; } = new List<AppointmentReassign>();
 
     [ForeignKey("CustomerId")]
     [InverseProperty("Appointments")]
     public virtual Customer Customer { get; set; } = null!;
+
+    [InverseProperty("ParentAppointment")]
+    public virtual ICollection<Appointment> InverseParentAppointment { get; set; } = new List<Appointment>();
+
+    [ForeignKey("ParentAppointmentId")]
+    [InverseProperty("InverseParentAppointment")]
+    public virtual Appointment? ParentAppointment { get; set; }
 
     [InverseProperty("Appointment")]
     public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();

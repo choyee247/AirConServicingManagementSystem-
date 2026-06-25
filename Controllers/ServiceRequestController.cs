@@ -106,6 +106,16 @@ namespace AirConServicingManagementSystem.Controllers
 
             appointment.Status = "In Progress";
 
+            var schedule = await _context.TechnicianSchedulePlans
+                .FirstOrDefaultAsync(x =>
+                    x.TechnicianId == appointment.TechnicianId &&
+                    x.CustomerId == appointment.CustomerId &&
+                    x.Status == "Pending");
+
+            if (schedule != null)
+            {
+                schedule.Status = "In Progress";
+            }
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

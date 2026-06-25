@@ -135,18 +135,67 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             return View(appointment);
         }
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Assign(int id, int technicianId)
+        //{
+        //    var appointment = await _context.Appointments
+        //        .FindAsync(id);
+
+        //    if (appointment == null)
+        //        return NotFound();
+
+        //    appointment.TechnicianId = technicianId;
+        //    appointment.Status = "Assigned";
+
+        //    await _context.SaveChangesAsync();
+
+        //    TempData["SuccessMessage"] =
+        //        "Technician assigned successfully.";
+
+        //    return RedirectToAction("Index", "Appointment");
+        //}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, int technicianId)
         {
             var appointment = await _context.Appointments
-                .FindAsync(id);
+                .Include(x => x.Customer)
+                .FirstOrDefaultAsync(x => x.AppointmentId == id);
 
             if (appointment == null)
                 return NotFound();
 
             appointment.TechnicianId = technicianId;
             appointment.Status = "Assigned";
+
+            // Schedule Auto Create
+            var schedule = new TechnicianSchedulePlan
+            {
+                TechnicianId = technicianId,
+
+                CustomerId = appointment.CustomerId,
+
+                CustomerName = appointment.Customer?.Name,
+
+                Title = "AirCon Service Visit",
+
+                PlanType = "Service",
+
+                Location = appointment.Location,
+
+                PlannedDate = appointment.ScheduledDate,
+
+                Priority = "Normal",
+
+                Status = "Pending",
+
+                Notes = appointment.Notes,
+
+                CreatedAt = DateTime.Now
+            };
+
+            _context.TechnicianSchedulePlans.Add(schedule);
 
             await _context.SaveChangesAsync();
 

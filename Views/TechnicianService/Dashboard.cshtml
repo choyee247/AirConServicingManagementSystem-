@@ -1,1008 +1,945 @@
-﻿@model AirConServicingManagementSystem.ViewsModels.TechnicianDashboardVM
-
-@{
+﻿@{
     ViewData["Title"] = "Technician Dashboard";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
-
-    var totalTasks = Model.AssignedCount + Model.PendingCount + Model.AcceptedCount + Model.CompletedCount;
-
-    var completionRate = totalTasks > 0
-        ? (Model.CompletedCount * 100 / totalTasks)
-        : 0;
 }
-
-@functions {
-    string StatusStyle(string status)
-    {
-        return status switch
-        {
-            "Pending" => "background-color:#ffc107;color:#000;",
-            "Assigned" => "background-color:#0dcaf0;color:#000;",
-            "Accepted" => "background-color:#0d6efd;color:#fff;",
-            "Completed" => "background-color:#198754;color:#fff;",
-            "Rejected" => "background-color:#dc3545;color:#fff;",
-            _ => "background-color:#6c757d;color:#fff;"
-        };
-    }
-}
-
-<div class="container-fluid dashboard-container">
-
-    <!-- HEADER -->
-    <div class="dashboard-header">
-
-        <div>
-            <h1 class="dashboard-title">
-                Technician Dashboard
-            </h1>
-
-            <p class="dashboard-subtitle">
-                Welcome to your service management panel
-            </p>
-        </div>
-
-        <div class="dashboard-date">
-            <div>@DateTime.Now.ToString("dd MMM yyyy")</div>
-            <div>@DateTime.Now.ToString("hh:mm tt")</div>
-        </div>
-
-    </div>
-
-    <!-- STATS -->
-    <div class="row g-3 mb-4">
-
-        <!-- Assigned -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="dashboard-card">
-
-                <div class="card-top">
-
-                    <div>
-                        <div class="card-label">
-                            Assigned
-                        </div>
-
-                        <div class="card-number">
-                            @Model.AssignedCount
-                        </div>
-
-                        <div class="card-text">
-                            Tasks waiting
-                        </div>
-                    </div>
-
-                    <div class="card-icon assigned-icon">
-
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#0dcaf0">
-                            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3Z" />
-                        </svg>
-
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Pending -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="dashboard-card">
-
-                <div class="card-top">
-
-                    <div>
-                        <div class="card-label">
-                            Pending
-                        </div>
-
-                        <div class="card-number">
-                            @Model.PendingCount
-                        </div>
-
-                        <div class="card-text">
-                            Awaiting action
-                        </div>
-                    </div>
-
-                    <div class="card-icon pending-icon">
-
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ffc107">
-                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22Z" />
-                        </svg>
-
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Accepted -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="dashboard-card">
-
-                <div class="card-top">
-
-                    <div>
-                        <div class="card-label">
-                            Accepted
-                        </div>
-
-                        <div class="card-number">
-                            @Model.AcceptedCount
-                        </div>
-
-                        <div class="card-text">
-                            In progress
-                        </div>
-                    </div>
-
-                    <div class="card-icon accepted-icon">
-
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#198754">
-                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7Z" />
-                        </svg>
-
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Completed -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="dashboard-card">
-
-                <div class="card-top">
-
-                    <div>
-                        <div class="card-label">
-                            Completed
-                        </div>
-
-                        <div class="card-number">
-                            @Model.CompletedCount
-                        </div>
-
-                        <div class="card-text">
-                            Finished tasks
-                        </div>
-                    </div>
-
-                    <div class="card-icon completed-icon">
-
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#0d6efd">
-                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7Z" />
-                        </svg>
-
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
-    <!-- PROGRESS + QUICK ACTION -->
-    <div class="row g-3 mb-4">
-
-        <!-- Progress -->
-        <div class="col-12 col-lg-8">
-
-            <div class="dashboard-card h-100">
-
-                <div class="section-title">
-                    Task Progress Summary
-                </div>
-
-                <div class="mb-3">
-
-                    <div class="d-flex justify-content-between mb-2">
-                        <small>Completion Rate</small>
-                        <small class="fw-bold">@completionRate%</small>
-                    </div>
-
-                    <div class="custom-progress">
-                        <div class="custom-progress-bar"
-                             style="width:@completionRate%">
-                        </div>
-                    </div>
-
-                </div>
-
-               @*  <div class="row g-3 mt-1">
-
-                    <!-- Assigned -->
-                    <div class="col-12 col-sm-6 col-xl-3">
-
-                        <div class="summary-card assigned-card">
-
-                            <div class="summary-card-body">
-
-                                <div>
-
-                                    <div class="summary-label">
-                                        Assigned
-                                    </div>
-
-                                    <div class="summary-subtext">
-                                        Waiting Tasks
-                                    </div>
-
-                                </div>
-
-                                <div class="summary-right">
-
-                                    <div class="summary-icon assigned-icon">
-
-                                        <svg width="22"
-                                             height="22"
-                                             viewBox="0 0 24 24"
-                                             fill="#0dcaf0">
-
-                                            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3Z" />
-
-                                        </svg>
-
-                                    </div>
-
-                                    <div class="summary-count">
-                                        @Model.AssignedCount
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- Pending -->
-                    <div class="col-12 col-sm-6 col-xl-3">
-
-                        <div class="summary-card pending-card">
-
-                            <div class="summary-card-body">
-
-                                <div>
-
-                                    <div class="summary-label">
-                                        Pending
-                                    </div>
-
-                                    <div class="summary-subtext">
-                                        Awaiting Action
-                                    </div>
-
-                                </div>
-
-                                <div class="summary-right">
-
-                                    <div class="summary-icon pending-icon">
-
-                                        <svg width="22"
-                                             height="22"
-                                             viewBox="0 0 24 24"
-                                             fill="#ffc107">
-
-                                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22Z" />
-
-                                        </svg>
-
-                                    </div>
-
-                                    <div class="summary-count">
-                                        @Model.PendingCount
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- Accepted -->
-                    <div class="col-12 col-sm-6 col-xl-3">
-
-                        <div class="summary-card accepted-card">
-
-                            <div class="summary-card-body">
-
-                                <div>
-
-                                    <div class="summary-label">
-                                        Accepted
-                                    </div>
-
-                                    <div class="summary-subtext">
-                                        In Progress
-                                    </div>
-
-                                </div>
-
-                                <div class="summary-right">
-
-                                    <div class="summary-icon accepted-icon">
-
-                                        <svg width="22"
-                                             height="22"
-                                             viewBox="0 0 24 24"
-                                             fill="#198754">
-
-                                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7Z" />
-
-                                        </svg>
-
-                                    </div>
-
-                                    <div class="summary-count">
-                                        @Model.AcceptedCount
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- Completed -->
-                    <div class="col-12 col-sm-6 col-xl-3">
-
-                        <div class="summary-card completed-card">
-
-                            <div class="summary-card-body">
-
-                                <div>
-
-                                    <div class="summary-label">
-                                        Completed
-                                    </div>
-
-                                    <div class="summary-subtext">
-                                        Finished Tasks
-                                    </div>
-
-                                </div>
-
-                                <div class="summary-right">
-
-                                    <div class="summary-icon completed-icon">
-
-                                        <svg width="22"
-                                             height="22"
-                                             viewBox="0 0 24 24"
-                                             fill="#0d6efd">
-
-                                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7Z" />
-
-                                        </svg>
-
-                                    </div>
-
-                                    <div class="summary-count">
-                                        @Model.CompletedCount
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div> *@
-
-
-            </div>
-
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="col-12 col-lg-4">
-
-            <div class="dashboard-card h-100">
-
-                <div class="section-title">
-                    Quick Actions
-                </div>
-
-                <div class="d-grid gap-3">
-
-                    <button class="btn custom-btn-outline">
-                        View Schedule
-                    </button>
-
-                    <button class="btn custom-btn-outline">
-                        Reports
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- RECENT TASKS -->
-    <div class="dashboard-card">
-
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-
-            <div class="section-title mb-0">
-                Recent Tasks
-            </div>
-
-            <a asp-controller="AdminService"
-               asp-action="Records"
-               class="view-all-link">
-                View All
-            </a>
-
-        </div>
-
-        <!-- MOBILE CARD VIEW -->
-        <div class="mobile-task-list d-block d-md-none">
-
-            @if (!Model.RecentServices.Any())
-            {
-                <div class="text-center text-muted py-4">
-                    No service requests
-                </div>
-            }
-            else
-            {
-                @foreach (var item in Model.RecentServices)
-                {
-                    <div class="task-mobile-card">
-
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-
-                            <div>
-                                <div class="fw-bold">
-                                    #AC-@item.ServiceId
-                                </div>
-
-                                <div class="small text-muted">
-                                    @item.Customer?.Name
-                                </div>
-                            </div>
-
-                            <span class="badge rounded-pill"
-                                  style="@StatusStyle(item?.Status ?? "")">
-                                @item.Status
-                            </span>
-
-                        </div>
-
-                        <div class="small text-muted mb-1">
-                            📍 @item.Customer?.Address
-                        </div>
-
-                        <div class="small">
-                            📅 @item.CreatedAt.ToString("dd MMM yyyy")
-                        </div>
-
-                    </div>
-                }
+@using System.Linq
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Technician Dashboard</title>
+    <!-- Font Awesome 6 (Free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f2f6fc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        /* ----- main container ----- */
+        .dashboard-wrap {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* ----- primary color #2c8c99 ----- */
+        .bg-primary-teal {
+            background: #2c8c99;
+        }
+
+        .text-primary-teal {
+            color: #2c8c99;
+        }
+
+        .border-teal {
+            border-color: #2c8c99;
+        }
+
+        /* ----- cards & shadows ----- */
+        .card-modern {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 1.5rem 1.25rem;
+            box-shadow: 0 8px 28px rgba(44, 140, 153, 0.08), 0 2px 8px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.25s ease;
+            border: 1px solid rgba(44, 140, 153, 0.08);
+            height: 100%;
+        }
+
+            .card-modern:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 16px 40px rgba(44, 140, 153, 0.12);
             }
 
-        </div>
-
-        <!-- DESKTOP TABLE -->
-        <div class="table-responsive d-none d-md-block">
-
-            <table class="table align-middle table-hover">
-
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Customer</th>
-                        <th>Location</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    @if (!Model.RecentServices.Any())
-                    {
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                No service requests
-                            </td>
-                        </tr>
-                    }
-                    else
-                    {
-                        @foreach (var item in Model.RecentServices)
-                        {
-                            <tr>
-
-                                <td>
-                                    #AC-@item.ServiceId
-                                </td>
-
-                                <td>
-                                    @item.Customer?.Name
-                                </td>
-
-                                <td>
-                                    @item.Customer?.Address
-                                </td>
-
-                                <td>
-                                    <span class="badge rounded-pill"
-                                          style="@StatusStyle(item.Status)">
-                                        @item.Status
-                                    </span>
-                                </td>
-
-                                <td>
-                                    @item.CreatedAt.ToString("dd MMM yyyy")
-                                </td>
-
-                            </tr>
-                        }
-                    }
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-</div>
-
-<style>
-
-    /* =========================
-           BODY
-        ========================== */
-
-    body {
-        background: #f4f7fb;
-        font-family: 'Segoe UI', sans-serif;
-        overflow-x: hidden;
-    }
-
-    /* =========================
-           CONTAINER
-        ========================== */
-
-    .dashboard-container {
-        padding: 20px;
-    }
-
-    /* =========================
-           HEADER
-        ========================== */
-
-    .dashboard-header {
-        background: #ffffff;
-        border-radius: 22px;
-        padding: 22px;
-        margin-bottom: 25px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    }
-
-    .dashboard-title {
-        font-size: 30px;
-        font-weight: 800;
-        margin-bottom: 6px;
-        color: #111827;
-    }
-
-    .dashboard-subtitle {
-        color: #6b7280;
-        margin-bottom: 0;
-        font-size: 14px;
-    }
-
-    .dashboard-date {
-        text-align: right;
-        color: #6b7280;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    /* =========================
-           CARD
-        ========================== */
-
-    .dashboard-card {
-        background: #ffffff;
-        border-radius: 22px;
-        padding: 20px;
-        border: 1px solid #eef2f7;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-
-        .dashboard-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        /* ----- header ----- */
+        .dashboard-header {
+            background: #ffffff;
+            border-radius: 32px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 18px rgba(44, 140, 153, 0.06);
+            border-left: 6px solid #2c8c99;
         }
 
-    /* =========================
-           TOP CARD
-        ========================== */
-
-    .card-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .card-label {
-        color: #6b7280;
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 6px;
-    }
-
-    .card-number {
-        font-size: 34px;
-        font-weight: 800;
-        line-height: 1;
-        color: #111827;
-    }
-
-    .card-text {
-        color: #9ca3af;
-        font-size: 13px;
-        margin-top: 6px;
-    }
-
-    /* =========================
-           ICON
-        ========================== */
-
-    .card-icon {
-        width: 58px;
-        height: 58px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .assigned-icon {
-        background: rgba(13,202,240,0.15);
-    }
-
-    .pending-icon {
-        background: rgba(255,193,7,0.18);
-    }
-
-    .accepted-icon {
-        background: rgba(25,135,84,0.15);
-    }
-
-    .completed-icon {
-        background: rgba(13,110,253,0.15);
-    }
-
-    /* =========================
-           SECTION TITLE
-        ========================== */
-
-    .section-title {
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 18px;
-        color: #111827;
-    }
-
-    /* =========================
-           PROGRESS BAR
-        ========================== */
-
-    .custom-progress {
-        height: 10px;
-        background: #e5e7eb;
-        border-radius: 20px;
-        overflow: hidden;
-    }
-
-    .custom-progress-bar {
-        height: 100%;
-        border-radius: 20px;
-        background: linear-gradient(to right, #0dcaf0, #0d6efd);
-    }
-
-    /* =========================
-           SUMMARY ITEM
-        ========================== */
-
-    .summary-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #f9fafb;
-        border: 1px solid #eef2f7;
-        padding: 15px;
-        border-radius: 16px;
-        transition: all 0.3s ease;
-        min-height: 82px;
-    }
-
-        .summary-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-        }
-
-    .summary-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .summary-color {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        flex-shrink: 0;
-    }
-
-    .assigned-bg {
-        background: #0dcaf0;
-    }
-
-    .pending-bg {
-        background: #ffc107;
-    }
-
-    .accepted-bg {
-        background: #198754;
-    }
-
-    .completed-bg {
-        background: #0d6efd;
-    }
-
-    .summary-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .summary-subtitle {
-        font-size: 12px;
-        color: #6b7280;
-        margin-top: 4px;
-    }
-
-    .summary-count {
-        font-size: 30px;
-        font-weight: 800;
-        color: #0d6efd;
-        min-width: 45px;
-        text-align: right;
-    }
-
-    /* =========================
-           BUTTON
-        ========================== */
-
-    .custom-btn-outline {
-        border-radius: 14px;
-        padding: 12px;
-        border: 1px solid #dbe3ec;
-        background: #ffffff;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-        .custom-btn-outline:hover {
-            background: #0d6efd;
-            color: white;
-            border-color: #0d6efd;
-        }
-
-    /* =========================
-           VIEW ALL
-        ========================== */
-
-    .view-all-link {
-        color: #0d6efd;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-        .view-all-link:hover {
-            text-decoration: underline;
-        }
-
-    /* =========================
-           TABLE
-        ========================== */
-
-    .table {
-        margin-bottom: 0;
-    }
-
-        .table th {
-            font-size: 13px;
-            color: #6b7280;
+        .header-title {
+            font-size: 2rem;
             font-weight: 700;
-            border-bottom: 2px solid #e5e7eb;
-            padding: 14px 10px;
+            letter-spacing: -0.3px;
+            color: #0f2b33;
         }
 
-        .table td {
-            font-size: 14px;
-            vertical-align: middle;
-            padding: 14px 10px;
-            border-bottom: 1px solid #f1f5f9;
+            .header-title i {
+                color: #2c8c99;
+                margin-right: 10px;
+            }
+
+        .header-sub {
+            color: #5d6f7e;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-top: 4px;
         }
 
-    /* =========================
-           BADGE
-        ========================== */
-
-    .badge {
-        padding: 7px 12px;
-        font-size: 11px;
-        font-weight: 600;
-        border-radius: 50px;
-    }
-
-    /* =========================
-           MOBILE TASK CARD
-        ========================== */
-
-    .task-mobile-card {
-        background: #ffffff;
-        border-radius: 18px;
-        padding: 16px;
-        margin-bottom: 15px;
-        border: 1px solid #eef2f7;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-    }
-
-    /* =========================
-           RESPONSIVE
-        ========================== */
-
-    @@media(max-width:992px) {
-
-        .dashboard-container {
-            padding: 16px;
+        .header-date {
+            text-align: right;
+            background: #f0f7fa;
+            padding: 0.6rem 1.4rem;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #1f4b54;
+            border: 1px solid #d7e8ed;
         }
 
-        .dashboard-title {
-            font-size: 27px;
+            .header-date i {
+                margin-right: 8px;
+                color: #2c8c99;
+            }
+
+        /* ----- stat cards ----- */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.8rem;
         }
 
-        .card-number {
-            font-size: 30px;
+        .stat-card {
+            background: #fff;
+            border-radius: 26px;
+            padding: 1.25rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 6px solid #2c8c99;
+            box-shadow: 0 4px 14px rgba(44, 140, 153, 0.06);
+            transition: 0.2s;
         }
 
-        .summary-count {
-            font-size: 28px;
+            .stat-card:hover {
+                background: #fafdff;
+                box-shadow: 0 8px 24px rgba(44, 140, 153, 0.10);
+            }
+
+        .stat-left .stat-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #5f7a88;
+            letter-spacing: 0.4px;
         }
-    }
 
-    @@media(max-width:768px) {
+        .stat-left .stat-number {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #0a2e38;
+            line-height: 1.2;
+        }
 
-        .dashboard-container {
+        .stat-left .stat-sub {
+            font-size: 0.75rem;
+            color: #889ea8;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(44, 140, 153, 0.10);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c8c99;
+            font-size: 1.8rem;
+        }
+
+        /* row: progress + quick */
+        .row-grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-wrapper {
+            margin-top: 0.5rem;
+        }
+
+        .progress-track {
+            background: #e7edf2;
+            border-radius: 40px;
+            height: 12px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #2c8c99, #47b5c4);
+            border-radius: 40px;
+            transition: width 0.4s;
+        }
+
+        .quick-btn {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 60px;
+            border: 1.5px solid #dce9ef;
+            background: white;
+            font-weight: 600;
+            color: #1f4b54;
+            transition: 0.2s;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+            .quick-btn i {
+                margin-right: 10px;
+                color: #2c8c99;
+            }
+
+            .quick-btn:hover {
+                background: #2c8c99;
+                color: white;
+                border-color: #2c8c99;
+            }
+
+                .quick-btn:hover i {
+                    color: white;
+                }
+
+        /* ----- sections (reminder, appointment, complaint, feedback) ----- */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #12343e;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+            .section-title i {
+                color: #2c8c99;
+                font-size: 1.2rem;
+            }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .reminder-item, .appointment-item, .complaint-item, .feedback-item {
+            background: #f8fbfd;
+            border-radius: 18px;
+            padding: 0.9rem 1rem;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid #2c8c99;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+            .reminder-item .badge-priority {
+                background: #f1c40f;
+                padding: 0.2rem 0.8rem;
+                border-radius: 30px;
+                font-size: 0.7rem;
+                font-weight: 700;
+                color: #1e2a32;
+            }
+
+        .badge-high {
+            background: #e67e22;
+            color: white;
+        }
+
+        .badge-low {
+            background: #3498db;
+            color: white;
+        }
+
+        .appointment-item .appt-time {
+            font-weight: 600;
+            color: #2c8c99;
+        }
+
+        .complaint-item .complaint-status {
+            padding: 0.2rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: #eef2f5;
+        }
+
+        .status-new {
+            background: #e67e22;
+            color: white;
+        }
+
+        .status-progress {
+            background: #2980b9;
+            color: white;
+        }
+
+        .status-resolved {
+            background: #27ae60;
+            color: white;
+        }
+
+        .feedback-item .stars {
+            color: #f1c40f;
+            letter-spacing: 2px;
+        }
+
+        .schedule-header {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .task-badge {
+            background: #2c8c99;
+            color: white;
+            padding: 0.2rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .daily-job-list {
+            margin-top: 0.8rem;
+        }
+
+        .daily-job-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+
+        .job-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .job-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .job-title {
+            font-weight: 600;
+            color: #1f2e3a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .job-meta {
+            font-size: 0.75rem;
+            display: flex;
+            gap: 8px;
+            color: #666;
+        }
+
+        .job-time {
+            font-weight: 600;
+            color: #2c8c99;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            color: #888;
+            padding: 12px;
+            text-align: center;
+        }
+
+        /* 📱 MOBILE RESPONSIVE */
+        @@media (max-width:768px) {
+            .daily-job-item
+
+        {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .job-time {
+            margin-left: auto;
+            font-size: 0.85rem;
+        }
+
+        .job-title {
+            max-width: 100%;
+            white-space: normal;
+        }
+
+        }
+
+        /* table */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+            .table-custom th {
+                background: #f0f7fa;
+                color: #1f4b54;
+                font-weight: 600;
+                padding: 0.9rem 0.8rem;
+                border-bottom: 2px solid #d7e8ed;
+            }
+
+            .table-custom td {
+                padding: 0.8rem;
+                border-bottom: 1px solid #eaf0f4;
+            }
+
+        .badge-status {
+            padding: 0.25rem 1rem;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #eef2f5;
+        }
+
+        .badge-assigned {
+            background: #d7eef3;
+            color: #0e5a66;
+        }
+
+        .badge-pending {
+            background: #fef3d7;
+            color: #8a6d0b;
+        }
+
+        .badge-accepted {
+            background: #d4edda;
+            color: #0f6b3a;
+        }
+
+        .badge-completed {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        /* ----- mobile responsive ----- */
+        @@media (max-width: 992px) {
+            .stat-grid
+
+        {
+            grid-template-columns: repeat(2,1fr);
+        }
+
+        .row-grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-2col {
+            grid-template-columns: 1fr;
+        }
+
+        }
+        @@media (max-width: 600px) {
+            body
+
+        {
             padding: 12px;
         }
 
         .dashboard-header {
-            padding: 18px;
-            border-radius: 18px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.8rem;
         }
 
-        .dashboard-title {
-            font-size: 24px;
-        }
-
-        .dashboard-subtitle {
-            font-size: 13px;
-        }
-
-        .dashboard-date {
+        .header-date {
             text-align: left;
-            font-size: 13px;
+            width: 100%;
         }
 
-        .dashboard-card {
-            padding: 16px;
-            border-radius: 18px;
+        .stat-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
         }
 
-        .card-number {
-            font-size: 28px;
+        .stat-left .stat-number {
+            font-size: 1.8rem;
         }
 
-        .card-icon {
-            width: 50px;
-            height: 50px;
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 1.4rem;
+        }
+
+        .card-modern {
+            padding: 1rem;
         }
 
         .section-title {
-            font-size: 16px;
+            font-size: 1rem;
         }
 
-        .summary-item {
-            padding: 13px;
-            min-height: 76px;
+        }
+        @@media (max-width: 420px) {
+            .stat-grid
+
+        {
+            grid-template-columns: 1fr;
         }
 
-        .summary-count {
-            font-size: 25px;
         }
 
-        .custom-btn-outline {
-            font-size: 14px;
-        }
-
-        .table td,
-        .table th {
+        /* scroll */
+        .scroll-hint {
+            overflow-x: auto;
             white-space: nowrap;
-        }
-    }
-
-    @@media(max-width:576px) {
-
-        .dashboard-title {
-            font-size: 22px;
+            padding-bottom: 4px;
         }
 
-        .dashboard-card {
-            padding: 14px;
+        .fw-600 {
+            font-weight: 600;
         }
 
-        .card-number {
-            font-size: 24px;
+        .gap-1 {
+            gap: 0.5rem;
         }
 
-        .card-icon {
-            width: 44px;
-            height: 44px;
+        .mt-2 {
+            margin-top: 1rem;
         }
 
-        .summary-item {
-            padding: 12px;
+        .mb-1 {
+            margin-bottom: 0.5rem;
         }
 
-        .summary-title {
-            font-size: 14px;
+        .flex {
+            display: flex;
+            align-items: center;
         }
 
-        .summary-subtitle {
-            font-size: 11px;
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrap">
 
-        .summary-count {
-            font-size: 22px;
-        }
+        <!-- HEADER -->
+        <div class="dashboard-header">
 
-        .task-mobile-card {
-            padding: 14px;
-        }
-    }
+            <div>
+                <div class="header-title">
+                    <i class="fas fa-user-cog"></i> Technician Panel
+                </div>
 
-</style>
+                <div class="header-sub">
+                    <i class="fas fa-calendar-check" style="color:#2c8c99;"></i>
+                    Welcome back, <strong>@Model.TechnicianName</strong> · Today's schedule
+                </div>
+            </div>
+
+            <div class="header-date">
+                <i class="fas fa-calendar-alt"></i>
+                @Model.CurrentDateTime.ToString("dd MMM yyyy")
+                · <i class="far fa-clock"></i>
+                @Model.CurrentDateTime.ToString("hh:mm tt")
+            </div>
+
+        </div>
+
+        <!-- STATS: Assigned, Pending, Accepted, Completed -->
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-left">
+                    <div class="stat-label"><i class="fas fa-tasks" style="color:#2c8c99;"></i> Assigned</div>
+                    <div class="stat-number">@Model.AssignedCount</div>
+                    <div class="stat-sub">waiting</div>
+                </div>
+                <div class="stat-icon"><i class="fas fa-inbox"></i></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #f1c40f;">
+                <div class="stat-left">
+                    <div class="stat-label"><i class="fas fa-hourglass-half" style="color:#f1c40f;"></i> Pending</div>
+                    <div class="stat-number">@Model.PendingCount</div>
+                    <div class="stat-sub">awaiting action</div>
+                </div>
+                <div class="stat-icon" style="background:rgba(241,196,15,0.12); color:#d4a017;"><i class="fas fa-clock"></i></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #27ae60;">
+                <div class="stat-left">
+                    <div class="stat-label"><i class="fas fa-spinner" style="color:#27ae60;"></i> In Progress</div>
+                    <div class="stat-number">@Model.InProgressCount</div>
+                    <div class="stat-sub">accepted</div>
+                </div>
+                <div class="stat-icon" style="background:rgba(39,174,96,0.10); color:#1e8449;"><i class="fas fa-sync-alt fa-fw"></i></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #2980b9;">
+                <div class="stat-left">
+                    <div class="stat-label"><i class="fas fa-check-circle" style="color:#2980b9;"></i> Completed</div>
+                    <div class="stat-number">@Model.CompletedCount</div>
+                    <div class="stat-sub">finished</div>
+                </div>
+                <div class="stat-icon" style="background:rgba(41,128,185,0.10); color:#1f618d;"><i class="fas fa-check-double"></i></div>
+            </div>
+        </div>
+
+        <!-- PROGRESS + QUICK ACTIONS -->
+        <div class="row-grid-2">
+            <div class="card-modern">
+
+                <div class="section-title">
+                    <i class="fas fa-chart-line"></i> Completion Rate
+                </div>
+
+                <div class="progress-wrapper">
+
+                    <!-- Percentage -->
+                    <div class="flex-between">
+                        <span>Overall progress</span>
+
+                        <span class="fw-600" style="color:#2c8c99;">
+                            @Math.Round(Model.CompletionRate, 0)%
+                        </span>
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="progress-track">
+                        <div class="progress-fill"
+                             style="width:@Model.CompletionRate%;">
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div style="display:flex; justify-content:space-between; margin-top:14px; font-size:0.85rem; color:#3d6673;">
+
+                        <span>
+                            <i class="fas fa-check-circle" style="color:#27ae60;"></i>
+                            @Model.CompletedCount done
+                        </span>
+
+                        <span>
+                            <i class="fas fa-hourglass-half" style="color:#f1c40f;"></i>
+                            @Model.PendingCount pending
+                        </span>
+
+                        <span>
+                            <i class="fas fa-tasks" style="color:#2c8c99;"></i>
+                            @Model.TotalCount total
+                        </span>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-modern">
+                <div class="section-title"><i class="fas fa-bolt"></i> Quick Actions</div>
+                <a href="/TechnicianService/MySchedule" class="quick-btn">
+                    <i class="fas fa-calendar-alt"></i> View Schedule
+                </a>
+                @* <button class="quick-btn"><i class="fas fa-calendar-alt"></i> View Schedule</button> *@
+                @* <button class="quick-btn"><i class="fas fa-file-alt"></i> Reports</button> *@
+                <button class="quick-btn">
+                    <i class="fas fa-bell"></i> Reminders
+
+                    <span style="
+                    background:#2c8c99;
+                    color:white;
+                    padding:0.1rem 0.8rem;
+                    border-radius:30px;
+                    font-size:0.7rem;">
+                        @Model.ReminderCount
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2-col: Reminder + Appointments -->
+        <div class="grid-2col">
+            <!-- Service Reminder & Next Service Alert -->
+            <div class="card-modern">
+
+                <div class="section-title">
+                    <i class="fas fa-clock"></i> Service Reminders
+                </div>
+
+                @if (Model?.ServiceReminders != null && Model.ServiceReminders.Count > 0)
+                {
+                    @foreach (var item in Model.ServiceReminders)
+                    {
+                        <div class="reminder-item mb-2">
+
+                            <div>
+                                <span>
+                                    <i class="fas fa-user" style="color:#2c8c99;"></i>
+                                    @(item.Customer?.Name ?? "Unknown Customer")
+                                    ·
+                                    @(item.ReminderType ?? "Reminder")
+                                </span>
+
+                                <span class="badge-priority ms-2">
+                                    @(item.ReminderDate?.ToString("dd MMM yyyy") ?? "-")
+                                </span>
+                            </div>
+
+                            <form asp-action="HandleReminder"
+                                  method="post"
+                                  class="mt-2">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       name="id"
+                                       value="@item.Id" />
+
+                                <button type="submit"
+                                        name="action"
+                                        value="Done"
+                                        class="btn btn-success btn-sm">
+                                    <i class="fas fa-check"></i> Done
+                                </button>
+
+                                <button type="submit"
+                                        name="action"
+                                        value="Reassign"
+                                        class="btn btn-warning btn-sm">
+                                    <i class="fas fa-redo"></i> Reassign
+                                </button>
+
+                            </form>
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-bell-slash"></i>
+                        No service reminders available.
+                    </div>
+                }
+
+            </div>
+
+            <!-- Appointment Schedule -->
+            <div class="card-modern">
+
+                <div class="section-title">
+                    <i class="fas fa-map-pin"></i> Appointments
+                </div>
+
+                @foreach (var item in Model.RecentAppointments)
+                {
+                    <div class="appointment-item">
+
+                        <span>
+                            <i class="fas fa-user" style="color:#2c8c99;"></i>
+
+                            @item.Customer?.Name
+
+                            · @item.ScheduledDate.ToString("hh:mm tt")
+                        </span>
+
+                        <span class="appt-time">
+                            <i class="fas fa-map-marker-alt"></i>
+
+                            @item.Location
+                        </span>
+
+                    </div>
+                }
+
+            </div>
+        </div>
+        <!-- Daily Jobs + Recent Tasks Table -->
+        <div class="card-modern" style="margin-bottom:1.8rem;">
+
+            <div class="flex-between schedule-header">
+                <div class="section-title">
+                    <i class="fas fa-tasks"></i> Daily Jobs · Today
+                </div>
+
+                <span class="task-badge">
+                    @(Model.TodayJobs?.Count ?? 0) tasks
+                </span>
+            </div>
+
+            <div class="daily-job-list">
+
+                @if (Model?.TodayJobs != null && Model.TodayJobs.Count > 0)
+                {
+                    foreach (var item in Model.TodayJobs)
+                    {
+                        <div class="daily-job-item">
+
+                            <div class="job-main">
+                                <i class="fas fa-user-circle"></i>
+
+                                <div class="job-text">
+                                    <div class="job-title">
+                                        @(item.Customer?.Name ?? "Unknown") · @item.Title
+                                    </div>
+
+                                    <div class="job-meta">
+                                        <span class="job-type">@item.PlanType</span>
+                                        <span class="job-priority" style="color:@(item.Priority=="High"?"#e74c3c":"#2c8c99")">
+                                            @item.Priority
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="job-time">
+                                @item.PlannedDate.ToString("HH:mm")
+                            </div>
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state">
+                        No jobs for today
+                    </div>
+                }
+
+            </div>
+        </div>
+        <!-- Complaints + Feedback row -->
+        <div class="grid-2col">
+            <!-- Complaints -->
+            <div class="card-modern">
+                <div class="section-title"><i class="fas fa-exclamation-circle"></i> Complaints <span style="font-size:0.7rem; background:#2c8c99; color:white; padding:0.1rem 1rem; border-radius:30px;">2 new</span></div>
+                <div class="complaint-item"><span><i class="fas fa-file-signature"></i> AC not cooling (Aung)</span> <span class="complaint-status status-new">New</span></div>
+                <div class="complaint-item"><span><i class="fas fa-file-signature"></i> Water leakage (Myint)</span> <span class="complaint-status status-progress">In Progress</span></div>
+                <div class="complaint-item"><span><i class="fas fa-file-signature"></i> Noise issue (Yu Yu)</span> <span class="complaint-status status-resolved">Resolved</span></div>
+                <div style="margin-top:10px; font-size:0.8rem; color:#2c8c99;"><i class="fas fa-arrow-right"></i> 2 resolved this week</div>
+            </div>
+
+            <!-- Feedback -->
+            <div class="card-modern">
+                <div class="section-title"><i class="fas fa-star"></i> Feedback & Ratings <span style="font-size:0.8rem; background:#2c8c99; color:white; padding:0.1rem 1.2rem; border-radius:30px;">4.6 ★</span></div>
+                <div class="feedback-item"><span><i class="fas fa-user-circle"></i> Hla Hla</span> <span class="stars">★★★★★</span> <span style="color:#5f7a88; font-size:0.75rem;">“great service”</span></div>
+                <div class="feedback-item"><span><i class="fas fa-user-circle"></i> Than Than</span> <span class="stars">★★★★☆</span> <span style="color:#5f7a88; font-size:0.75rem;">“on time”</span></div>
+                <div class="feedback-item"><span><i class="fas fa-user-circle"></i> Min Min</span> <span class="stars">★★★★★</span> <span style="color:#5f7a88; font-size:0.75rem;">“very professional”</span></div>
+                <div style="margin-top:12px; background:#f0f7fa; border-radius:40px; padding:0.4rem 1rem; display:inline-block; font-weight:600; color:#1f4b54;"><i class="fas fa-thumbs-up" style="color:#2c8c99;"></i> 12 total feedback</div>
+            </div>
+        </div>
+
+        
+
+        <!-- Recent Tasks Table (Desktop) + mobile friendly -->
+        <div class="card-modern">
+            <div class="flex-between" style="flex-wrap:wrap; gap:0.5rem;">
+                <div class="section-title" style="margin-bottom:0;"><i class="fas fa-history"></i> Recent Tasks</div>
+                <a href="#" style="color:#2c8c99; font-weight:600; text-decoration:none;"><i class="fas fa-arrow-right"></i> View all</a>
+            </div>
+            <div class="table-wrap">
+                <table class="table-custom">
+                    <thead><tr><th>ID</th><th>Customer</th><th>Location</th><th>Status</th><th>Date</th></tr></thead>
+                    <tbody>
+                        @if ((Model.RecentTasks?.Count ?? 0) > 0)
+                        {
+                            foreach (var item in Model.RecentTasks)
+                            {
+                                <tr>
+                                    <td><strong>#AC-@item.ServiceId</strong></td>
+
+                                    <td>@item.Customer?.Name</td>
+
+                                    <td>@item.Location</td>
+
+                                    <td>
+                                        <span class="badge-status
+                        @(item.Status=="Assigned" ? "badge-assigned" :
+                          item.Status=="Pending" ? "badge-pending" :
+                          item.Status=="In Progress" ? "badge-accepted" :
+                          "badge-completed")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @item.CreatedAt.ToString("dd MMM yyyy")
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    No recent tasks found
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- mobile card hint -->
+           @*  <div style="margin-top:0.8rem; font-size:0.8rem; color:#5f7a88; display:flex; gap:1.2rem; flex-wrap:wrap;">
+                <span>
+                    Assigned:
+                    @(Model.RecentTasks?.Count(x => x.Status == "Assigned") ?? 0)
+                </span>
+
+                <span>
+                    Pending:
+                    @(Model.RecentTasks?.Count(x => x.Status == "Pending") ?? 0)
+                </span>
+
+                <span>
+                    Completed:
+                    @(Model.RecentTasks?.Count(x => x.Status == "Completed") ?? 0)
+                </span>
+            </div> *@
+        </div>
+
+        <!-- Footer note: ModernUI with #2c8c99 -->
+        <div style="margin-top: 2rem; text-align: center; font-size:0.8rem; color:#6f8e9b; border-top:1px solid #dce9ef; padding-top:1.5rem;">
+            <i class="fas fa-circle" style="color:#2c8c99; font-size:0.5rem;"></i> Technician Dashboard
+        </div>
+
+    </div>
+</body>
+</html>
+<script>
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById("liveTime").innerText =
+            now.toLocaleTimeString();
+    }, 1000);
+</script>

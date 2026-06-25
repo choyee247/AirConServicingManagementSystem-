@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "ReAppointment";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+
+    var serviceRecord = ViewBag.ServiceRecord
+        as AirConServicingManagementSystem.Models.ServiceRecord;
+}
+
+<div class="container py-4">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header text-white"
+             style="background:#2c8c99;">
+            <h4 class="mb-0">ReAppointment</h4>
+        </div>
+
+        <div class="card-body">
+
+            <!-- OLD INFO -->
+            <div class="mb-3">
+                <label>Customer</label>
+                <input class="form-control"
+                       value="@serviceRecord?.Customer?.Name"
+                       readonly />
+            </div>
+
+            <div class="mb-3">
+                <label>Phone</label>
+                <input class="form-control"
+                       value="@serviceRecord?.Customer?.Phone"
+                       readonly />
+            </div>
+
+            <hr />
+
+            <!-- NEW APPOINTMENT -->
+            <form asp-action="Create" asp-controller="ReAppointment" method="post">
+
+                <input type="hidden" name="serviceRecordId" value="@serviceRecord.Id" />
+
+                <div class="mb-3">
+                    <label>Scheduled Date</label>
+                    <input type="datetime-local"
+                           name="scheduledDate"
+                           class="form-control"
+                           required />
+                </div>
+
+                <div class="mb-3">
+                    <label>Location</label>
+                    <input type="text"
+                           name="location"
+                           class="form-control"
+                           required />
+                </div>
+
+                <div class="mb-3">
+                    <label>Notes</label>
+                    <textarea name="notes"
+                              class="form-control"></textarea>
+                </div>
+
+                <button class="btn text-white w-100"
+                        style="background:#2c8c99;">
+                    Create ReAppointment
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

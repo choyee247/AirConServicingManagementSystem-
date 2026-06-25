@@ -31,6 +31,8 @@ public partial class ServiceReminder
     [Column(TypeName = "datetime")]
     public DateTime? DeletedAt { get; set; }
 
+    public int? ServiceRequestId { get; set; }
+
     [ForeignKey("AirConUnitId")]
     [InverseProperty("ServiceReminders")]
     public virtual AirConUnit AirConUnit { get; set; } = null!;
@@ -38,4 +40,8 @@ public partial class ServiceReminder
     [ForeignKey("CustomerId")]
     [InverseProperty("ServiceReminders")]
     public virtual Customer Customer { get; set; } = null!;
+
+    [ForeignKey("ServiceRequestId")]
+    [InverseProperty("ServiceReminders")]
+    public virtual ServiceRequest? ServiceRequest { get; set; }
 }

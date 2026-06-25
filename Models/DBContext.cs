@@ -120,6 +120,8 @@ public partial class DBContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Appointments_Customers");
 
+            entity.HasOne(d => d.ParentAppointment).WithMany(p => p.InverseParentAppointment).HasConstraintName("FK_Appointments_ParentAppointment");
+
             entity.HasOne(d => d.Technician).WithMany(p => p.Appointments).HasConstraintName("FK_Appointments_Technicians");
         });
 
@@ -258,6 +260,8 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.Customer).WithMany(p => p.ServiceReminders)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ServiceRe__Custo__60A75C0F");
+
+            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.ServiceReminders).HasConstraintName("FK_ServiceReminders_ServiceRequests");
         });
 
         modelBuilder.Entity<ServiceRequest>(entity =>

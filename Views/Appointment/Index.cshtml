@@ -103,7 +103,14 @@
 
                                 <!-- ACTIONS -->
                                 <td class="d-flex gap-1">
-
+                                    @if (item.IsReAppointment)
+                                    {
+                                        <div class="mb-1">
+                                            <span class="badge" style="background:#2c8c99;">
+                                                🔁 ReAppointment
+                                            </span>
+                                        </div>
+                                    }
                                     <!-- Assign Technician -->
                                     @if (item.Status == "Pending")
                                     {

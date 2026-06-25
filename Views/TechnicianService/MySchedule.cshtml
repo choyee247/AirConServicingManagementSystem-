@@ -1,0 +1,233 @@
+﻿@using AirConServicingManagementSystem.ViewsModels
+@model MyScheduleVM
+
+@{
+    ViewData["Title"] = "My Schedule";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<style>
+    :root {
+        --main: #2c8c99;
+        --soft: #eaf4f7;
+        --dark: #1e4b54;
+    }
+
+    .schedule-header {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        border-left: 5px solid var(--main);
+        transition: 0.2s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card h6 {
+            margin: 0;
+            color: #6c7e97;
+            font-size: 13px;
+        }
+
+        .stat-card h3 {
+            margin: 6px 0 0;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+    .table-modern {
+        width: 100%;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+        .table-modern thead {
+            background: var(--main);
+            color: white;
+        }
+
+        .table-modern th {
+            padding: 14px;
+            font-size: 13px;
+        }
+
+        .table-modern td {
+            padding: 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+        }
+
+    .badge-modern {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        color: white;
+        display: inline-block;
+    }
+
+    .btn-modern {
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        border: none;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-start {
+        background: var(--main);
+        color: white;
+    }
+
+    .btn-view {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-cont {
+        background: #f39c12;
+        color: white;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 30px;
+        color: #777;
+    }
+</style>
+
+<!-- HEADER STATS -->
+<div class="schedule-header">
+
+    <div class="stat-card">
+        <h6>Today</h6>
+        <h3>@Model.TodayCount</h3>
+    </div>
+
+    <div class="stat-card">
+        <h6>Upcoming</h6>
+        <h3>@Model.UpcomingCount</h3>
+    </div>
+
+    <div class="stat-card">
+        <h6>High Priority</h6>
+        <h3>@Model.HighPriorityCount</h3>
+    </div>
+
+    <div class="stat-card">
+        <h6>Completed</h6>
+        <h3>@Model.CompletedCount</h3>
+    </div>
+
+</div>
+
+<!-- TABLE -->
+<div class="table-modern">
+
+    <table style="width:100%; border-collapse: collapse;">
+
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Customer</th>
+                <th>Title</th>
+                <th>Location</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @if (Model.Plans == null || !Model.Plans.Any())
+            {
+                <tr>
+                    <td colspan="7" class="empty-box">
+                        No schedules found
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model.Plans)
+                {
+                    <tr>
+
+                        <td>@item.PlannedDate.ToString("dd MMM · HH:mm")</td>
+
+                        <td>@(item.CustomerName ?? item.Customer?.Name ?? "N/A")</td>
+
+                        <td>@(item.Title ?? "-")</td>
+
+                        <td>@(item.Location ?? "-")</td>
+
+                        <td>
+                            <span class="badge-modern"
+                                  style="background:
+                              @(item.Priority?.ToLower() == "high" ? "#e74c3c" :
+                                item.Priority?.ToLower() == "medium" ? "#f1c40f" :
+                                "#95a5a6")">
+                                @item.Priority
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge-modern"
+                                  style="background:
+                              @(item.Status == "Completed" ? "#27ae60" :
+                                item.Status == "In Progress" ? "#2c8c99" :
+                                "#f39c12")">
+                                @item.Status
+                            </span>
+                        </td>
+
+                        <td>
+
+                            @if (item.Status == "Pending")
+                            {
+                                <a asp-action="Start"
+                                   asp-route-id="@item.PlanId"
+                                   class="btn-modern btn-start">
+                                    Start
+                                </a>
+                            }
+
+                            @if (item.Status == "In Progress")
+                            {
+                                <a asp-action="Continue"
+                                   asp-route-id="@item.PlanId"
+                                   class="btn-modern btn-cont">
+                                    Continue
+                                </a>
+                            }
+
+                            <a asp-action="Details"
+                               asp-route-id="@item.PlanId"
+                               class="btn-modern btn-view">
+                                View
+                            </a>
+
+                        </td>
+
+                    </tr>
+                }
+            }
+
+        </tbody>
+
+    </table>
+
+</div>

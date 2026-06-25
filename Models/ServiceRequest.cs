@@ -73,6 +73,9 @@ public partial class ServiceRequest
     [InverseProperty("ServiceRequest")]
     public virtual ICollection<ServiceRecord> ServiceRecords { get; set; } = new List<ServiceRecord>();
 
+    [InverseProperty("ServiceRequest")]
+    public virtual ICollection<ServiceReminder> ServiceReminders { get; set; } = new List<ServiceReminder>();
+
     [ForeignKey("TechnicianId")]
     [InverseProperty("ServiceRequests")]
     public virtual Technician? Technician { get; set; }

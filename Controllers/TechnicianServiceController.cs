@@ -19,31 +19,79 @@ public class TechnicianServiceController : Controller
     public async Task<IActionResult> Dashboard()
     {
         int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
+
         if (techId == 0)
             return RedirectToAction("Login", "TechnicianAuth");
 
+        var technician = await _context.Technicians
+            .FirstOrDefaultAsync(x => x.TechnicianId == techId);
+
+        var appointments = await _context.Appointments
+            .Include(a => a.Customer)
+            .Include(a => a.Technician)
+            .Where(a => a.TechnicianId == techId || a.TechnicianId == null)
+            .OrderByDescending(a => a.ScheduledDate)
+            .Take(3)
+            .ToListAsync();
+
+        var reminders = await _context.ServiceReminders
+             .Include(r => r.Customer)
+             .Include(r => r.AirConUnit)
+             .Where(r => r.IsDeleted == false && r.SentStatus == false)
+             .OrderBy(r => r.ReminderDate)
+             .Take(3)
+             .ToListAsync();
+
+        var recentTasks = await _context.ServiceRequests
+            .Include(x => x.Customer)
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(3)
+            .ToListAsync();
+
+        var today = DateTime.Today;
+
+        var todayJobs = await _context.TechnicianSchedulePlans
+            .Include(x => x.Customer)
+            .Where(x =>
+                x.TechnicianId == techId &&
+                x.PlannedDate.Date == today)
+            .OrderBy(x => x.PlannedDate)
+            .ToListAsync();
+
         var dashboard = new TechnicianDashboardVM
         {
+            TechnicianName = technician?.Name ?? "Technician",
+
+            CurrentDateTime = DateTime.Now,
+
             AssignedCount = await _context.ServiceRequests
-                .CountAsync(s => s.TechnicianId == techId && s.Status == ServiceStatus.Assigned),
+                .CountAsync(s => s.TechnicianId == techId && s.Status == "Assigned"),
 
             PendingCount = await _context.ServiceRequests
-                .CountAsync(s => s.Status == ServiceStatus.Pending),
+                .CountAsync(s => s.TechnicianId == techId && s.Status == "Pending"),
 
-            AcceptedCount = await _context.ServiceRequests
-                .CountAsync(s => s.TechnicianId == techId && s.Status == ServiceStatus.Accepted),
+            InProgressCount = await _context.ServiceRequests
+                .CountAsync(s => s.TechnicianId == techId && s.Status == "In Progress"),
 
             CompletedCount = await _context.ServiceRequests
-                .CountAsync(s => s.TechnicianId == techId && s.Status == ServiceStatus.Completed),
+                .CountAsync(s => s.TechnicianId == techId && s.Status == "Completed"),
 
-            RecentServices = await _context.ServiceRequests
-                .Include(s => s.Customer)
-                .Where(s =>
-                    s.Status == ServiceStatus.Pending ||        // Pending (TechnicianId = NULL)
-                    s.TechnicianId == techId)                  // Technician jobs
-                .OrderByDescending(x => x.CreatedAt)
-                .Take(5)
-                .ToListAsync()
+            RecentAppointments = appointments,
+
+            //RecentServices = await _context.ServiceRequests
+            //    .Include(s => s.Customer)
+            //    .Where(s => s.TechnicianId == techId)
+            //    .OrderByDescending(x => x.CreatedAt)
+            //    .Take(5)
+            //    .ToListAsync(),
+
+            TodayJobs = todayJobs,
+
+            ReminderCount = reminders.Count,
+
+            ServiceReminders = reminders,
+
+            RecentTasks = recentTasks ?? new List<ServiceRequest>()
         };
 
         return View(dashboard);
@@ -270,7 +318,8 @@ public class TechnicianServiceController : Controller
             ? string.Join(", ", model.ServiceTypeList)
             : "";
 
-        record.NextServiceDue = model.NextServiceDue ?? nextServiceDate;
+        //record.NextServiceDue = model.NextServiceDue ?? nextServiceDate;
+        record.NextServiceDue = nextServiceDate;
         record.UpdatedAt = DateTime.Now;
 
         // =========================
@@ -288,17 +337,146 @@ public class TechnicianServiceController : Controller
         if (appointment != null)
         {
             appointment.Status = "Completed";
-        }   
+        }
+
+        var schedule = await _context.TechnicianSchedulePlans
+        .Where(x =>
+            x.TechnicianId == techId &&
+            x.CustomerId == service.CustomerId)
+        .OrderByDescending(x => x.PlanId)
+        .FirstOrDefaultAsync();
+
+        if (schedule != null)
+        {
+            schedule.Status = "Completed";
+        }
         // =========================
         // 5. SAVE ALL
         // =========================
+        CreateServiceReminder(service, model.ACCondition);
+
         await _context.SaveChangesAsync();
 
         TempData["Success"] = "Service Completed Successfully";
 
         return RedirectToAction("Records", "AdminService");
     }
+    private void CreateServiceReminder(ServiceRequest service, string acCondition)
+    {
+        int months = acCondition switch
+        {
+            "Good" => 6,
+            "Normal" => 3,
+            "Bad" => 1,
+            _ => 3
+        };
 
+        var reminder = new ServiceReminder
+        {
+            CustomerId = service.CustomerId,
+            AirConUnitId = service.AirConId.Value,
+            ServiceRequestId = service.ServiceId,
+
+            ReminderType = "Next", // 🔥 shorten (safe for DB)
+            ReminderDate = DateTime.Now.AddMonths(months),
+
+            SentStatus = false,
+            CreatedAt = DateTime.Now,
+            IsDeleted = false
+        };
+
+        _context.ServiceReminders.Add(reminder);
+    }
+    [HttpPost]
+    public async Task<IActionResult> HandleReminder(int id, string action)
+    {
+        var reminder = await _context.ServiceReminders
+            .Include(x => x.AirConUnit)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (reminder == null)
+            return NotFound();
+
+        if (action == "Done")
+        {
+            reminder.SentStatus = true;
+            reminder.IsDeleted = true;
+        }
+        else if (action == "ReAssign")
+        {
+            reminder.IsDeleted = true;
+
+            // 1. Create NEW Service Request
+            var service = new ServiceRequest
+            {
+                CustomerId = reminder.CustomerId,
+                AirConId = reminder.AirConUnitId,
+                Status = "Assigned",
+                CreatedAt = DateTime.Now
+            };
+
+            _context.ServiceRequests.Add(service);
+
+            // 2. CREATE NEW SCHEDULE (IMPORTANT)
+            var schedule = new TechnicianSchedulePlan
+            {
+                TechnicianId = 0, // later assign or choose technician
+
+                CustomerId = reminder.CustomerId,
+                CustomerName = reminder.Customer?.Name,
+
+                Title = "Reminder Service",
+                PlanType = "Reminder",
+
+                PlannedDate = DateTime.Now.AddDays(1),
+
+                Priority = "High",
+                Status = "Pending",
+
+                Location = reminder.Customer?.Address ?? "N/A",
+
+                CreatedAt = DateTime.Now
+            };
+
+            _context.TechnicianSchedulePlans.Add(schedule);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Dashboard");
+    }
+
+    public async Task<IActionResult> MySchedule()
+    {
+        int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
+
+        if (techId == 0)
+            return RedirectToAction("Login", "TechnicianAuth");
+
+        var today = DateTime.Today;
+
+        var plans = await _context.TechnicianSchedulePlans
+            .Include(p => p.Customer)
+            .Include(p => p.ServiceRequest)
+            .Where(p => p.TechnicianId == techId)
+            .OrderBy(p => p.PlannedDate)
+            .ToListAsync();
+
+        var vm = new MyScheduleVM
+        {
+            Plans = plans ?? new List<TechnicianSchedulePlan>(),
+
+            TodayCount = plans.Count(x => x.PlannedDate.Date == today),
+            UpcomingCount = plans.Count(x => x.PlannedDate > today),
+            HighPriorityCount = plans.Count(x => x.Priority == "High"),
+            CompletedCount = plans.Count(x => x.Status == "Completed"),
+            TodayJobs = plans
+            .Where(x => x.PlannedDate.Date == today)
+            .ToList()
+            };
+
+        return View(vm);
+    }
     //[HttpPost]
     //[ValidateAntiForgeryToken]
     //public async Task<IActionResult> Complete(
