@@ -38,6 +38,12 @@ public partial class Customer
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
     [InverseProperty("Customer")]
+    public virtual ICollection<Complaint> Complaints { get; set; } = new List<Complaint>();
+
+    [InverseProperty("Customer")]
+    public virtual ICollection<CustomerFeedback> CustomerFeedbacks { get; set; } = new List<CustomerFeedback>();
+
+    [InverseProperty("Customer")]
     public virtual ICollection<CustomerLocation> CustomerLocations { get; set; } = new List<CustomerLocation>();
 
     [InverseProperty("Customer")]

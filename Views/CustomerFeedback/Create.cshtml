@@ -1,0 +1,48 @@
+﻿@model CustomerFeedback
+@{
+    ViewData["Title"] = "Create Feedback";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="card-modern p-3">
+
+    <h4 style="color:#2c8c99;">Add Feedback</h4>
+
+    <form asp-action="Create" method="post">
+
+        <label>Customer</label>
+        <select asp-for="CustomerId" class="form-control">
+            @foreach (var c in ViewBag.Customers)
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        </select>
+
+        <label class="mt-2">Technician</label>
+        <select asp-for="TechnicianId" class="form-control">
+            <option value="">-- Select --</option>
+            @foreach (var t in ViewBag.Technicians)
+            {
+                <option value="@t.TechnicianId">@t.Name</option>
+            }
+        </select>
+
+        <label class="mt-2">Rating (1-5)</label>
+        <input asp-for="Rating" type="number" min="1" max="5" class="form-control" />
+
+        <label class="mt-2">Comment</label>
+        <textarea asp-for="Comment" class="form-control"></textarea>
+
+        <label class="mt-2">Type</label>
+        <select asp-for="FeedbackType" class="form-control">
+            <option>Phone Call</option>
+            <option>Admin Follow-up</option>
+            <option>On-site</option>
+        </select>
+
+        <button class="btn mt-3 text-white" style="background:#2c8c99;">
+            Save
+        </button>
+
+    </form>
+
+</div>

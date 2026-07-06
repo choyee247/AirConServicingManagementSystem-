@@ -63,9 +63,15 @@ public partial class ServiceRequest
     [InverseProperty("ServiceRequests")]
     public virtual Appointment? Appointment { get; set; }
 
+    [InverseProperty("ServiceRequest")]
+    public virtual ICollection<Complaint> Complaints { get; set; } = new List<Complaint>();
+
     [ForeignKey("CustomerId")]
     [InverseProperty("ServiceRequests")]
     public virtual Customer Customer { get; set; } = null!;
+
+    [InverseProperty("ServiceRequest")]
+    public virtual ICollection<CustomerFeedback> CustomerFeedbacks { get; set; } = new List<CustomerFeedback>();
 
     [InverseProperty("Service")]
     public virtual Payment? Payment { get; set; }

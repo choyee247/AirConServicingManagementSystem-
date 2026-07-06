@@ -5,338 +5,939 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<style>
-    :root {
-        --primary-color: #2c8c99;
-        --primary-light: #4ca6b3;
-        --primary-dark: #1a6b77;
-        --text-light: #ffffff;
-        --shadow-color: rgba(44, 140, 153, 0.15);
-        --gradient-start: #2c8c99;
-        --gradient-end: #34a8b6;
-    }
-
-    .dashboard-header {
-        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-        color: var(--text-light);
-        padding: 1.5rem;
-        border-radius: 16px;
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 25px var(--shadow-color);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-        .dashboard-header h3 {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Admin · Technician Admin Dashboard</title>
+    <!-- Font Awesome 6 Free -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f9fc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 24px 20px;
+            color: #1a2b33;
+        }
+
+        .admin-wrap {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ----- primary color #2c8c99 & variants ----- */
+        :root {
+            --primary: #2c8c99;
+            --primary-light: #4ca6b3;
+            --primary-dark: #1a6b77;
+            --primary-soft: rgba(44, 140, 153, 0.08);
+            --primary-glow: rgba(44, 140, 153, 0.20);
+            --shadow-teal: 0 12px 30px rgba(44, 140, 153, 0.12);
+        }
+
+        .bg-primary-teal {
+            background: var(--primary);
+        }
+
+        .text-primary-teal {
+            color: var(--primary);
+        }
+
+        .border-teal {
+            border-color: var(--primary);
+        }
+
+        /* ----- cards & glass effect ----- */
+        .card-modern {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 1.5rem 1.25rem;
+            box-shadow: 0 6px 22px rgba(44, 140, 153, 0.07), 0 2px 6px rgba(0,0,0,0.02);
+            transition: all 0.25s ease;
+            border: 1px solid rgba(44, 140, 153, 0.06);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .card-modern::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, var(--primary), var(--primary-light));
+                opacity: 0.7;
+            }
+
+            .card-modern:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--shadow-teal);
+                border-color: rgba(44, 140, 153, 0.15);
+            }
+
+        /* ----- header with gradient ----- */
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 1.6rem 2rem;
+            border-radius: 32px;
+            margin-bottom: 2.2rem;
+            box-shadow: 0 12px 34px rgba(44, 140, 153, 0.25);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+            .admin-header h2 {
+                font-weight: 700;
+                font-size: 1.9rem;
+                letter-spacing: -0.3px;
+            }
+
+                .admin-header h2 i {
+                    margin-right: 12px;
+                    opacity: 0.9;
+                }
+
+            .admin-header .badge-role {
+                background: rgba(255,255,255,0.18);
+                padding: 0.4rem 1.2rem;
+                border-radius: 60px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                backdrop-filter: blur(4px);
+            }
+
+            .admin-header .header-date {
+                background: rgba(255,255,255,0.12);
+                padding: 0.4rem 1.6rem;
+                border-radius: 60px;
+                font-weight: 500;
+                font-size: 0.95rem;
+                backdrop-filter: blur(4px);
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+
+        /* ----- stat grid (4 items) ----- */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 26px;
+            padding: 1.3rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 6px solid var(--primary);
+            box-shadow: 0 4px 14px rgba(44, 140, 153, 0.06);
+            transition: 0.2s;
+            border: 1px solid rgba(44, 140, 153, 0.06);
+        }
+
+            .stat-card:hover {
+                background: #fafdff;
+                box-shadow: 0 10px 28px rgba(44, 140, 153, 0.10);
+                transform: translateY(-3px);
+            }
+
+        .stat-left .stat-label {
+            font-size: 0.8rem;
             font-weight: 600;
-            font-size: 1.75rem;
+            color: #5f7a88;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
         }
 
-        .dashboard-header .subtitle {
-            opacity: 0.9;
-            font-size: 0.95rem;
-            margin-top: 0.25rem;
+        .stat-left .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1.2;
         }
 
-    .dashboard-card {
-        background: linear-gradient(145deg, #ffffff, #f8f9fa);
-        border: none;
-        border-radius: 16px;
-        padding: 1.5rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 15px var(--shadow-color);
-        border: 1px solid rgba(44, 140, 153, 0.1);
-    }
+        .stat-left .stat-sub {
+            font-size: 0.7rem;
+            color: #8ba3ae;
+            font-weight: 500;
+        }
 
-        .dashboard-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--primary-soft);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.7rem;
+        }
+
+        /* ----- 2-col layout: manage + feedback/complaint ----- */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.8rem;
+            margin-bottom: 2.2rem;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid rgba(44, 140, 153, 0.08);
+            padding-bottom: 0.6rem;
+        }
+
+            .section-title i {
+                color: var(--primary);
+                font-size: 1.2rem;
+            }
+
+        /* ----- technician list (fake) ----- */
+        .tech-item {
+            background: #f8fbfd;
+            border-radius: 60px;
+            padding: 0.6rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.7rem;
+            border: 1px solid #e2eef3;
+            transition: 0.1s;
+        }
+
+            .tech-item .tech-name {
+                font-weight: 600;
+                color: #12343e;
+            }
+
+            .tech-item .tech-status {
+                font-size: 0.7rem;
+                background: var(--primary-soft);
+                padding: 0.15rem 1rem;
+                border-radius: 40px;
+                color: var(--primary-dark);
+                font-weight: 600;
+            }
+
+        .btn-teal-outline {
+            background: transparent;
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+            border-radius: 60px;
+            padding: 0.3rem 1rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: 0.2s;
+        }
+
+            .btn-teal-outline:hover {
+                background: var(--primary);
+                color: white;
+            }
+
+        .btn-teal-solid {
+            background: var(--primary);
+            border: none;
+            color: white;
+            border-radius: 60px;
+            padding: 0.45rem 1.4rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+            .btn-teal-solid:hover {
+                background: var(--primary-dark);
+                color: white;
+            }
+
+        /* ----- feedback & complaint items ----- */
+        .feedback-item, .complaint-item {
+            background: #f8fbfd;
+            border-radius: 18px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.7rem;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+            .feedback-item .stars {
+                color: #f1c40f;
+                letter-spacing: 1px;
+            }
+
+            .complaint-item .complaint-badge {
+                font-size: 0.65rem;
+                font-weight: 700;
+                padding: 0.15rem 1rem;
+                border-radius: 40px;
+                background: #e67e22;
+                color: white;
+            }
+
+        .complaint-badge.resolved {
+            background: #27ae60;
+        }
+
+        .complaint-badge.progress {
+            background: #2980b9;
+        }
+
+        /* ----- assign technician (quick action) ----- */
+        .assign-box {
+            background: #f2f9fc;
+            border-radius: 24px;
+            padding: 1rem 1.2rem;
+            border: 1px dashed var(--primary);
+            margin-top: 1rem;
+        }
+
+            .assign-box .assign-row {
+                display: flex;
+                gap: 0.8rem;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+
+        /* ----- table (recent) ----- */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+
+        .table-custom {
             width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            border-collapse: collapse;
+            font-size: 0.9rem;
         }
 
-        .dashboard-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(44, 140, 153, 0.25);
+            .table-custom th {
+                background: #f0f7fa;
+                color: var(--primary-dark);
+                font-weight: 600;
+                padding: 0.8rem 0.8rem;
+                border-bottom: 2px solid #d7e8ed;
+            }
+
+            .table-custom td {
+                padding: 0.7rem 0.8rem;
+                border-bottom: 1px solid #eaf0f4;
+            }
+
+        .badge-status {
+            padding: 0.2rem 1rem;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 700;
         }
 
-    .dashboard-icon-container {
-        width: 70px;
-        height: 70px;
-        border-radius: 18px;
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 6px 15px rgba(44, 140, 153, 0.3);
-        transition: transform 0.3s ease;
-    }
-
-    .dashboard-card:hover .dashboard-icon-container {
-        transform: scale(1.1) rotate(5deg);
-    }
-
-    .dashboard-icon-container i {
-        font-size: 28px;
-        color: var(--text-light);
-    }
-
-    .dashboard-title {
-        font-size: 14px;
-        font-weight: 500;
-        color: #6c757d;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
-    }
-
-    .dashboard-count {
-        font-size: 2.25rem;
-        font-weight: 700;
-        color: var(--primary-dark);
-        line-height: 1;
-        margin-bottom: 0.5rem;
-    }
-
-    .dashboard-trend {
-        font-size: 12px;
-        color: #28a745;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-
-        .dashboard-trend.negative {
-            color: #dc3545;
+        .badge-active {
+            background: #d4edda;
+            color: #0f6b3a;
         }
 
-    .section-title {
-        font-weight: 600;
-        color: var(--primary-dark);
-        position: relative;
-        padding-bottom: 0.75rem;
-        margin: 2.5rem 0 1.5rem;
-    }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
-            border-radius: 3px;
+        .badge-pending {
+            background: #fef3d7;
+            color: #8a6d0b;
         }
 
-    .overview-card {
-        background: linear-gradient(135deg, #f8fdff, #ffffff);
-        border-radius: 16px;
-        padding: 2rem;
-        border: 1px solid rgba(44, 140, 153, 0.15);
-        box-shadow: 0 6px 20px rgba(44, 140, 153, 0.1);
-        margin-bottom: 2rem;
-    }
+        /* ----- mobile first adjustments ----- */
+        @@media (max-width: 992px) {
+            .stat-grid
 
-        .overview-card p {
-            color: #495057;
-            line-height: 1.7;
-            margin-bottom: 0;
+        {
+            grid-template-columns: repeat(2,1fr);
         }
 
-    .feature-alert {
-        background: linear-gradient(135deg, rgba(44, 140, 153, 0.1), rgba(52, 168, 182, 0.05));
-        border: 1px solid rgba(44, 140, 153, 0.2);
-        border-left: 4px solid var(--primary-color);
-        border-radius: 12px;
-        padding: 1.25rem;
-        margin-top: 2rem;
-    }
-
-        .feature-alert i {
-            color: var(--primary-color);
-            font-size: 1.25rem;
+        .grid-2col {
+            grid-template-columns: 1fr;
         }
 
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-top: 1.5rem;
-    }
-
-    @@media (max-width: 768px) {
-        .dashboard-header
-
-    {
-        padding: 1.25rem;
-    }
-
-    .dashboard-header h3 {
-        font-size: 1.5rem;
-    }
-
-    .dashboard-count {
-        font-size: 1.875rem;
-    }
-
-    .dashboard-icon-container {
-        width: 60px;
-        height: 60px;
-    }
-
-        .dashboard-icon-container i {
-            font-size: 24px;
         }
 
-    }
+        @@media (max-width: 640px) {
+            body
 
-    @@media (max-width: 576px) {
-        .dashboard-card
+        {
+            padding: 14px 12px;
+        }
 
-    {
-        padding: 1.25rem;
-    }
+        .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 1.2rem 1.2rem;
+        }
 
-    .overview-card {
-        padding: 1.5rem;
-    }
+            .admin-header h2 {
+                font-size: 1.5rem;
+            }
 
-    .section-title {
-        margin: 2rem 0 1rem;
-    }
+        .stat-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
 
-    }
-</style>
+        .stat-left .stat-number {
+            font-size: 1.6rem;
+        }
 
-<div class="dashboard-header">
-    <h3>Admin Dashboard</h3>
-    <div class="subtitle">Welcome back! Here's what's happening with your system today.</div>
-</div>
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 1.3rem;
+        }
 
-<div class="row g-4">
+        .card-modern {
+            padding: 1rem;
+        }
 
-    <!-- Customers -->
-    <div class="col-xl-3 col-lg-4 col-md-6">
-        <a asp-controller="Customer" asp-action="Index" class="text-decoration-none text-reset">
-        <div class="dashboard-card">
-            <div class="dashboard-icon-container">
-                <i class="fa-solid fa-users"></i>
-            </div>
-            <div class="dashboard-title">Total Customers</div>
-            <div class="dashboard-count">@Model.TotalCustomers</div>
-            <div class="dashboard-trend">
-                <i class="fa-solid fa-arrow-up"></i>
-                <span>Growing daily</span>
-            </div>
-        </div>
-        </a>
-    </div>
+        .section-title {
+            font-size: 1rem;
+        }
 
-    <!-- Technicians -->
-    <div class="col-xl-3 col-lg-4 col-md-6">
-        <a asp-controller="Technicians" asp-action="Index" class="text-decoration-none text-reset">
-        <div class="dashboard-card">
-            <div class="dashboard-icon-container">
-                <i class="fa-solid fa-user-gear"></i>
-            </div>
-            <div class="dashboard-title">Active Technicians</div>
-            <div class="dashboard-count">@Model.TotalTechnicians</div>
-            <div class="dashboard-trend">
-                <i class="fa-solid fa-users"></i>
-                <span>Ready for service</span>
-            </div>
-        </div>
-        </a>
-    </div>
+        .feedback-item, .complaint-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
 
-    <!-- Services -->
-    <div class="col-xl-3 col-lg-4 col-md-6">
-        <a asp-controller="ServiceRecords" asp-action="Index" class="text-decoration-none text-reset">
-        <div class="dashboard-card">
-            <div class="dashboard-icon-container">
-                <i class="fa-solid fa-screwdriver-wrench"></i>
-            </div>
-            <div class="dashboard-title">Service Records</div>
-            <div class="dashboard-count">@Model.ActiveServices</div>
-            <div class="dashboard-trend">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Active this month</span>
-            </div>
-        </div>
-        </a>
-    </div>
+        .assign-box .assign-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
 
-    <!-- Warranty -->
-    <div class="col-xl-3 col-lg-4 col-md-6">
-        <a asp-controller="Warranty" asp-action="Index" class="text-decoration-none text-reset">
-        <div class="dashboard-card">
-            <div class="dashboard-icon-container">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <div class="dashboard-title">Warranty Cases</div>
-            <div class="dashboard-count">@Model.WarrantyCases</div>
-            <div class="dashboard-trend">
-                <i class="fa-solid fa-clock"></i>
-                <span>Require attention</span>
-            </div>
-        </div>
-        </a>
-    </div>
+        }
 
-</div>
+        @@media (max-width: 420px) {
+            .stat-grid
 
-<h5 class="section-title">System Overview</h5>
+        {
+            grid-template-columns: 1fr;
+        }
 
-<div class="overview-card">
-    <p>
-        Welcome to the <strong style="color: var(--primary-dark);">Air Con Servicing Management System</strong> Admin Panel.
-        From here, you can efficiently manage customers, technicians, service records,
-        warranty tracking, reminders, and monitor overall system performance.
-    </p>
-    <p class="mt-3 mb-0">
-        The dashboard provides real-time insights into your operations with key metrics
-        displayed in an intuitive format. Use these metrics to make informed decisions
-        and optimize your service delivery.
-    </p>
-</div>
+        .admin-header h2 {
+            font-size: 1.3rem;
+        }
 
-<!-- Future Ready Section -->
-<div class="feature-alert">
-    <div class="d-flex align-items-start">
-        <i class="fa-solid fa-circle-info me-3 mt-1"></i>
-        <div>
-            <h6 class="mb-2" style="color: var(--primary-dark);">Upcoming Features</h6>
-            <p class="mb-2">We're continuously improving your experience. Coming soon:</p>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-1">
-                        <i class="fa-solid fa-chart-pie me-2" style="color: var(--primary-color); font-size: 0.875rem;"></i>
-                        <span>Monthly service analytics</span>
-                    </div>
-                    <div class="d-flex align-items-center mb-1">
-                        <i class="fa-solid fa-bell me-2" style="color: var(--primary-color); font-size: 0.875rem;"></i>
-                        <span>Warranty expiry alerts</span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-1">
-                        <i class="fa-solid fa-chart-bar me-2" style="color: var(--primary-color); font-size: 0.875rem;"></i>
-                        <span>Technician performance charts</span>
-                    </div>
-                    <div class="d-flex align-items-center mb-1">
-                        <i class="fa-solid fa-envelope me-2" style="color: var(--primary-color); font-size: 0.875rem;"></i>
-                        <span>Automated reminder notifications</span>
-                    </div>
+        }
+
+        /* extras */
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .gap-1 {
+            gap: 0.5rem;
+        }
+
+        .mt-2 {
+            margin-top: 1.2rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .fw-600 {
+            font-weight: 600;
+        }
+
+        .text-muted-soft {
+            color: #6b8a96;
+        }
+
+        .bg-soft-teal {
+            background: var(--primary-soft);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrap">
+
+        <!-- HEADER -->
+        <div class="admin-header">
+
+            <!-- LEFT SIDE -->
+            <div>
+                <h2 style="margin-bottom:0.3rem;">
+                    <i class="fas fa-user-shield"></i>
+                    Technician Admin
+                </h2>
+
+                <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:6px;">
+
+                    <span class="badge-role">
+                        <i class="fas fa-user"></i>
+                        @Model.AdminName
+                    </span>
+
+                    <span class="badge-role">
+                        <i class="fas fa-wrench"></i>
+                        @Model.TotalTechnicians Technicians
+                    </span>
+
+                    <span class="badge-role">
+                        <i class="fas fa-exchange-alt"></i>
+                        Manage & Track
+                    </span>
+
                 </div>
             </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="header-date">
+
+                <i class="far fa-calendar-alt"></i>
+                @Model.CurrentDateTime.ToString("dd MMM yyyy")
+
+                &nbsp;·&nbsp;
+
+                <i class="far fa-clock"></i>
+                @Model.CurrentDateTime.ToString("hh:mm tt")
+
+            </div>
+
         </div>
+
+        <!-- STATS: Customers, Technicians, Services, Warranty -->
+        <div class="stat-grid">
+
+            <!-- Customers -->
+            <div class="stat-card">
+                <div class="stat-left">
+                    <div class="stat-label">
+                        <i class="fas fa-users" style="color:#2c8c99;"></i> Customers
+                    </div>
+                    <div class="stat-number">@Model.TotalCustomers</div>
+                </div>
+                <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
+            </div>
+
+            <!-- Technicians -->
+            <div class="stat-card" style="border-left-color:#27ae60;">
+                <div class="stat-left">
+                    <div class="stat-label">
+                        <i class="fas fa-user-gear" style="color:#27ae60;"></i> Technicians
+                    </div>
+                    <div class="stat-number">@Model.TotalTechnicians</div>
+                    <div class="stat-sub">
+                        @Model.ActiveTechnicians active · @Model.AvailableTechnicians available
+                    </div>
+                </div>
+                <div class="stat-icon" style="color:#27ae60;">
+                    <i class="fas fa-hard-hat"></i>
+                </div>
+            </div>
+
+            <!-- Services -->
+            <div class="stat-card" style="border-left-color:#2980b9;">
+                <div class="stat-left">
+                    <div class="stat-label">
+                        <i class="fas fa-screwdriver-wrench" style="color:#2980b9;"></i> Services
+                    </div>
+                    <div class="stat-number">@Model.TotalServices</div>
+                    <div class="stat-sub">
+                        @Model.ActiveServices active · @Model.CompletedServices completed
+                    </div>
+                </div>
+                <div class="stat-icon" style="color:#2980b9;">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+            </div>
+
+            <!-- Warranty -->
+            <div class="stat-card" style="border-left-color:#f39c12;">
+                <div class="stat-left">
+                    <div class="stat-label">
+                        <i class="fas fa-shield-halved" style="color:#f39c12;"></i> Warranty
+                    </div>
+                    <div class="stat-number">@Model.WarrantyCases</div>
+                    <div class="stat-sub">
+                        @Model.ExpiringWarranty expiring soon
+                    </div>
+                </div>
+                <div class="stat-icon" style="color:#f39c12;">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 2-col: Manage Technicians + Feedback & Complaints -->
+        <div class="grid-2col">
+
+            <!-- LEFT: Technician management -->
+            <div class="card-modern">
+
+                <div class="section-title">
+                    <i class="fas fa-user-cog"></i>
+                    Manage Technicians
+                </div>
+
+                @if (Model.Technicians != null && Model.Technicians.Count > 0)
+                {
+                    foreach (var tech in Model.Technicians.Take(4))
+                    {
+                        <div class="tech-item">
+
+                            <span class="tech-name">
+
+                                @if (tech.LeaveDate != null)
+                                {
+                                    <i class="fas fa-circle"
+                                       style="color:#e67e22;font-size:0.5rem;"></i>
+                                }
+                                else if (tech.IsAvailable)
+                                {
+                                    <i class="fas fa-circle"
+                                       style="color:#27ae60;font-size:0.5rem;"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-circle"
+                                       style="color:#f1c40f;font-size:0.5rem;"></i>
+                                }
+
+                                @tech.Name
+
+                            </span>
+
+                            <span class="tech-status"
+                                  style="@(tech.LeaveDate!=null
+                            ? "background:#fee2d7;color:#b85a2b;"
+                            : tech.IsAvailable
+                                ? ""
+                                : "background:#fef3d7;color:#8a6d0b;")">
+
+                                @if (tech.LeaveDate != null)
+                                {
+                                    @:On Leave
+                                }
+                                else if (tech.IsAvailable)
+                                {
+                                    @:Available
+                                }
+                                else
+                                {
+                                    @:Busy
+                                }
+
+                            </span>
+
+                           @*  <a asp-controller="Technician"
+                               asp-action="Edit"
+                               asp-route-id="@tech.TechnicianId"
+                               class="btn-teal-outline">
+
+                                <i class="fas fa-pen"></i>
+
+                                Edit
+
+                            </a> *@
+                            <a asp-controller="AdminService"
+                               asp-action="Calendar"
+                               asp-route-id="@tech.TechnicianId"
+                               class="btn-teal-outline">
+
+                                <i class="fas fa-calendar-alt"></i>
+                                Schedule
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        No technicians found.
+                    </div>
+                }
+
+                <!-- Bottom Card -->
+                <div class="assign-box">
+
+                    <div class="assign-row">
+
+                        <div style="flex:1;">
+
+                            <strong style="color:#2c8c99;">
+                                Total Technicians :
+                            </strong>
+
+                            @Model.TotalTechnicians
+
+                            <br />
+
+                            <small style="color:#5f7a88;">
+                                Available :
+                                @Model.AvailableTechnicians
+                                |
+                                Busy :
+                                @Model.BusyTechnicians
+                                |
+                                Leave :
+                                @Model.OnLeaveTechnicians
+                            </small>
+
+                        </div>
+
+                        <a asp-controller="Technicians"
+                           asp-action="Create"
+                           class="btn-teal-solid">
+
+                            <i class="fas fa-plus-circle"></i>
+
+                            Add
+
+                        </a>
+
+                    </div>
+
+                    <div style="font-size:0.75rem;color:#5f7a88;margin-top:10px;">
+
+                        <i class="fas fa-info-circle"
+                           style="color:#2c8c99;"></i>
+
+                        Technician account will be created from Technician Management.
+
+                    </div>
+
+                </div>
+
+                <div style="margin-top:1rem;
+                background:#eef6f9;
+                border-radius:30px;
+                padding:0.6rem 1rem;
+                font-size:0.8rem;">
+
+                    <i class="fas fa-calendar-check"
+                       style="color:#2c8c99;"></i>
+
+                    <strong>Today's Available Technicians :</strong>
+
+                    @Model.AvailableTechnicians /
+
+                    @Model.TotalTechnicians
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT: Feedback & Complaints -->
+            <div class="card-modern">
+
+                <div class="section-title">
+                    <i class="fas fa-comment-dots"></i> Feedback & Complaints
+                </div>
+
+                <!-- FEEDBACK -->
+                <div style="margin-bottom:0.8rem; font-weight:600; color:#2c8c99;">
+                    <i class="fas fa-star" style="color:#f1c40f;"></i>
+                    Recent Feedback (Avg: @Model.AverageRating.ToString("0.0"))
+                </div>
+
+                @if (Model.RecentFeedbacks?.Any() == true)
+                {
+                    foreach (var f in Model.RecentFeedbacks)
+                    {
+                        <div class="feedback-item">
+                            <span>
+                                <i class="fas fa-user-circle"></i>
+                                @(f.Customer?.Name ?? "Unknown")
+                            </span>
+
+                            <span class="stars">
+                                @string.Concat(Enumerable.Repeat("★", f.Rating))
+                            </span>
+
+                            <span style="color:#5f7a88;font-size:0.75rem;">
+                                "@f.Comment"
+                            </span>
+                        </div>
+                    }
+                }
+
+                <!-- COMPLAINTS -->
+                <div style="margin-top:1rem; font-weight:600; color:#e67e22;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Complaints
+                    <small>
+                        (@Model.NewComplaints New ·
+                        @Model.InProgressComplaints In Progress ·
+                        @Model.ResolvedComplaints Resolved)
+                    </small>
+                </div>
+
+                @if (Model.RecentComplaints?.Any() == true)
+                {
+                    foreach (var c in Model.RecentComplaints)
+                    {
+                        <div class="complaint-item">
+
+                            <span>
+                                <i class="fas fa-file-signature"></i>
+                                @c.Title (@c.Customer?.Name)
+                            </span>
+
+                            <span class="complaint-badge
+                      @(c.Status=="New"?"new":
+                        c.Status=="In Progress"?"progress":"resolved")">
+                                @c.Status
+                            </span>
+
+                        </div>
+                    }
+                }
+
+                <!-- FOOTER -->
+                <div style="margin-top:1rem; background:var(--primary-soft);
+                border-radius:60px; padding:0.4rem 1rem;
+                display:inline-block; font-size:0.8rem;">
+
+                    <i class="fas fa-arrow-right" style="color:#2c8c99;"></i>
+                    <strong>Forward complaints</strong> to assigned technician
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Recent service records + Assign preview -->
+        <div class="card-modern" style="margin-bottom:1.8rem;">
+            <div class="flex-between">
+                <div class="section-title" style="margin-bottom:0; border-bottom:0; padding-bottom:0;"><i class="fas fa-history"></i> Recent Service Records</div>
+                <span style="background:var(--primary-soft); padding:0.2rem 1.4rem; border-radius:60px; font-size:0.75rem; font-weight:600; color:var(--primary-dark);"><i class="fas fa-user-cog"></i> Assigned to technicians</span>
+            </div>
+            <div class="table-wrap">
+                <table class="table-custom">
+                    <thead><tr><th>ID</th><th>Customer</th><th>Technician</th><th>Status</th><th>Date</th></tr></thead>
+                    <tbody>
+                        @if (Model.RecentServiceRecords != null && Model.RecentServiceRecords.Any())
+                        {
+                            foreach (var item in Model.RecentServiceRecords)
+                            {
+                                <tr>
+                                    <td><strong>#SR-@item.ServiceId</strong></td>
+
+                                    <td>@item.Customer?.Name</td>
+
+                                    <td>
+                                        @(item.Technician?.Name ?? "<span style='color:#f39c12'>Unassigned</span>")
+                                    </td>
+
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2"
+                                              style="background-color:
+                      @(item.Status == "Completed" ? "#27ae60" :
+                        item.Status == "In Progress" ? "#f39c12" :
+                        item.Status == "Assigned" ? "#2c8c99" :
+                        "#f1c40f");
+                      color:white;">
+                                            @item.Status
+                                        </span>
+                                    </td>
+
+                                    <td>@item.CreatedAt.ToString("dd MMM yyyy")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">
+                                    No service records found
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top:1rem; display:flex; gap:1.2rem; flex-wrap:wrap; font-size:0.8rem; color:#5f7a88;">
+
+                <span>
+                    <i class="fas fa-check-circle" style="color:#27ae60;"></i>
+                    @(Model.RecentServiceRecords?.Count(x => x.Status == "Completed") ?? 0) completed
+                </span>
+
+                <span>
+                    <i class="fas fa-hourglass-half" style="color:#f1c40f;"></i>
+                    @(Model.RecentServiceRecords?.Count(x => x.Status == "Pending") ?? 0) pending
+                </span>
+
+                <span>
+                    <i class="fas fa-user-plus" style="color:var(--primary);"></i>
+                    @(Model.RecentServiceRecords?.Count(x => x.TechnicianId == null) ?? 0) unassigned
+                </span>
+
+            </div>
+        </div>
+
+        <!-- Quick action: assign technician to customer complaint/feedback -->
+        <div style="background: linear-gradient(135deg, rgba(44,140,153,0.04), rgba(44,140,153,0.10)); border-radius: 28px; padding: 1.2rem 1.8rem; border: 1px solid rgba(44,140,153,0.15);">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; justify-content: space-between;">
+                <div>
+                    <i class="fas fa-link" style="color:var(--primary);"></i>
+                    <span style="font-weight:600; color:var(--primary-dark);">Assign technician to customer request</span>
+                    <span style="display:block; font-size:0.8rem; color:#5f7a88;">Select from customer list and assign to any active technician</span>
+                </div>
+                <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+                    <select name="customerId" style="padding:0.5rem 1.4rem; border-radius:60px; border:1px solid #dce9ef; background:white; font-weight:500;">
+                        @foreach (var c in Model.Customers)
+                        {
+                            <option value="@c.Id">@c.Name</option>
+                        }
+                    </select>
+                    <select name="technicianId" style="padding:0.5rem 1.4rem; border-radius:60px; border:1px solid #dce9ef; background:white; font-weight:500;">
+                        @foreach (var t in Model.Technicians)
+                        {
+                            <option value="@t.TechnicianId">@t.Name</option>
+                        }
+                    </select>
+                    <button class="btn-teal-solid"><i class="fas fa-check"></i> Assign</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <div style="margin-top: 2.5rem; text-align: center; font-size:0.75rem; color:#8ba3ae; border-top:1px solid #dce9ef; padding-top:1.5rem;">
+            <i class="fas fa-circle" style="color:var(--primary); font-size:0.4rem;"></i> Technician Admin 
+        </div>
+
     </div>
-</div>
+    <script>
+        setInterval(() => {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            document.getElementById("liveClock").innerText = time;
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -34,5 +34,5 @@ public partial class User
 
     [ForeignKey("TechnicianId")]
     [InverseProperty("Users")]
-    public virtual ServiceTechnician? Technician { get; set; }
+    public virtual Technician? Technician { get; set; }
 }

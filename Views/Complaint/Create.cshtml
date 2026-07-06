@@ -1,0 +1,49 @@
+﻿@model Complaint
+@{
+    ViewData["Title"] = "Create Complaint";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card-modern p-3">
+
+    <h4 style="color:#2c8c99;">Create Complaint</h4>
+
+    <form asp-action="Create" method="post">
+
+        <label>Customer</label>
+        <select asp-for="CustomerId" class="form-control">
+            @foreach (var c in ViewBag.Customers)
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        </select>
+
+        <label class="mt-2">Technician</label>
+        <select asp-for="TechnicianId" class="form-control">
+            <option value="">-- Select --</option>
+            @foreach (var t in ViewBag.Technicians)
+            {
+                <option value="@t.TechnicianId">@t.Name</option>
+            }
+        </select>
+
+        <label class="mt-2">Title</label>
+        <input asp-for="Title" class="form-control" />
+
+        <label class="mt-2">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+
+        <label class="mt-2">Status</label>
+        <select asp-for="Status" class="form-control">
+            <option>New</option>
+            <option>In Progress</option>
+            <option>Resolved</option>
+        </select>
+
+        <button class="btn mt-3 text-white" style="background:#2c8c99;">
+            Save
+        </button>
+
+    </form>
+
+</div>

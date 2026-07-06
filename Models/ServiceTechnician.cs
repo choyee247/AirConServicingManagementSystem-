@@ -41,7 +41,4 @@ public partial class ServiceTechnician
 
     [InverseProperty("Technician")]
     public virtual ICollection<TechnicianBonuse> TechnicianBonuses { get; set; } = new List<TechnicianBonuse>();
-
-    [InverseProperty("Technician")]
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

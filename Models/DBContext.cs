@@ -25,7 +25,11 @@ public partial class DBContext : DbContext
 
     public virtual DbSet<AppointmentReassign> AppointmentReassigns { get; set; }
 
+    public virtual DbSet<Complaint> Complaints { get; set; }
+
     public virtual DbSet<Customer> Customers { get; set; }
+
+    public virtual DbSet<CustomerFeedback> CustomerFeedbacks { get; set; }
 
     public virtual DbSet<CustomerLocation> CustomerLocations { get; set; }
 
@@ -142,6 +146,21 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.OldTechnician).WithMany(p => p.AppointmentReassignOldTechnicians).HasConstraintName("FK__Appointme__OldTe__7EF6D905");
         });
 
+        modelBuilder.Entity<Complaint>(entity =>
+        {
+            entity.HasKey(e => e.ComplaintId).HasName("PK__Complain__740D898FA52B5E9D");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Complaints)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Complaint_Customer");
+
+            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.Complaints).HasConstraintName("FK_Complaint_ServiceRequest");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.Complaints).HasConstraintName("FK_Complaint_Technician");
+        });
+
         modelBuilder.Entity<Customer>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC077FC05282");
@@ -149,6 +168,21 @@ public partial class DBContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
+        });
+
+        modelBuilder.Entity<CustomerFeedback>(entity =>
+        {
+            entity.HasKey(e => e.FeedbackId).HasName("PK__Customer__6A4BEDD63D3D7987");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.CustomerFeedbacks)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CustomerFeedback_Customer");
+
+            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.CustomerFeedbacks).HasConstraintName("FK_CustomerFeedback_ServiceRequest");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.CustomerFeedbacks).HasConstraintName("FK_CustomerFeedback_Technician");
         });
 
         modelBuilder.Entity<CustomerLocation>(entity =>
@@ -363,7 +397,7 @@ public partial class DBContext : DbContext
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
 
-            entity.HasOne(d => d.Technician).WithMany(p => p.Users).HasConstraintName("FK__Users__Technicia__70DDC3D8");
+            entity.HasOne(d => d.Technician).WithMany(p => p.Users).HasConstraintName("FK_Users_Technicians");
         });
 
         modelBuilder.Entity<Warranty>(entity =>

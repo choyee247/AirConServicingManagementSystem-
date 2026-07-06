@@ -50,7 +50,8 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=TechnicianAuth}/{action=Login}/{id?}");
+    //pattern: "{controller=TechnicianAuth}/{action=Login}/{id?}");
+    pattern: "{controller=AdminLogin}/{action=Login}/{id?}");
 
 app.MapControllers();
 

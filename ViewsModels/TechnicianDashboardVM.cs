@@ -22,6 +22,13 @@ namespace AirConServicingManagementSystem.ViewsModels
         public int ReminderCount { get; set; }
         public List<ServiceRequest> RecentTasks { get; set; } = new();
         public List<TechnicianSchedulePlan> TodayJobs { get; set; } = new();
+        public List<Complaint> Complaints { get; set; } = new();
+        public List<CustomerFeedback> Feedbacks { get; set; } = new();
+        public int ComplaintCount { get; set; }
+        public int FeedbackCount { get; set; }
+        public double AverageRating { get; set; }
+
+
         // =========================
         // FINANCIAL
         // =========================
@@ -64,9 +71,7 @@ namespace AirConServicingManagementSystem.ViewsModels
         // =========================
         // FEEDBACK
         // =========================
-        public List<FeedbackVM> Feedbacks { get; set; } = new();
-
-        public decimal AverageRating { get; set; }
+      
 
         public int TotalFeedbackCount { get; set; }
 

@@ -58,6 +58,20 @@ public class TechnicianServiceController : Controller
             .OrderBy(x => x.PlannedDate)
             .ToListAsync();
 
+        var complaints = await _context.Complaints
+            .Include(x => x.Customer)
+            .Where(x => x.TechnicianId == techId && !x.IsDeleted)
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(3)
+            .ToListAsync();
+
+        var feedbacks = await _context.CustomerFeedbacks
+            .Include(x => x.Customer)
+            .Where(x => x.TechnicianId == techId && !x.IsDeleted)
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(3)
+            .ToListAsync();
+
         var dashboard = new TechnicianDashboardVM
         {
             TechnicianName = technician?.Name ?? "Technician",
@@ -90,6 +104,16 @@ public class TechnicianServiceController : Controller
             ReminderCount = reminders.Count,
 
             ServiceReminders = reminders,
+
+            Complaints = complaints,
+
+            Feedbacks = feedbacks,
+
+            ComplaintCount = complaints.Count,
+
+            FeedbackCount = feedbacks.Count,
+
+            AverageRating = feedbacks.Any()? feedbacks.Average(x => x.Rating): 0,
 
             RecentTasks = recentTasks ?? new List<ServiceRequest>()
         };
