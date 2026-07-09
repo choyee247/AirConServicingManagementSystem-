@@ -25,17 +25,30 @@
                 <!-- Customer -->
                 <div class="mb-3">
                     <label class="form-label">Customer</label>
-                    <select asp-for="CustomerId" class="form-select" required>
+                    <select asp-for="CustomerId"
+                            id="CustomerId"
+                            class="form-select"
+                            required>
                         <option value="">-- Select Customer --</option>
                         @foreach (var c in ViewBag.Customers)
                         {
                             <option value="@c.Id">
-                                @c.Name (@c.Phone)
+                                @c.Name 
                             </option>
                         }
                     </select>
                 </div>
+                <div class="mb-3">
 
+                    <label class="form-label">
+                        Phone Number
+                    </label>
+
+                    <input id="CustomerInfo"
+                           class="form-control"
+                            />
+
+                </div>
                 <!-- Date -->
                 <div class="mb-3">
                     <label class="form-label">Scheduled Date</label>
@@ -49,6 +62,7 @@
                 <div class="mb-3">
                     <label class="form-label">Location</label>
                     <input asp-for="Location"
+                           id="Location"
                            class="form-control"
                            placeholder="Customer address / location"
                            required />
@@ -75,3 +89,72 @@
         </div>
     </div>
 </div>
+@section Scripts
+{
+    <script>
+
+
+        $("#CustomerId").change(function(){
+
+
+            var customerId = $(this).val();
+
+
+            if(customerId == "")
+            {
+                $("#Location").val("");
+                $("#CustomerInfo").val("");
+
+                return;
+            }
+
+
+
+            $.ajax({
+
+                url:'/Appointment/GetCustomerInfo',
+
+                type:'GET',
+
+                data:{
+                    id:customerId
+                },
+
+
+                success:function(data)
+                {
+
+                    if(data)
+                    {
+
+                        $("#Location")
+                            .val(data.location);
+
+
+                        $("#CustomerInfo")
+                            .val(
+                               
+                                + data.phone
+                            );
+
+                    }
+
+                },
+
+
+                error:function()
+                {
+                    console.log("Customer load error");
+                }
+
+
+            });
+
+
+
+        });
+
+
+
+    </script>
+}

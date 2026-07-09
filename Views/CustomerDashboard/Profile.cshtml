@@ -77,10 +77,10 @@
                     <input asp-for="Phone" class="form-control" required />
                 </div>
 
-                <div class="mb-3">
+               @*  <div class="mb-3">
                     <label class="form-label"><i class="fas fa-envelope me-1"></i> Email</label>
                     <input asp-for="Email" class="form-control" required />
-                </div>
+                </div> *@
 
                 <div class="mb-3">
                     <label class="form-label"><i class="fas fa-map-marker-alt me-1"></i> Address</label>
@@ -93,9 +93,9 @@
                 </div>
 
                 <!-- Hidden fields -->
-                <input type="hidden" asp-for="Latitude" id="Latitude" />
+                @* <input type="hidden" asp-for="Latitude" id="Latitude" />
                 <input type="hidden" asp-for="Longitude" id="Longitude" />
-                <input type="hidden" asp-for="MapAddress" id="MapAddress" />
+                <input type="hidden" asp-for="MapAddress" id="MapAddress" /> *@
 
                 <div class="text-end">
                     <button type="submit" class="btn btn-primary px-4">
@@ -109,7 +109,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
+@* <script>
     // Initialize map using model coordinates
     var lat = @Model.Latitude ?? 16.8409;
     var lng = @Model.Longitude ?? 96.1735;
@@ -145,3 +145,4 @@
         updateLocation(e.latlng.lat, e.latlng.lng);
     });
 </script>
+ *@

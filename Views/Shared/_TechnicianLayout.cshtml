@@ -407,19 +407,19 @@
                         </a>
                     </li>
 
-                    <li>
+                  @*   <li>
                         <a asp-controller="AdminMaintenance" asp-action="Index">
                             <i class="fa-solid fa-calendar-check"></i>
                             <span class="link-text">Maintenance</span>
                         </a>
-                    </li>
+                    </li> *@
 
-                    <li>
+                    @* <li>
                         <a asp-controller="ServiceFee" asp-action="Index">
                             <i class="fa-solid fa-money-bill-wave"></i>
                             <span class="link-text">Service Fees</span>
                         </a>
-                    </li>
+                    </li> *@
 
                 </ul>
             </li>
@@ -432,11 +432,17 @@
                 </a>
             </li> *@
             <li>
+                <a asp-controller="TechnicianService" asp-action="Reminders" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span class="link-text">Service Reminders</span>
+                </a>
+            </li>
+           @*  <li>
                 <a href="/Feedback/Index" class="nav-link">
                     <i class="fa-solid fa-star"></i>
                     <span class="nav-text">Feedback</span>
                 </a>
-            </li>
+            </li> *@
             <li>
                 <a asp-controller="TechnicianService" asp-action="MySchedule" class="nav-link">
                     <i class="fa-solid fa-calendar-days"></i>
@@ -450,7 +456,7 @@
                 </a>
             </li> *@
             <li>
-                <a href="/TechnicianProfile/Index" class="nav-link">
+                <a href="/Technicians/Profile" class="nav-link">
                     <i class="fa-solid fa-user-gear"></i>
                     <span class="nav-text">My Profile</span>
                 </a>
@@ -499,14 +505,28 @@
                 <div class="user-box">
 
                     <div class="avatar">
-                        @(HttpContextAccessor.HttpContext.Session.GetString("TechnicianName")?.Substring(0, 1))
+                        @{
+                            var techName = HttpContextAccessor.HttpContext.Session.GetString("TechnicianName");
+
+                            if (!string.IsNullOrEmpty(techName))
+                            {
+                                @techName.Substring(0, 1).ToUpper()
+                            }
+                        }
                     </div>
 
+
                     <div class="user-info">
+
                         <div class="fw-bold">
                             @HttpContextAccessor.HttpContext.Session.GetString("TechnicianName")
                         </div>
-                        <small class="text-muted">Technician</small>
+
+
+                        <small class="text-muted">
+                            @HttpContextAccessor.HttpContext.Session.GetString("TechnicianRole") - Technician
+                        </small>
+
                     </div>
 
                 </div>
@@ -530,9 +550,9 @@
         </div>
 
         <!-- FOOTER -->
-        <footer class="footer">
+     @*    <footer class="footer">
             © @DateTime.Now.Year AirCon System
-        </footer>
+        </footer> *@
 
     </div>
 
@@ -563,7 +583,8 @@
 
     </script>
 
-    @RenderSection("Scripts", required: false)
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

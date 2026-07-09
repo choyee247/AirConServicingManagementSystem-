@@ -238,7 +238,19 @@ public class TechnicianServiceController : Controller
     public async Task<IActionResult> Availability()
     {
         var technicians = await _context.Technicians
+            .Where(x => !x.IsDeleted)
+            .Include(x => x.Appointments)
             .ToListAsync();
+
+
+        foreach (var tech in technicians)
+        {
+            tech.IsAvailable = !tech.Appointments
+                .Any(a =>
+                    a.Status != "Completed"
+                );
+        }
+
 
         return View(technicians);
     }
@@ -385,6 +397,17 @@ public class TechnicianServiceController : Controller
 
         return RedirectToAction("Records", "AdminService");
     }
+    public async Task<IActionResult> Reminders()
+    {
+        var reminders = await _context.ServiceReminders
+            .Include(x => x.Customer)
+            .Include(x => x.AirConUnit)
+            .Where(x => x.IsDeleted ==false && x.SentStatus == false)
+            .OrderBy(x => x.ReminderDate)
+            .ToListAsync();
+
+        return View(reminders);
+    }
     private void CreateServiceReminder(ServiceRequest service, string acCondition)
     {
         int months = acCondition switch
@@ -416,6 +439,8 @@ public class TechnicianServiceController : Controller
     {
         var reminder = await _context.ServiceReminders
             .Include(x => x.AirConUnit)
+            .Include(x => x.Customer)
+            .Include(x => x.ServiceRequest)
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (reminder == null)
@@ -436,7 +461,9 @@ public class TechnicianServiceController : Controller
                 CustomerId = reminder.CustomerId,
                 AirConId = reminder.AirConUnitId,
                 Status = "Assigned",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                ServiceType = "Reminder Service",
+                Location = reminder.Customer?.Address ?? "N/A"
             };
 
             _context.ServiceRequests.Add(service);
@@ -444,7 +471,7 @@ public class TechnicianServiceController : Controller
             // 2. CREATE NEW SCHEDULE (IMPORTANT)
             var schedule = new TechnicianSchedulePlan
             {
-                TechnicianId = 0, // later assign or choose technician
+                TechnicianId = (int)reminder.ServiceRequest.TechnicianId,
 
                 CustomerId = reminder.CustomerId,
                 CustomerName = reminder.Customer?.Name,

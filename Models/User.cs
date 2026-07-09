@@ -32,6 +32,9 @@ public partial class User
     [Column(TypeName = "datetime")]
     public DateTime? DeletedAt { get; set; }
 
+    [Column(TypeName = "datetime")]
+    public DateTime? UpdatedAt { get; set; }
+
     [ForeignKey("TechnicianId")]
     [InverseProperty("Users")]
     public virtual Technician? Technician { get; set; }

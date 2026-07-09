@@ -15,6 +15,11 @@ public class ReAppointmentController : Controller
     {
         var serviceRecord = await _context.ServiceRecords
             .Include(x => x.Customer)
+                .ThenInclude(c => c.CustomerLocations)
+                    .ThenInclude(l => l.StateDivisionPk)
+            .Include(x => x.Customer)
+                .ThenInclude(c => c.CustomerLocations)
+                    .ThenInclude(l => l.TownshipPk)
             .Include(x => x.ServiceRequest)
                 .ThenInclude(x => x.Appointment)
             .FirstOrDefaultAsync(x => x.Id == serviceRecordId);
@@ -22,13 +27,31 @@ public class ReAppointmentController : Controller
         if (serviceRecord == null)
             return NotFound();
 
+        var location = serviceRecord.Customer.CustomerLocations
+            .FirstOrDefault();
+
+        if (location != null)
+        {
+            ViewBag.LocationText =
+                $"{serviceRecord.Customer.Address}," + $"{location.TownshipPk?.TownshipEn}, " + $"{location.StateDivisionPk?.StateDivisionEn}" ;
+        }
+
+        else
+        {
+            ViewBag.LocationText = serviceRecord.Customer.Address;
+        }
+
         ViewBag.ServiceRecord = serviceRecord;
 
         return View();
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(int serviceRecordId, DateTime scheduledDate, string location, string notes)
+    public async Task<IActionResult> Create(
+      int serviceRecordId,
+      DateTime scheduledDate,
+      string location,
+      string notes)
     {
         var serviceRecord = await _context.ServiceRecords
             .Include(x => x.ServiceRequest)
@@ -43,21 +66,38 @@ public class ReAppointmentController : Controller
         if (oldAppointment == null)
             return NotFound();
 
-        var newAppointment = new Appointment
+        if (scheduledDate < DateTime.Now)
+        {
+            TempData["Error"] = "Please choose a future date.";
+
+            return RedirectToAction(nameof(Create),
+                new { serviceRecordId });
+        }
+
+        Appointment appointment = new Appointment
         {
             CustomerId = oldAppointment.CustomerId,
+
             TechnicianId = null,
+
             ScheduledDate = scheduledDate,
+
             Location = location,
+
             Notes = notes,
+
             Status = "Pending",
+
             IsReAppointment = true,
+
             ParentAppointmentId = oldAppointment.AppointmentId
         };
 
-        _context.Appointments.Add(newAppointment);
+        _context.Appointments.Add(appointment);
 
         await _context.SaveChangesAsync();
+
+        TempData["Success"] = "ReAppointment created successfully.";
 
         return RedirectToAction("Index", "Appointment");
     }

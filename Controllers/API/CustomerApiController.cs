@@ -46,37 +46,37 @@ namespace AirConServicingManagementSystem.Controllers.API
             return Ok(customer);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(CustomerLocationViewModel vm)
-        {
-            var customer = new Customer
-            {
-                Name = vm.Name,
-                Phone = vm.Phone,
-                Address = vm.Address,
-                CreatedAt = DateTime.Now
-            };
+        //[HttpPost]
+        //public async Task<IActionResult> Create(CustomerLocationViewModel vm)
+        //{
+        //    var customer = new Customer
+        //    {
+        //        Name = vm.Name,
+        //        Phone = vm.Phone,
+        //        Address = vm.Address,
+        //        CreatedAt = DateTime.Now
+        //    };
 
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+        //    _context.Customers.Add(customer);
+        //    await _context.SaveChangesAsync();
 
-            if (vm.Latitude.HasValue && vm.Longitude.HasValue)
-            {
-                var location = new CustomerLocation
-                {
-                    CustomerId = customer.Id,
-                    Latitude = vm.Latitude,
-                    Longitude = vm.Longitude,
-                    MapAddress = vm.MapAddress,
-                    CreatedAt = DateTime.Now
-                };
+        //    if (vm.Latitude.HasValue && vm.Longitude.HasValue)
+        //    {
+        //        var location = new CustomerLocation
+        //        {
+        //            CustomerId = customer.Id,
+        //            Latitude = vm.Latitude,
+        //            Longitude = vm.Longitude,
+        //            MapAddress = vm.MapAddress,
+        //            CreatedAt = DateTime.Now
+        //        };
 
-                _context.CustomerLocations.Add(location);
-                await _context.SaveChangesAsync();
-            }
+        //        _context.CustomerLocations.Add(location);
+        //        await _context.SaveChangesAsync();
+        //    }
 
-            return Ok(customer);
-        }
+        //    return Ok(customer);
+        //}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Customer model)

@@ -1,0 +1,574 @@
+﻿@model AirConServicingManagementSystem.Models.TechnicianProfileVM
+
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #2c8c99;
+        --primary-dark: #1a6b77;
+        --primary-light: #4ca6b3;
+        --primary-soft: rgba(44, 140, 153, 0.08);
+        --primary-opacity-10: rgba(44, 140, 153, 0.10);
+        --font-base: 17px;
+    }
+
+    /* ----- Base ----- */
+    body {
+        font-size: var(--font-base);
+    }
+
+    .container {
+        padding: 16px 14px !important;
+        max-width: 100% !important;
+    }
+
+    /* ----- Profile Card ----- */
+    .profile-card {
+        border-radius: 24px !important;
+        border: 1px solid rgba(44, 140, 153, 0.06) !important;
+        box-shadow: 0 8px 32px rgba(44, 140, 153, 0.08) !important;
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+        .profile-card .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+            color: white;
+            padding: 1.5rem 2rem !important;
+            border-bottom: none !important;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+            .profile-card .card-header h4 {
+                font-size: 1.6rem;
+                font-weight: 700;
+                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+            }
+
+                .profile-card .card-header h4 i {
+                    font-size: 1.8rem;
+                }
+
+            .profile-card .card-header .role-badge {
+                background: rgba(255,255,255,0.2);
+                padding: 0.3rem 1.2rem;
+                border-radius: 60px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                backdrop-filter: blur(4px);
+                border: 1px solid rgba(255,255,255,0.1);
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+        .profile-card .card-body {
+            padding: 2rem !important;
+            background: #ffffff;
+        }
+
+    /* ----- Profile Avatar ----- */
+    .profile-avatar {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+        .profile-avatar .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary-opacity-10);
+            border: 4px solid var(--primary-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary-color);
+            transition: 0.3s;
+        }
+
+            .profile-avatar .avatar-circle:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 24px rgba(44, 140, 153, 0.2);
+            }
+
+        .profile-avatar .avatar-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-top: 0.5rem;
+        }
+
+        .profile-avatar .avatar-role {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+    /* ----- Profile Info Grid ----- */
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem 2rem;
+        margin-top: 1rem;
+    }
+
+    .profile-item {
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(44, 140, 153, 0.06);
+    }
+
+        .profile-item .profile-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #6c7e97;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.2rem;
+        }
+
+            .profile-item .profile-label i {
+                color: var(--primary-color);
+                width: 18px;
+                font-size: 0.85rem;
+            }
+
+        .profile-item .profile-value {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #1e293b;
+            padding-left: 2rem;
+        }
+
+            .profile-item .profile-value .text-muted {
+                font-weight: 400;
+                color: #6c757d;
+            }
+
+        .profile-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+    /* ----- Action Buttons ----- */
+    .profile-actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(44, 140, 153, 0.06);
+    }
+
+    .btn-profile {
+        padding: 0.6rem 1.6rem;
+        border-radius: 60px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .btn-profile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+    .btn-edit {
+        background: var(--primary-color);
+        color: white;
+    }
+
+        .btn-edit:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+    .btn-password {
+        background: #f39c12;
+        color: white;
+    }
+
+        .btn-password:hover {
+            background: #d68910;
+            color: white;
+        }
+
+    .btn-back {
+        background: #6c757d;
+        color: white;
+    }
+
+        .btn-back:hover {
+            background: #5a6268;
+            color: white;
+        }
+
+    /* ----- Responsive ----- */
+    @@media (max-width: 992px) {
+        .container
+
+    {
+        padding: 12px 10px !important;
+    }
+
+    .profile-card .card-header h4 {
+        font-size: 1.3rem;
+    }
+
+    .profile-card .card-header .role-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 1rem;
+    }
+
+    .profile-card .card-body {
+        padding: 1.5rem !important;
+    }
+
+    .profile-grid {
+        gap: 0.8rem 1.5rem;
+    }
+
+    .profile-item .profile-value {
+        font-size: 0.95rem;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        body
+
+    {
+        font-size: 16px;
+    }
+
+    .container {
+        padding: 10px 6px !important;
+    }
+
+    .profile-card {
+        border-radius: 18px !important;
+    }
+
+        .profile-card .card-header {
+            padding: 1rem 1.2rem !important;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .profile-card .card-header h4 {
+                font-size: 1.1rem;
+            }
+
+                .profile-card .card-header h4 i {
+                    font-size: 1.3rem;
+                }
+
+            .profile-card .card-header .role-badge {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.8rem;
+                align-self: flex-start;
+            }
+
+        .profile-card .card-body {
+            padding: 1rem !important;
+        }
+
+    .profile-avatar .avatar-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 2.2rem;
+        border-width: 3px;
+    }
+
+    .profile-avatar .avatar-name {
+        font-size: 1.1rem;
+    }
+
+    .profile-avatar .avatar-role {
+        font-size: 0.8rem;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+
+    .profile-item {
+        padding: 0.5rem 0;
+    }
+
+        .profile-item .profile-label {
+            font-size: 0.65rem;
+        }
+
+            .profile-item .profile-label i {
+                font-size: 0.75rem;
+                width: 16px;
+            }
+
+        .profile-item .profile-value {
+            font-size: 0.9rem;
+            padding-left: 1.8rem;
+        }
+
+        .profile-item.full-width {
+            grid-column: 1;
+        }
+
+    .profile-actions {
+        flex-direction: column;
+        gap: 0.6rem;
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+
+    .btn-profile {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.85rem;
+        justify-content: center;
+        width: 100%;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        body
+
+    {
+        font-size: 15px;
+    }
+
+    .container {
+        padding: 6px 3px !important;
+    }
+
+    .profile-card {
+        border-radius: 14px !important;
+    }
+
+        .profile-card .card-header {
+            padding: 0.7rem 0.8rem !important;
+        }
+
+            .profile-card .card-header h4 {
+                font-size: 0.95rem;
+            }
+
+                .profile-card .card-header h4 i {
+                    font-size: 1.1rem;
+                }
+
+            .profile-card .card-header .role-badge {
+                font-size: 0.6rem;
+                padding: 0.15rem 0.6rem;
+            }
+
+        .profile-card .card-body {
+            padding: 0.7rem !important;
+        }
+
+    .profile-avatar .avatar-circle {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+        border-width: 2px;
+    }
+
+    .profile-avatar .avatar-name {
+        font-size: 0.95rem;
+    }
+
+    .profile-avatar .avatar-role {
+        font-size: 0.7rem;
+    }
+
+    .profile-item {
+        padding: 0.3rem 0;
+    }
+
+        .profile-item .profile-label {
+            font-size: 0.55rem;
+            letter-spacing: 0.3px;
+        }
+
+            .profile-item .profile-label i {
+                font-size: 0.65rem;
+                width: 14px;
+            }
+
+        .profile-item .profile-value {
+            font-size: 0.8rem;
+            padding-left: 1.4rem;
+        }
+
+    .btn-profile {
+        padding: 0.4rem 1rem;
+        font-size: 0.75rem;
+        border-radius: 50px;
+    }
+
+    }
+
+    /* ----- Dark Mode ----- */
+    [data-bs-theme="dark"] .profile-card {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .profile-card .card-body {
+            background: #2d2d2d !important;
+        }
+
+    [data-bs-theme="dark"] .profile-item {
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .profile-item .profile-value {
+            color: #e0e0e0 !important;
+        }
+
+        [data-bs-theme="dark"] .profile-item .profile-label {
+            color: #a0a0a0 !important;
+        }
+
+    [data-bs-theme="dark"] .profile-avatar .avatar-name {
+        color: #e0e0e0 !important;
+    }
+
+    [data-bs-theme="dark"] .profile-avatar .avatar-role {
+        color: #a0a0a0 !important;
+    }
+
+    [data-bs-theme="dark"] .profile-avatar .avatar-circle {
+        background: rgba(44, 140, 153, 0.15) !important;
+        border-color: var(--primary-light) !important;
+    }
+
+    [data-bs-theme="dark"] .profile-actions {
+        border-color: #495057 !important;
+    }
+</style>
+
+<div class="container py-2 py-md-4">
+
+    <div class="profile-card card shadow">
+
+        <!-- HEADER -->
+        <div class="card-header">
+            <h4>
+                <i class="fa-solid fa-user"></i>
+                My Profile
+            </h4>
+            <span class="role-badge">
+                <i class="fa-solid fa-user-tie"></i>
+                @Model.TechnicianRole
+            </span>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+
+            <!-- Avatar Section -->
+            <div class="profile-avatar">
+                <div class="avatar-circle">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="avatar-name">@Model.Name</div>
+                <div class="avatar-role">
+                    <i class="fa-solid fa-briefcase me-1"></i>
+                    @Model.TechnicianRole
+                </div>
+            </div>
+
+            <!-- Profile Info Grid -->
+            <div class="profile-grid">
+
+                <!-- Full Name -->
+                <div class="profile-item">
+                    <div class="profile-label">
+                        <i class="fa-solid fa-user"></i>
+                        Full Name
+                    </div>
+                    <div class="profile-value">@Model.Name</div>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="profile-item">
+                    <div class="profile-label">
+                        <i class="fa-solid fa-phone"></i>
+                        Phone Number
+                    </div>
+                    <div class="profile-value">@Model.PhoneNumber</div>
+                </div>
+
+                <!-- Address - Full Width -->
+                <div class="profile-item full-width">
+                    <div class="profile-label">
+                        <i class="fa-solid fa-location-dot"></i>
+                        Address
+                    </div>
+                    <div class="profile-value">@Model.Address</div>
+                </div>
+
+                <!-- Role -->
+                <div class="profile-item">
+                    <div class="profile-label">
+                        <i class="fa-solid fa-user-tie"></i>
+                        Role
+                    </div>
+                    <div class="profile-value">@Model.TechnicianRole</div>
+                </div>
+
+                <!-- Join Date -->
+                <div class="profile-item">
+                    <div class="profile-label">
+                        <i class="fa-solid fa-calendar-plus"></i>
+                        Join Date
+                    </div>
+                    <div class="profile-value">@Model.JoinDate?.ToString("dd-MM-yyyy")</div>
+                </div>
+
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="profile-actions">
+
+                <a asp-action="EditProfile" class="btn-profile btn-edit">
+                    <i class="fa fa-edit"></i>
+                    Edit Profile
+                </a>
+
+                <a asp-action="ChangePassword" class="btn-profile btn-password">
+                    <i class="fa fa-key"></i>
+                    Change Password
+                </a>
+
+                <a asp-action="Index" asp-controller="TechnicianDashboard" class="btn-profile btn-back">
+                    <i class="fa fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

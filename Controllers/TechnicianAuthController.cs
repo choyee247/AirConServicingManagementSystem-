@@ -1,6 +1,8 @@
 ﻿using AirConServicingManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Security.Cryptography;
 
 public class TechnicianAuthController : Controller
 {
@@ -11,37 +13,121 @@ public class TechnicianAuthController : Controller
         _context = context;
     }
 
+
+    // GET Login
     public IActionResult Login()
     {
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(string email, string phoneNumber)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(
+    string username,
+    string password)
     {
-        var tech = await _context.Technicians
-            .FirstOrDefaultAsync(t =>
-                t.Email == email &&
-                t.PhoneNumber == phoneNumber &&
-                t.IsDeleted == false);
 
-        if (tech == null)
+        if (string.IsNullOrEmpty(username) ||
+            string.IsNullOrEmpty(password))
         {
-            ViewBag.Error = "Invalid Email or Phone Number";
+            ViewBag.Error = "Username and Password are required";
             return View();
         }
 
-        HttpContext.Session.SetInt32("TechnicianId", tech.TechnicianId);
-        HttpContext.Session.SetString("TechnicianName", tech.Name);
-        HttpContext.Session.SetString("TechnicianRole", tech.TechnicianRole);
 
-        return RedirectToAction("Dashboard", "TechnicianService");
+
+        var passwordHash = ComputeSha256Hash(password);
+
+
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x =>
+                x.Username == username &&
+                x.PasswordHash == passwordHash &&
+                x.Role != "Admin" &&
+                x.IsActive == true &&
+                x.IsDeleted != true);
+
+
+
+        if (user == null)
+        {
+            ViewBag.Error = "Invalid Username or Password";
+            return View();
+        }
+
+
+
+        // Save Login Session
+
+        HttpContext.Session.SetInt32(
+            "UserId",
+            user.Id
+        );
+
+
+        HttpContext.Session.SetString(
+            "Username",
+            user.Username
+        );
+
+
+        HttpContext.Session.SetString(
+            "TechnicianRole",
+            user.Role ?? ""
+        );
+
+
+
+        // First Login Check
+
+        if (user.TechnicianId == null)
+        {
+            return RedirectToAction(
+                "Create",
+                "Technicians"
+            );
+        }
+
+
+
+        // Existing Technician
+
+        HttpContext.Session.SetInt32(
+            "TechnicianId",
+            user.TechnicianId.Value
+        );
+
+        HttpContext.Session.SetString(
+             "TechnicianName",
+             user?.Username ?? "Technician"
+         );
+
+        return RedirectToAction(
+            "Dashboard",
+            "TechnicianService"
+        );
+
     }
+
 
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();  
         return RedirectToAction("Login", "TechnicianAuth");
+    }
+
+    private string ComputeSha256Hash(string rawData)
+    {
+        using var sha256 = SHA256.Create();
+
+
+        var bytes = sha256.ComputeHash(
+            Encoding.UTF8.GetBytes(rawData)
+        );
+
+
+        return Convert.ToBase64String(bytes);
     }
     public IActionResult Register()
     {

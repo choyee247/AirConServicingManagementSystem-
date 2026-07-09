@@ -11,7 +11,8 @@
     <!-- Google Font & simple reset for better consistency -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <!-- Font Awesome 6 (free icons) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    @* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> *@
+    <link rel="stylesheet" href="~/fontawesome/css/beta3allmin600.css">
     <style>
         * {
             margin: 0;
@@ -393,26 +394,129 @@
                         <!-- Problem Found & Repair Action (side by side) -->
                         <div class="form-row">
                             <div class="form-col">
-                                <label class="form-label-custom" for="ProblemFound">
-                                    <i class="fas fa-exclamation-triangle"></i> Problem Found
+
+                                <label class="form-label-custom">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Problem Found
                                 </label>
-                                <textarea id="ProblemFound" name="ProblemFound" class="form-control-custom" rows="3" placeholder="e.g., Low refrigerant, dirty coils, fan motor noise..."></textarea>
+
+                                <select class="form-control-custom mb-2"
+                                        onchange="document.getElementById('ProblemFound').value=this.value">
+
+                                    <option value="">-- Select Problem --</option>
+
+                                    <option>Low refrigerant gas</option>
+                                    <option>Air conditioner not cooling</option>
+                                    <option>Weak cooling performance</option>
+                                    <option>Dirty air filter</option>
+                                    <option>Dirty evaporator coil</option>
+                                    <option>Dirty condenser coil</option>
+                                    <option>Fan motor noise</option>
+                                    <option>Fan motor not working</option>
+                                    <option>Compressor not starting</option>
+                                    <option>Water leakage issue</option>
+                                    <option>PCB control board problem</option>
+                                    <option>Remote control not working</option>
+                                    <option>Power supply problem</option>
+                                    <option>Abnormal vibration</option>
+                                    <option>Electrical wiring issue</option>
+
+                                </select>
+
+
+                                <textarea id="ProblemFound"
+                                          name="ProblemFound"
+                                          class="form-control-custom"
+                                          rows="3"
+                                          placeholder="Describe problem..."></textarea>
+
                             </div>
                             <div class="form-col">
-                                <label class="form-label-custom" for="RepairAction">
-                                    <i class="fas fa-screwdriver-wrench"></i> Repair Action
+
+                                <label class="form-label-custom">
+                                    <i class="fas fa-screwdriver-wrench"></i>
+                                    Repair Action
                                 </label>
-                                <textarea id="RepairAction" name="RepairAction" class="form-control-custom" rows="3" placeholder="e.g., Recharged gas, cleaned coils, tightened connections..."></textarea>
+
+
+                                <select class="form-control-custom mb-2"
+                                        onchange="document.getElementById('RepairAction').value=this.value">
+
+
+                                    <option value="">-- Select Repair Action --</option>
+
+                                    <option>Refilled refrigerant gas</option>
+                                    <option>Cleaned air filter</option>
+                                    <option>Cleaned evaporator coil</option>
+                                    <option>Cleaned condenser coil</option>
+                                    <option>Checked refrigerant pressure</option>
+                                    <option>Repaired water leakage</option>
+                                    <option>Replaced damaged wiring</option>
+                                    <option>Adjusted fan motor</option>
+                                    <option>Replaced fan motor</option>
+                                    <option>Repaired PCB control board</option>
+                                    <option>Replaced capacitor</option>
+                                    <option>Fixed compressor issue</option>
+                                    <option>Tightened electrical connections</option>
+                                    <option>Performed general maintenance</option>
+                                    <option>Tested system operation after repair</option>
+
+
+                                </select>
+
+
+                                <textarea id="RepairAction"
+                                          name="RepairAction"
+                                          class="form-control-custom"
+                                          rows="3"
+                                          placeholder="Describe repair action..."></textarea>
+
                             </div>
                         </div>
 
                         <!-- Parts Replaced & Technician Note -->
                         <div class="form-row">
                             <div class="form-col">
-                                <label class="form-label-custom" for="PartsReplaced">
-                                    <i class="fas fa-microchip"></i> Parts Replaced
+
+                                <label class="form-label-custom">
+                                    <i class="fas fa-microchip"></i>
+                                    Parts Replaced
                                 </label>
-                                <textarea id="PartsReplaced" name="PartsReplaced" class="form-control-custom" rows="3" placeholder="List any components replaced (capacitor, fan motor, PCB...)."></textarea>
+
+
+                                <select class="form-control-custom mb-2"
+                                        onchange="document.getElementById('PartsReplaced').value=this.value">
+
+
+                                    <option value="">-- Select Parts --</option>
+
+                                    <option>No Parts Replaced</option>
+                                    <option>Capacitor</option>
+                                    <option>Fan Motor</option>
+                                    <option>PCB Control Board</option>
+                                    <option>Remote Control</option>
+                                    <option>Temperature Sensor</option>
+                                    <option>Thermal Fuse</option>
+                                    <option>Drain Pipe</option>
+                                    <option>Air Filter</option>
+                                    <option>Compressor</option>
+                                    <option>Relay Switch</option>
+                                    <option>Contactor</option>
+                                    <option>Electrical Wiring</option>
+                                    <option>Refrigerant Gas</option>
+                                    <option>Indoor Fan Blade</option>
+
+
+                                </select>
+
+
+                                <textarea id="PartsReplaced"
+                                          name="PartsReplaced"
+                                          class="form-control-custom"
+                                          rows="3"
+                                          placeholder="List replaced parts..."></textarea>
+
+
                             </div>
                             <div class="form-col">
                                 <label class="form-label-custom" for="TechnicianNote">

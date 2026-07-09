@@ -3,103 +3,837 @@
     ViewData["Title"] = "My Services";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
-<table class="table table-hover">
 
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Customer</th>
-            <th>Location</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
+<style>
+    :root {
+        --primary-color: #2c8c99;
+        --primary-dark: #1a6b77;
+        --primary-light: #4ca6b3;
+        --primary-soft: rgba(44, 140, 153, 0.08);
+        --primary-opacity-10: rgba(44, 140, 153, 0.10);
+    }
 
-    <tbody>
+    /* ----- Base ----- */
+    body {
+        font-size: 17px;
+    }
 
-        @foreach (var item in Model)
-        {
-            <tr>
+    .container {
+        padding: 12px 10px !important;
+        max-width: 100% !important;
+    }
 
-                <td>@item.ServiceRequest.ServiceId</td>
+    /* ----- Page Header ----- */
+    .page-header {
+        padding: 1.2rem 1.5rem;
+        background: white;
+        border-radius: 20px;
+        border: 1px solid rgba(44, 140, 153, 0.06);
+        box-shadow: 0 4px 20px rgba(44, 140, 153, 0.06);
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.8rem;
+    }
 
-                <td>@item.ServiceRequest.Customer?.Name</td>
+        .page-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.2rem;
+        }
 
-                <td>@item.ServiceRequest.Location</td>
+            .page-header h2 i {
+                margin-right: 0.6rem;
+            }
 
-                <td>
+        .page-header p {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
 
-                    <span class="badge
-                    @(item.ServiceRequest.Status=="Pending" ? "bg-warning" :
-                      item.ServiceRequest.Status=="In Progress" ? "bg-primary" :
-                      item.ServiceRequest.Status=="Completed" ? "bg-success" :
-                      "bg-secondary")">
+        .page-header .badge-count {
+            background: var(--primary-opacity-10);
+            color: var(--primary-color);
+            padding: 0.3rem 1rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
 
-                        @item.ServiceRequest.Status
+    /* ----- Card ----- */
+    .service-card {
+        border-radius: 20px !important;
+        border: 1px solid rgba(44, 140, 153, 0.06) !important;
+        box-shadow: 0 4px 20px rgba(44, 140, 153, 0.06) !important;
+        overflow: hidden;
+    }
 
-                    </span>
+        .service-card .card-header {
+            background: white !important;
+            border-bottom: 1px solid rgba(44, 140, 153, 0.06) !important;
+            padding: 0.8rem 1.2rem !important;
+        }
 
-                </td>
+            .service-card .card-header h5 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--primary-color);
+                margin-bottom: 0;
+            }
 
-                <td>
+    /* ----- Table ----- */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0;
+    }
 
-                    @if (item.ServiceRequest.Status == "Pending")
-                    {
-                        <a asp-action="Edit"
-                           asp-route-id="@item.ServiceRequest.ServiceId"
-                           class="btn btn-sm text-white"
-                           style="background:#2c8c99;">
-                            Start Service
-                        </a>
-                    }
+    .table-custom {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        min-width: 600px;
+        margin-bottom: 0;
+    }
 
-                    @if (item.ServiceRequest.Status == "In Progress")
-                    {
-                        if (item.ServiceRequest.AirConId == null)
+        .table-custom thead th {
+            background: var(--primary-opacity-10);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 0.8rem 0.8rem;
+            border-bottom: 2px solid rgba(44, 140, 153, 0.08);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .table-custom tbody td {
+            padding: 0.7rem 0.8rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(44, 140, 153, 0.06);
+            font-size: 0.9rem;
+        }
+
+        .table-custom tbody tr:hover {
+            background: var(--primary-opacity-10);
+            transition: background 0.2s;
+        }
+
+    /* ----- Badges ----- */
+    .badge-status {
+        padding: 0.25rem 0.9rem;
+        border-radius: 40px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .badge-pending {
+        background: #fef3d7;
+        color: #8a6d0b;
+    }
+
+    .badge-progress {
+        background: #cce5ff;
+        color: #004085;
+    }
+
+    .badge-completed {
+        background: #d4edda;
+        color: #0f6b3a;
+    }
+
+    .badge-other {
+        background: #e9ecef;
+        color: #495057;
+    }
+
+    /* ----- Buttons ----- */
+    .btn-group-actions {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm-custom {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.75rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+    }
+
+    .btn-start-service {
+        background: var(--primary-color);
+        color: white;
+    }
+
+        .btn-start-service:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+    .btn-fill-ac {
+        background: #28a745;
+        color: white;
+    }
+
+        .btn-fill-ac:hover {
+            background: #1e7e34;
+            color: white;
+        }
+
+    .btn-edit-ac {
+        background: #007bff;
+        color: white;
+    }
+
+        .btn-edit-ac:hover {
+            background: #0069d9;
+            color: white;
+        }
+
+    .btn-another-ac {
+        background: #ffc107;
+        color: #1e2a32;
+    }
+
+        .btn-another-ac:hover {
+            background: #e0a800;
+            color: #1e2a32;
+        }
+
+    .btn-view-service {
+        background: #6c757d;
+        color: white;
+    }
+
+        .btn-view-service:hover {
+            background: #5a6268;
+            color: white;
+        }
+
+    /* ----- Mobile Card View ----- */
+    .mobile-service-card {
+        background: white;
+        border-radius: 16px;
+        padding: 0.8rem 0.7rem;
+        margin-bottom: 0.6rem;
+        border: 1px solid rgba(44, 140, 153, 0.06);
+        box-shadow: 0 2px 8px rgba(44, 140, 153, 0.04);
+        transition: 0.2s;
+    }
+
+        .mobile-service-card:hover {
+            box-shadow: 0 4px 16px rgba(44, 140, 153, 0.08);
+        }
+
+        .mobile-service-card .mobile-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.2rem 0;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+        }
+
+        .mobile-service-card .mobile-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #5f7a88;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            min-width: 65px;
+        }
+
+        .mobile-service-card .mobile-value {
+            font-size: 0.85rem;
+            color: #1e293b;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .mobile-service-card .mobile-actions {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 0.4rem;
+            padding-top: 0.4rem;
+            border-top: 1px solid rgba(44, 140, 153, 0.06);
+        }
+
+        .mobile-service-card .btn-sm-mobile {
+            padding: 0.2rem 0.6rem;
+            font-size: 0.65rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            white-space: nowrap;
+        }
+
+    /* ----- Empty State ----- */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--primary-color);
+            opacity: 0.2;
+        }
+
+        .empty-state h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 1rem;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+
+    /* ----- Responsive ----- */
+    @@media (max-width: 992px) {
+        .container
+
+    {
+        padding: 10px 8px !important;
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .page-header p {
+        font-size: 0.85rem;
+    }
+
+    .table-custom {
+        font-size: 0.85rem;
+        min-width: 550px;
+    }
+
+        .table-custom thead th {
+            font-size: 0.7rem;
+            padding: 0.6rem 0.6rem;
+        }
+
+        .table-custom tbody td {
+            padding: 0.5rem 0.6rem;
+            font-size: 0.8rem;
+        }
+
+    .btn-sm-custom {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        body
+
+    {
+        font-size: 16px;
+    }
+
+    .container {
+        padding: 8px 4px !important;
+    }
+
+    .page-header {
+        padding: 0.8rem 1rem;
+        border-radius: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .page-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .page-header p {
+            font-size: 0.75rem;
+        }
+
+        .page-header .badge-count {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.8rem;
+        }
+
+    .service-card {
+        border-radius: 16px !important;
+    }
+
+        .service-card .card-header {
+            padding: 0.6rem 0.8rem !important;
+        }
+
+            .service-card .card-header h5 {
+                font-size: 0.95rem;
+            }
+
+    /* Hide desktop table on mobile */
+    .desktop-table {
+        display: none !important;
+    }
+
+    /* Show mobile cards */
+    .mobile-view {
+        display: block !important;
+    }
+
+    }
+
+    @@media (min-width: 769px) {
+        .mobile-view
+
+    {
+        display: none !important;
+    }
+
+    .desktop-table {
+        display: block !important;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .container
+
+    {
+        padding: 4px 2px !important;
+    }
+
+    .page-header {
+        padding: 0.5rem 0.6rem;
+        border-radius: 12px;
+    }
+
+        .page-header h2 {
+            font-size: 1rem;
+        }
+
+            .page-header h2 i {
+                font-size: 0.9rem;
+            }
+
+        .page-header p {
+            font-size: 0.65rem;
+        }
+
+        .page-header .badge-count {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.6rem;
+        }
+
+    .mobile-service-card {
+        padding: 0.5rem 0.4rem;
+        border-radius: 12px;
+    }
+
+        .mobile-service-card .mobile-label {
+            font-size: 0.55rem;
+            min-width: 55px;
+        }
+
+        .mobile-service-card .mobile-value {
+            font-size: 0.7rem;
+        }
+
+        .mobile-service-card .btn-sm-mobile {
+            font-size: 0.55rem;
+            padding: 0.15rem 0.4rem;
+        }
+
+    .empty-state i {
+        font-size: 3rem;
+    }
+
+    .empty-state h4 {
+        font-size: 1rem;
+    }
+
+    .empty-state p {
+        font-size: 0.8rem;
+    }
+
+    }
+
+    /* ----- Dark Mode ----- */
+    [data-bs-theme="dark"] .page-header {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .page-header p {
+            color: #a0a0a0 !important;
+        }
+
+    [data-bs-theme="dark"] .service-card {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .service-card .card-header {
+            background: #2d2d2d !important;
+            border-color: #495057 !important;
+        }
+
+    [data-bs-theme="dark"] .table-custom {
+        color: #e0e0e0;
+    }
+
+        [data-bs-theme="dark"] .table-custom thead th {
+            background: rgba(44, 140, 153, 0.08);
+            border-color: #495057;
+            color: rgba(44, 140, 153, 0.9);
+        }
+
+        [data-bs-theme="dark"] .table-custom tbody td {
+            border-color: #495057;
+        }
+
+        [data-bs-theme="dark"] .table-custom tbody tr:hover {
+            background: rgba(44, 140, 153, 0.10);
+        }
+
+    [data-bs-theme="dark"] .mobile-service-card {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .mobile-service-card .mobile-value {
+            color: #e0e0e0;
+        }
+
+        [data-bs-theme="dark"] .mobile-service-card .mobile-label {
+            color: #a0a0a0;
+        }
+</style>
+
+<div class="container py-2 py-md-4">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h2>
+                <i class="fas fa-tools"></i>
+                My Services
+            </h2>
+            <p>
+                <i class="fas fa-list me-1"></i>
+                Manage your assigned service requests
+            </p>
+        </div>
+        <div>
+            <span class="badge-count">
+                <i class="fas fa-clipboard-list me-1"></i>
+                @Model.Count() Services
+            </span>
+        </div>
+    </div>
+
+    <!-- Services Table -->
+    <div class="card shadow-sm border-0 service-card">
+
+        <div class="card-header bg-white">
+            <h5>
+                <i class="fas fa-list-ul me-2"></i>
+                Service Request List
+            </h5>
+        </div>
+
+        <!-- DESKTOP TABLE VIEW -->
+        <div class="card-body p-0 desktop-table">
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
                         {
-                            <!-- FIRST TIME -->
-                            <a asp-controller="AirConUnit"
-                               asp-action="Create"
-                               asp-route-serviceId="@item.ServiceRequest.ServiceId"
-                               class="btn btn-sm btn-success">
-                                Fill AirCon Detail
-                            </a>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>#@item.ServiceRequest.ServiceId</strong>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-user me-1" style="color:var(--primary-color);"></i>
+                                        @item.ServiceRequest.Customer?.Name
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-map-marker-alt me-1" style="color:var(--primary-color);"></i>
+                                        @item.ServiceRequest.Location
+                                    </td>
+                                    <td>
+                                        @if (item.ServiceRequest.Status == "Pending")
+                                        {
+                                            <span class="badge-status badge-pending">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        }
+                                        else if (item.ServiceRequest.Status == "In Progress")
+                                        {
+                                            <span class="badge-status badge-progress">
+                                                <i class="fas fa-spinner fa-spin me-1"></i>In Progress
+                                            </span>
+                                        }
+                                        else if (item.ServiceRequest.Status == "Completed")
+                                        {
+                                            <span class="badge-status badge-completed">
+                                                <i class="fas fa-check-circle me-1"></i>Completed
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-status badge-other">
+                                                @item.ServiceRequest.Status
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group-actions">
+
+                                            @if (item.ServiceRequest.Status == "Pending")
+                                            {
+                                                <a asp-action="Edit"
+                                                   asp-route-id="@item.ServiceRequest.ServiceId"
+                                                   class="btn-sm-custom btn-start-service">
+                                                    <i class="fas fa-play"></i>
+                                                    Start Service
+                                                </a>
+                                            }
+
+                                            @if (item.ServiceRequest.Status == "In Progress")
+                                            {
+                                                if (item.ServiceRequest.AirConId == null)
+                                                {
+                                                    <!-- FIRST TIME -->
+                                                    <a asp-controller="AirConUnit"
+                                                       asp-action="Create"
+                                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
+                                                       class="btn-sm-custom btn-fill-ac">
+                                                        <i class="fas fa-plus-circle"></i>
+                                                        Fill AC Detail
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <!-- ALREADY EXISTS -->
+                                                    <a asp-controller="AirConUnit"
+                                                       asp-action="Edit"
+                                                       asp-route-id="@item.ServiceRequest.AirConId"
+                                                       class="btn-sm-custom btn-edit-ac">
+                                                        <i class="fas fa-edit"></i>
+                                                        Edit AC
+                                                    </a>
+                                                    <a asp-controller="AirConUnit"
+                                                       asp-action="Create"
+                                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
+                                                       asp-route-isAnother="true"
+                                                       class="btn-sm-custom btn-another-ac">
+                                                        <i class="fas fa-plus"></i>
+                                                        + Another AC
+                                                    </a>
+                                                }
+                                            }
+
+                                            @if (item.ServiceRequest.Status == "Completed")
+                                            {
+                                                <a asp-controller="ServiceRequest"
+                                                   asp-action="Details"
+                                                   asp-route-appointmentId="@item.ServiceRequest.AppointmentId"
+                                                   class="btn-sm-custom btn-view-service">
+                                                    <i class="fas fa-eye"></i>
+                                                    View Service
+                                                </a>
+                                            }
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
                         }
                         else
                         {
-                            <!-- ALREADY EXISTS -->
-                            <a asp-controller="AirConUnit"
-                               asp-action="Edit"
-                               asp-route-id="@item.ServiceRequest.AirConId"
-                               class="btn btn-sm btn-primary">
-                                Edit AirCon Detail
-                            </a>
-                            <a asp-controller="AirConUnit"
-                               asp-action="Create"
-                               asp-route-serviceId="@item.ServiceRequest.ServiceId"
-                               asp-route-isAnother="true"
-                               class="btn btn-sm btn-warning">
-                                + Another AC
-                            </a>
+                            <tr>
+                                <td colspan="5" class="text-center py-4">
+                                    <div class="empty-state py-2">
+                                        <i class="fas fa-clipboard-list"></i>
+                                        <h4>No Services Found</h4>
+                                        <p>You don't have any assigned services yet.</p>
+                                    </div>
+                                </td>
+                            </tr>
                         }
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-                        <!-- ALWAYS SHOW -->
-                        
-                    }
-                    @if (item.ServiceRequest.Status == "Completed")
-                    {
-                        <a asp-controller="ServiceRequest"
-                           asp-action="Details"
-                           asp-route-appointmentId="@item.ServiceRequest.AppointmentId"
-                           class="btn btn-warning btn-sm">
-                            View Service
-                        </a>
-                    }
-                </td>
+        <!-- MOBILE CARD VIEW -->
+        <div class="card-body p-2 mobile-view">
+            @if (Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="mobile-service-card">
 
-            </tr>
-        }
+                        <!-- ID & Status -->
+                        <div class="mobile-row">
+                            <div>
+                                <span class="mobile-label">ID</span>
+                                <span class="mobile-value fw-bold" style="color:var(--primary-color);">
+                                    #@item.ServiceRequest.ServiceId
+                                </span>
+                            </div>
+                            <div>
+                                <span class="mobile-label">Status</span>
+                                @if (item.ServiceRequest.Status == "Pending")
+                                {
+                                    <span class="badge-status badge-pending" style="font-size:0.6rem;">
+                                        Pending
+                                    </span>
+                                }
+                                else if (item.ServiceRequest.Status == "In Progress")
+                                {
+                                    <span class="badge-status badge-progress" style="font-size:0.6rem;">
+                                        In Progress
+                                    </span>
+                                }
+                                else if (item.ServiceRequest.Status == "Completed")
+                                {
+                                    <span class="badge-status badge-completed" style="font-size:0.6rem;">
+                                        Completed
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status badge-other" style="font-size:0.6rem;">
+                                        @item.ServiceRequest.Status
+                                    </span>
+                                }
+                            </div>
+                        </div>
 
-    </tbody>
+                        <!-- Customer -->
+                        <div class="mobile-row">
+                            <span class="mobile-label">Customer</span>
+                            <span class="mobile-value">
+                                <i class="fas fa-user me-1" style="color:var(--primary-color);"></i>
+                                @item.ServiceRequest.Customer?.Name
+                            </span>
+                        </div>
 
-</table>
+                        <!-- Location -->
+                        <div class="mobile-row">
+                            <span class="mobile-label">Location</span>
+                            <span class="mobile-value">
+                                <i class="fas fa-map-marker-alt me-1" style="color:var(--primary-color);"></i>
+                                @item.ServiceRequest.Location
+                            </span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mobile-actions">
+
+                            @if (item.ServiceRequest.Status == "Pending")
+                            {
+                                <a asp-action="Edit"
+                                   asp-route-id="@item.ServiceRequest.ServiceId"
+                                   class="btn-sm-mobile btn-start-service">
+                                    <i class="fas fa-play"></i>
+                                    Start
+                                </a>
+                            }
+
+                            @if (item.ServiceRequest.Status == "In Progress")
+                            {
+                                if (item.ServiceRequest.AirConId == null)
+                                {
+                                    <a asp-controller="AirConUnit"
+                                       asp-action="Create"
+                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
+                                       class="btn-sm-mobile btn-fill-ac">
+                                        <i class="fas fa-plus-circle"></i>
+                                        Fill AC
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="AirConUnit"
+                                       asp-action="Edit"
+                                       asp-route-id="@item.ServiceRequest.AirConId"
+                                       class="btn-sm-mobile btn-edit-ac">
+                                        <i class="fas fa-edit"></i>
+                                        Edit AC
+                                    </a>
+                                    <a asp-controller="AirConUnit"
+                                       asp-action="Create"
+                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
+                                       asp-route-isAnother="true"
+                                       class="btn-sm-mobile btn-another-ac">
+                                        <i class="fas fa-plus"></i>
+                                        + AC
+                                    </a>
+                                }
+                            }
+
+                            @if (item.ServiceRequest.Status == "Completed")
+                            {
+                                <a asp-controller="ServiceRequest"
+                                   asp-action="Details"
+                                   asp-route-appointmentId="@item.ServiceRequest.AppointmentId"
+                                   class="btn-sm-mobile btn-view-service">
+                                    <i class="fas fa-eye"></i>
+                                    View
+                                </a>
+                            }
+
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state py-4">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h4>No Services Found</h4>
+                    <p>You don't have any assigned services yet.</p>
+                </div>
+            }
+        </div>
+
+    </div>
+
+</div>

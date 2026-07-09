@@ -19,6 +19,17 @@
     </div>
 
     <div class="create-card">
+       @*  <div class="form-group">
+
+            <label class="form-label">
+                Username
+            </label>
+
+            <input class="form-input"
+                   value="@ViewBag.Username"
+                   readonly />
+
+        </div> *@
         <form asp-action="Create" method="post" class="create-form">
             <div class="form-sections">
                 <div class="form-section">
@@ -58,7 +69,7 @@
                             <span asp-validation-for="PhoneNumber" class="validation-error"></span>
                         </div>
 
-                        <div class="form-group">
+                      @*   <div class="form-group">
                             <label asp-for="Email" class="form-label">Email Address</label>
                             <div class="input-with-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -68,7 +79,7 @@
                                 <input asp-for="Email" class="form-input" placeholder="technician@example.com" />
                             </div>
                             <span asp-validation-for="Email" class="validation-error"></span>
-                        </div>
+                        </div> *@
                     </div>
                 </div>
 
@@ -101,12 +112,9 @@
                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
                                     <path d="M6 20v-1a6 6 0 0 1 12 0v1" />
                                 </svg>
-                                <select asp-for="TechnicianRole" class="form-input">
-                                    <option value="">-- Select Role --</option>
-                                    <option value="Technician">Technician</option>
-                                    <option value="Senior Technician">Senior Technician</option>
-                                    <option value="Supervisor">Supervisor</option>
-                                </select>
+                                <input class="form-input"
+                                       value="@ViewBag.Role"
+                                       readonly />
                             </div>
                             <span asp-validation-for="TechnicianRole" class="validation-error"></span>
                         </div>
@@ -126,7 +134,7 @@
                             </div>
                             <span asp-validation-for="JoinDate" class="validation-error"></span>
                         </div>
-                        <div class="form-group">
+                       @*  <div class="form-group">
                             <label asp-for="LeaveDate" class="form-label">Leave Date</label>
                             <div class="input-with-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -137,9 +145,9 @@
                                 </svg>
                                 <input asp-for="LeaveDate" type="date" class="form-input" />
                             </div>
-                        </div>
+                        </div> *@
 
-                        <div class="form-group">
+                       @*  <div class="form-group">
                             <label class="form-label">Status</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-label">
@@ -149,7 +157,7 @@
                                 </label>
                                 <div class="checkbox-help">Uncheck to mark as inactive</div>
                             </div>
-                        </div>
+                        </div> *@
                     </div>
                 </div>
             </div>

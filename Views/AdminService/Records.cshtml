@@ -144,29 +144,37 @@
 
         <div class="card-body">
 
-            <div class="row">
+            <form method="get" asp-action="Records">
 
-                <div class="col-md-5">
+                <div class="row g-3">
 
-                    <input type="text"
-                           class="form-control modern-input"
-                           placeholder="Search customer...">
+                    <div class="col-md-8">
+
+                        <input type="text"
+                               name="search"
+                               value="@Context.Request.Query["search"]"
+                               class="form-control modern-input"
+                               placeholder="Search Customer, Phone, Address, State, Township..." />
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <button class="btn btn-theme w-100">
+
+                            <i class="fas fa-search me-2"></i>
+
+                            Search
+
+                        </button>
+
+                    </div>
+
 
                 </div>
 
-                <div class="col-md-3">
-
-                    <button class="btn btn-theme w-100">
-
-                        <i class="fas fa-search"></i>
-
-                        Search
-
-                    </button>
-
-                </div>
-
-            </div>
+            </form>
 
         </div>
 
@@ -229,16 +237,35 @@
                                 <div>
 
                                     <div class="fw-bold">
-
                                         @item.Customer?.Name
-
                                     </div>
 
+
                                     <small class="text-muted">
-
-                                        Customer
-
+                                        @item.Customer?.Phone
                                     </small>
+
+
+                                    <br />
+
+
+                                    @if (item.Customer?.CustomerLocations != null)
+                                    {
+                                        foreach (var loc in item.Customer.CustomerLocations)
+                                        {
+
+                                            <small class="text-secondary">
+
+                                                <i class="fas fa-map-marker-alt"></i>
+
+                                                @loc.StateDivisionPk?.StateDivisionEn,
+
+                                                @loc.TownshipPk?.TownshipEn
+
+                                            </small>
+
+                                        }
+                                    }
 
                                 </div>
 

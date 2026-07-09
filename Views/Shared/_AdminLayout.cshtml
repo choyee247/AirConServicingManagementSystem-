@@ -288,25 +288,33 @@
                 <ul class="submenu">
 
                     <li>
-                        <a asp-controller="Technicians" asp-action="Create">
+                        <a asp-controller="Users" asp-action="Create">
                             <i class="fa-solid fa-user-plus"></i>
                             <span class="nav-text">Create Account</span>
                         </a>
                     </li>
 
                     <li>
-                        <a asp-controller="Technicians" asp-action="Index">
+                        <a asp-controller="Users" asp-action="Index">
                             <i class="fa-solid fa-users"></i>
                             <span class="nav-text">Manage Technicians</span>
                         </a>
                     </li>
 
-                    <li>
-                        <a asp-controller="TechnicianService" asp-action="Assign">
+                   @*  <li>
+                        <a asp-controller="AdminService"
+                           asp-action="Assign"
+                           class="nav-link">
+
                             <i class="fa-solid fa-user-check"></i>
-                            <span class="nav-text">Assign Jobs</span>
+
+                            <span class="nav-text">
+                                Assign Jobs
+                            </span>
+
                         </a>
-                    </li>
+                    </li> *@
+                    
 
                 </ul>
             </li>
@@ -323,25 +331,25 @@
                 <ul class="submenu">
 
                     <li>
-                        <a asp-controller="Appointment" asp-action="Index">
+                        <a asp-controller="Appointment" asp-action="AppointmentList">
                             <i class="fa-solid fa-calendar-check"></i>
                             <span class="nav-text">Appointments</span>
                         </a>
                     </li>
 
-                    <li>
+                    @* <li>
                         <a asp-controller="AdminService" asp-action="Records">
                             <i class="fa-solid fa-file-lines"></i>
                             <span class="nav-text">Service Records</span>
                         </a>
-                    </li>
-
+                    </li> *@
+@* 
                     <li>
                         <a asp-controller="InstallationRequest" asp-action="Index">
                             <i class="fa-solid fa-house-circle-check"></i>
                             <span class="nav-text">Installation Requests</span>
                         </a>
-                    </li>
+                    </li> *@
 
                 </ul>
             </li>

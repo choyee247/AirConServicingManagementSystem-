@@ -248,90 +248,90 @@ public class CustomerDashboardController : Controller
         return View(locations);
     }
     // GET: Customer/Profile
-    public async Task<IActionResult> Profile()
-    {
-        int? customerId = HttpContext.Session.GetInt32("CustomerId");
-        if (customerId == null)
-            return RedirectToAction("Login", "CustomerLogin");
+    //public async Task<IActionResult> Profile()
+    //{
+    //    int? customerId = HttpContext.Session.GetInt32("CustomerId");
+    //    if (customerId == null)
+    //        return RedirectToAction("Login", "CustomerLogin");
 
-        var customer = await _context.Customers
-            .Include(c => c.CustomerLocations)
-            .FirstOrDefaultAsync(c => c.Id == customerId && c.IsDeleted != true);
+    //    var customer = await _context.Customers
+    //        .Include(c => c.CustomerLocations)
+    //        .FirstOrDefaultAsync(c => c.Id == customerId && c.IsDeleted != true);
 
-        if (customer == null)
-            return NotFound();
+    //    if (customer == null)
+    //        return NotFound();
 
-        var location = customer.CustomerLocations.FirstOrDefault();
+    //    var location = customer.CustomerLocations.FirstOrDefault();
 
-        var vm = new CustomerLocationViewModel
-        {
-            Name = customer.Name,
-            Phone = customer.Phone,
-            //Email = customer.Email,
-            Address = customer.Address,
-            Latitude = location?.Latitude,   // default Yangon
-            Longitude = location?.Longitude,
-            MapAddress = location?.MapAddress
-        };
+    //    var vm = new CustomerLocationViewModel
+    //    {
+    //        Name = customer.Name,
+    //        Phone = customer.Phone,
+    //        //Email = customer.Email,
+    //        Address = customer.Address,
+    //        Latitude = location?.Latitude,   // default Yangon
+    //        Longitude = location?.Longitude,
+    //        MapAddress = location?.MapAddress
+    //    };
 
-        return View(vm);
-    }
+    //    return View(vm);
+    //}
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Profile(CustomerLocationViewModel vm)
-    {
-        int? customerId = HttpContext.Session.GetInt32("CustomerId");
-        if (customerId == null)
-            return RedirectToAction("Login", "CustomerLogin");
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> Profile(CustomerLocationViewModel vm)
+    //{
+    //    int? customerId = HttpContext.Session.GetInt32("CustomerId");
+    //    if (customerId == null)
+    //        return RedirectToAction("Login", "CustomerLogin");
 
-        var customer = await _context.Customers
-            .Include(c => c.CustomerLocations)
-            .FirstOrDefaultAsync(c => c.Id == customerId && c.IsDeleted != true);
+    //    var customer = await _context.Customers
+    //        .Include(c => c.CustomerLocations)
+    //        .FirstOrDefaultAsync(c => c.Id == customerId && c.IsDeleted != true);
 
-        if (customer == null)
-            return NotFound();
+    //    if (customer == null)
+    //        return NotFound();
 
-        if (ModelState.IsValid)
-        {
-            return View(vm);
-        }
+    //    if (ModelState.IsValid)
+    //    {
+    //        return View(vm);
+    //    }
 
-        // Update customer info
-        customer.Name = vm.Name;
-        customer.Phone = vm.Phone?.Trim();
-        //customer.Email = vm.Email;
-        customer.Address = vm.Address;
-        customer.UpdatedAt = DateTime.Now;
+    //    // Update customer info
+    //    customer.Name = vm.Name;
+    //    customer.Phone = vm.Phone?.Trim();
+    //    //customer.Email = vm.Email;
+    //    customer.Address = vm.Address;
+    //    customer.UpdatedAt = DateTime.Now;
 
-        // Update or Insert location
-        var location = customer.CustomerLocations.FirstOrDefault();
-        if (location != null)
-        {
-            location.Latitude = vm.Latitude;
-            location.Longitude = vm.Longitude;
-            location.MapAddress = vm.MapAddress;
-        }
-        else if (vm.Latitude.HasValue && vm.Longitude.HasValue)
-        {
-            location = new CustomerLocation
-            {
-                CustomerId = customer.Id,
-                Latitude = vm.Latitude,
-                Longitude = vm.Longitude,
-                MapAddress = vm.MapAddress,
-                CreatedAt = DateTime.Now
-            };
-            _context.Add(location);
-        }
+    //    // Update or Insert location
+    //    var location = customer.CustomerLocations.FirstOrDefault();
+    //    if (location != null)
+    //    {
+    //        location.Latitude = vm.Latitude;
+    //        location.Longitude = vm.Longitude;
+    //        location.MapAddress = vm.MapAddress;
+    //    }
+    //    else if (vm.Latitude.HasValue && vm.Longitude.HasValue)
+    //    {
+    //        location = new CustomerLocation
+    //        {
+    //            CustomerId = customer.Id,
+    //            Latitude = vm.Latitude,
+    //            Longitude = vm.Longitude,
+    //            MapAddress = vm.MapAddress,
+    //            CreatedAt = DateTime.Now
+    //        };
+    //        _context.Add(location);
+    //    }
 
-        await _context.SaveChangesAsync();
+    //    await _context.SaveChangesAsync();
 
-        TempData["Success"] = "Profile updated successfully.";
+    //    TempData["Success"] = "Profile updated successfully.";
 
-        // Redirect to GET Profile to refresh View
-        return RedirectToAction("Profile");
-    }
+    //    // Redirect to GET Profile to refresh View
+    //    return RedirectToAction("Profile");
+    //}
 
 
     // 👤 Profile

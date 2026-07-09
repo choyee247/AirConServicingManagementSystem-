@@ -135,26 +135,6 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             return View(appointment);
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Assign(int id, int technicianId)
-        //{
-        //    var appointment = await _context.Appointments
-        //        .FindAsync(id);
-
-        //    if (appointment == null)
-        //        return NotFound();
-
-        //    appointment.TechnicianId = technicianId;
-        //    appointment.Status = "Assigned";
-
-        //    await _context.SaveChangesAsync();
-
-        //    TempData["SuccessMessage"] =
-        //        "Technician assigned successfully.";
-
-        //    return RedirectToAction("Index", "Appointment");
-        //}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, int technicianId)
@@ -214,7 +194,12 @@ namespace AirConServicingManagementSystem.Controllers.Admin
                 return RedirectToAction("Login", "TechnicianAuth");
 
             var records = _context.ServiceRecords
-                .Include(r => r.Customer)
+                .Include(x => x.Customer)
+                    .ThenInclude(c => c.CustomerLocations)
+                        .ThenInclude(l => l.StateDivisionPk)
+                .Include(x => x.Customer)
+                    .ThenInclude(c => c.CustomerLocations)
+                        .ThenInclude(l => l.TownshipPk)
                 .Include(r => r.Technician)
                 .Include(r => r.ServiceRequest)
                     .ThenInclude(a => a.Appointment)
@@ -229,8 +214,16 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             {
                 records = records.Where(r =>
                     (r.Customer != null && r.Customer.Name.Contains(search)) ||
+                     (r.Customer.Phone.Contains(search)) ||
+                    (r.Customer.Address.Contains(search)) ||
+
+                    (r.Customer.CustomerLocations.Any(l =>
+                        l.StateDivisionPk.StateDivisionEn.Contains(search) ||
+                        l.TownshipPk.TownshipEn.Contains(search))||
+
                     (r.Technician != null && r.Technician.Name.Contains(search)) ||
                     (r.ServiceType != null && r.ServiceType.Contains(search))
+                    )
                 );
             }
 

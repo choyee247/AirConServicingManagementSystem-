@@ -1,70 +1,304 @@
 ﻿@{
-    ViewData["Title"] = "ReAppointment";
+    ViewData["Title"] = "Create ReAppointment";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 
     var serviceRecord = ViewBag.ServiceRecord
         as AirConServicingManagementSystem.Models.ServiceRecord;
+
+    var customerLocation = serviceRecord?.Customer?
+        .CustomerLocations?
+        .FirstOrDefault();
 }
+
+<style>
+
+    :root{
+        --theme:#2c8c99;
+        --theme-dark:#257681;
+        --bg:#f4f8fb;
+    }
+
+    body{
+        background:var(--bg);
+    }
+
+    .page-card{
+
+        border:none;
+        border-radius:20px;
+        overflow:hidden;
+        box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    }
+
+    .page-header{
+
+        background:linear-gradient(135deg,#2c8c99,#45a8b5);
+        color:white;
+        padding:25px;
+
+    }
+
+    .section-title{
+
+        color:#2c8c99;
+        font-size:18px;
+        font-weight:700;
+        margin-bottom:18px;
+
+    }
+
+    .modern-input{
+
+        border-radius:12px;
+        padding:12px 14px;
+        border:1px solid #d9d9d9;
+
+    }
+
+    .modern-input:focus{
+
+        border-color:#2c8c99;
+        box-shadow:0 0 0 .15rem rgba(44,140,153,.25);
+
+    }
+
+    .readonly{
+
+        background:#f8f9fa;
+
+    }
+
+    .info-card{
+
+        background:#fbfbfb;
+        border-radius:15px;
+        border:1px solid #eee;
+        padding:20px;
+
+    }
+
+</style>
 
 <div class="container py-4">
 
-    <div class="card shadow border-0">
+    <div class="card page-card">
 
-        <div class="card-header text-white"
-             style="background:#2c8c99;">
-            <h4 class="mb-0">ReAppointment</h4>
+        <div class="page-header">
+
+            <h3 class="mb-1">
+                <i class="fas fa-calendar-plus me-2"></i>
+                Create ReAppointment
+            </h3>
+
+            <small>
+                Schedule next maintenance visit
+            </small>
+
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-4">
 
-            <!-- OLD INFO -->
-            <div class="mb-3">
-                <label>Customer</label>
-                <input class="form-control"
-                       value="@serviceRecord?.Customer?.Name"
-                       readonly />
+            <div class="section-title">
+
+                Customer Information
+
             </div>
 
-            <div class="mb-3">
-                <label>Phone</label>
-                <input class="form-control"
-                       value="@serviceRecord?.Customer?.Phone"
-                       readonly />
-            </div>
+            <div class="info-card">
 
-            <hr />
+                <div class="row">
 
-            <!-- NEW APPOINTMENT -->
-            <form asp-action="Create" asp-controller="ReAppointment" method="post">
+                    <div class="col-md-6 mb-3">
 
-                <input type="hidden" name="serviceRecordId" value="@serviceRecord.Id" />
+                        <label class="form-label fw-semibold">
 
-                <div class="mb-3">
-                    <label>Scheduled Date</label>
-                    <input type="datetime-local"
-                           name="scheduledDate"
-                           class="form-control"
-                           required />
+                            Customer Name
+
+                        </label>
+
+                        <input
+                            class="form-control modern-input readonly"
+                            readonly
+                            value="@serviceRecord?.Customer?.Name" />
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Phone Number
+
+                        </label>
+
+                        <input
+                            class="form-control modern-input readonly"
+                            readonly
+                            value="@serviceRecord?.Customer?.Phone" />
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            State Division
+
+                        </label>
+
+                        <input
+                            class="form-control modern-input readonly"
+                            readonly
+                            value="@customerLocation?.StateDivisionPk?.StateDivisionEn" />
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Township
+
+                        </label>
+
+                        <input
+                            class="form-control modern-input readonly"
+                            readonly
+                            value="@customerLocation?.TownshipPk?.TownshipEn" />
+
+                    </div>
+
                 </div>
 
                 <div class="mb-3">
-                    <label>Location</label>
-                    <input type="text"
-                           name="location"
-                           class="form-control"
-                           required />
+
+                    <label class="form-label fw-semibold">
+
+                        Customer Address
+
+                    </label>
+
+                    <textarea
+                        class="form-control modern-input readonly"
+                        rows="3"
+                              readonly>@ViewBag.LocationText</textarea>
+
+                </div>
+
+            </div>
+
+            <hr class="my-4">
+
+            <form asp-action="Create"
+                  method="post">
+
+                <input
+                    type="hidden"
+                    name="serviceRecordId"
+                    value="@serviceRecord?.Id" />
+                <!-- Appointment Information -->
+
+                <div class="section-title">
+                    Appointment Information
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Scheduled Date
+                        </label>
+
+                        <input type="datetime-local"
+                               name="scheduledDate"
+                               class="form-control modern-input"
+                               min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                               required />
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Service Type
+                        </label>
+
+                        <input type="text"
+                               class="form-control modern-input readonly"
+                               value="@serviceRecord?.ServiceType"
+                               readonly />
+
+                    </div>
+
                 </div>
 
                 <div class="mb-3">
-                    <label>Notes</label>
+
+                    <label class="form-label fw-semibold">
+                        Appointment Location
+                    </label>
+
+                    <textarea name="location"
+                              rows="4"
+                              class="form-control modern-input"
+                              required>@ViewBag.LocationText</textarea>
+
+                    <small class="text-muted">
+                        Default location is customer's address. You may edit it if the customer requests another service location.
+                    </small>
+
+                </div>
+
+                <div class="mb-4">
+
+                    <label class="form-label fw-semibold">
+                        Notes
+                    </label>
+
                     <textarea name="notes"
-                              class="form-control"></textarea>
+                              rows="4"
+                              class="form-control modern-input"
+                              placeholder="Example: Customer requested morning visit, bring ladder, check outdoor unit..."></textarea>
+
                 </div>
 
-                <button class="btn text-white w-100"
-                        style="background:#2c8c99;">
-                    Create ReAppointment
-                </button>
+                <div class="row">
+
+                    <div class="col-md-6 mb-2">
+
+                        <a asp-controller="AdminService"
+                           asp-action="Records"
+                           class="btn btn-outline-secondary w-100">
+
+                            <i class="fas fa-arrow-left me-2"></i>
+
+                            Back
+
+                        </a>
+
+                    </div>
+
+                    <div class="col-md-6 mb-2">
+
+                        <button type="submit"
+                                class="btn w-100 text-white"
+                                style="background:#2c8c99;height:48px;">
+
+                            <i class="fas fa-calendar-plus me-2"></i>
+
+                            Create ReAppointment
+
+                        </button>
+
+                    </div>
+
+                </div>
 
             </form>
 

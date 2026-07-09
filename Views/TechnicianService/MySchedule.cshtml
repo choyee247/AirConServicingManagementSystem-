@@ -9,49 +9,144 @@
 <style>
     :root {
         --main: #2c8c99;
+        --main-dark: #1a6b77;
+        --main-light: #4ca6b3;
         --soft: #eaf4f7;
         --dark: #1e4b54;
+        --font-base: 17px;
     }
 
+    /* ----- Base ----- */
+    body {
+        font-size: var(--font-base);
+    }
+
+    .container {
+        padding: 12px 10px !important;
+        max-width: 100% !important;
+    }
+
+    /* ----- Page Header ----- */
+    .page-header {
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--main);
+            margin-bottom: 0.2rem;
+        }
+
+            .page-header h2 i {
+                margin-right: 0.6rem;
+            }
+
+        .page-header p {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .page-header .date-badge {
+            background: var(--soft);
+            color: var(--dark);
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    /* ----- Stat Cards ----- */
     .schedule-header {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 15px;
-        margin-bottom: 20px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .stat-card {
         background: white;
-        border-radius: 16px;
-        padding: 18px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        border-radius: 18px;
+        padding: 1.2rem 1rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
         border-left: 5px solid var(--main);
         transition: 0.2s;
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
         .stat-card:hover {
             transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(44, 140, 153, 0.12);
         }
 
         .stat-card h6 {
             margin: 0;
             color: #6c7e97;
-            font-size: 13px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .stat-card h3 {
-            margin: 6px 0 0;
+            margin: 4px 0 0;
             color: var(--dark);
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 2.2rem;
         }
 
+        .stat-card .stat-icon {
+            font-size: 1.2rem;
+            color: var(--main);
+            opacity: 0.3;
+            margin-left: auto;
+        }
+
+        .stat-card:nth-child(2) {
+            border-left-color: #f39c12;
+        }
+
+        .stat-card:nth-child(3) {
+            border-left-color: #e74c3c;
+        }
+
+        .stat-card:nth-child(4) {
+            border-left-color: #27ae60;
+        }
+
+    /* ----- Table ----- */
     .table-modern {
         width: 100%;
         background: white;
-        border-radius: 16px;
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        border: 1px solid rgba(44, 140, 153, 0.06);
     }
+
+        .table-modern .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-modern table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 700px;
+        }
 
         .table-modern thead {
             background: var(--main);
@@ -59,175 +154,816 @@
         }
 
         .table-modern th {
-            padding: 14px;
-            font-size: 13px;
+            padding: 1rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            text-align: left;
         }
 
         .table-modern td {
-            padding: 12px;
-            font-size: 13px;
+            padding: 0.9rem 1rem;
+            font-size: 0.92rem;
             border-bottom: 1px solid #eee;
+            vertical-align: middle;
         }
 
+        .table-modern tbody tr:hover {
+            background: var(--soft);
+            transition: background 0.2s;
+        }
+
+        .table-modern tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* ----- Badges ----- */
     .badge-modern {
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 0.25rem 0.9rem;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 700;
         color: white;
         display: inline-block;
+        white-space: nowrap;
+    }
+
+    .badge-priority-high {
+        background: #e74c3c;
+    }
+
+    .badge-priority-medium {
+        background: #f39c12;
+    }
+
+    .badge-priority-low {
+        background: #95a5a6;
+    }
+
+    .badge-status-pending {
+        background: #f39c12;
+    }
+
+    .badge-status-progress {
+        background: var(--main);
+    }
+
+    .badge-status-completed {
+        background: #27ae60;
+    }
+
+    /* ----- Buttons ----- */
+    .btn-group-actions {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
     }
 
     .btn-modern {
-        padding: 5px 10px;
+        padding: 0.3rem 0.9rem;
         border-radius: 8px;
-        font-size: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
         border: none;
         text-decoration: none;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+        transition: 0.2s;
     }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
 
     .btn-start {
         background: var(--main);
         color: white;
     }
 
+        .btn-start:hover {
+            background: var(--main-dark);
+            color: white;
+        }
+
+    .btn-continue {
+        background: #f39c12;
+        color: white;
+    }
+
+        .btn-continue:hover {
+            background: #d68910;
+            color: white;
+        }
+
     .btn-view {
         background: #17a2b8;
         color: white;
     }
 
-    .btn-cont {
-        background: #f39c12;
-        color: white;
+        .btn-view:hover {
+            background: #138496;
+            color: white;
+        }
+
+    /* ----- Mobile Card View ----- */
+    .mobile-schedule-card {
+        background: white;
+        border-radius: 16px;
+        padding: 0.9rem 0.8rem;
+        margin-bottom: 0.7rem;
+        border: 1px solid rgba(44, 140, 153, 0.06);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        transition: 0.2s;
     }
 
+        .mobile-schedule-card:hover {
+            box-shadow: 0 4px 20px rgba(44, 140, 153, 0.08);
+        }
+
+        .mobile-schedule-card .mobile-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.25rem 0;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+        }
+
+        .mobile-schedule-card .mobile-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #6c7e97;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            min-width: 65px;
+        }
+
+        .mobile-schedule-card .mobile-value {
+            font-size: 0.9rem;
+            color: #1e293b;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+            .mobile-schedule-card .mobile-value .title-text {
+                font-weight: 600;
+                color: var(--dark);
+            }
+
+        .mobile-schedule-card .mobile-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(44, 140, 153, 0.06);
+        }
+
+        .mobile-schedule-card .btn-sm-mobile {
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+            .mobile-schedule-card .btn-sm-mobile:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            }
+
+    /* ----- Empty State ----- */
     .empty-box {
         text-align: center;
-        padding: 30px;
+        padding: 2.5rem 1rem;
         color: #777;
+    }
+
+        .empty-box i {
+            font-size: 3.5rem;
+            color: var(--main);
+            opacity: 0.2;
+            margin-bottom: 1rem;
+        }
+
+        .empty-box h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--main);
+            margin-bottom: 0.3rem;
+        }
+
+        .empty-box p {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+    /* ----- Responsive ----- */
+    @@media (max-width: 992px) {
+        .container
+
+    {
+        padding: 10px 8px !important;
+    }
+
+    .schedule-header {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.8rem;
+    }
+
+    .stat-card h6 {
+        font-size: 0.75rem;
+    }
+
+    .table-modern table {
+        font-size: 0.85rem;
+        min-width: 650px;
+    }
+
+    .table-modern th {
+        font-size: 0.75rem;
+        padding: 0.8rem 0.8rem;
+    }
+
+    .table-modern td {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.82rem;
+    }
+
+    .btn-modern {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.7rem;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        body
+
+    {
+        font-size: 16px;
+    }
+
+    .container {
+        padding: 8px 4px !important;
+    }
+
+    .page-header h2 {
+        font-size: 1.4rem;
+    }
+
+    .page-header p {
+        font-size: 0.85rem;
+    }
+
+    .page-header .date-badge {
+        font-size: 0.8rem;
+        padding: 0.3rem 1rem;
+    }
+
+    .schedule-header {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+    }
+
+    .stat-card {
+        padding: 0.8rem 0.7rem;
+        min-height: 65px;
+        border-radius: 14px;
+        border-left-width: 4px;
+    }
+
+        .stat-card h3 {
+            font-size: 1.5rem;
+        }
+
+        .stat-card h6 {
+            font-size: 0.65rem;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1rem;
+        }
+
+    .table-modern {
+        border-radius: 16px;
+    }
+
+        .table-modern table {
+            font-size: 0.8rem;
+            min-width: 550px;
+        }
+
+        .table-modern th {
+            font-size: 0.65rem;
+            padding: 0.6rem 0.6rem;
+        }
+
+        .table-modern td {
+            padding: 0.5rem 0.6rem;
+            font-size: 0.75rem;
+        }
+
+    .badge-modern {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.6rem;
+    }
+
+    .btn-modern {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.5rem;
+    }
+
+    /* Hide desktop table on mobile */
+    .desktop-table {
+        display: none !important;
+    }
+
+    /* Show mobile cards */
+    .mobile-view {
+        display: block !important;
+    }
+
+    }
+
+    @@media (min-width: 769px) {
+        .mobile-view
+
+    {
+        display: none !important;
+    }
+
+    .desktop-table {
+        display: block !important;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        body
+
+    {
+        font-size: 15px;
+    }
+
+    .container {
+        padding: 4px 2px !important;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+
+        .page-header h2 {
+            font-size: 1.2rem;
+        }
+
+            .page-header h2 i {
+                font-size: 1rem;
+            }
+
+        .page-header p {
+            font-size: 0.75rem;
+        }
+
+        .page-header .date-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.8rem;
+        }
+
+    .schedule-header {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.4rem;
+    }
+
+    .stat-card {
+        padding: 0.5rem 0.5rem;
+        min-height: 55px;
+        border-radius: 12px;
+        border-left-width: 3px;
+    }
+
+        .stat-card h3 {
+            font-size: 1.2rem;
+        }
+
+        .stat-card h6 {
+            font-size: 0.55rem;
+        }
+
+    .mobile-schedule-card {
+        padding: 0.5rem 0.4rem;
+        border-radius: 12px;
+    }
+
+        .mobile-schedule-card .mobile-label {
+            font-size: 0.55rem;
+            min-width: 55px;
+        }
+
+        .mobile-schedule-card .mobile-value {
+            font-size: 0.75rem;
+        }
+
+        .mobile-schedule-card .btn-sm-mobile {
+            font-size: 0.55rem;
+            padding: 0.15rem 0.4rem;
+        }
+
+    .empty-box i {
+        font-size: 2.5rem;
+    }
+
+    .empty-box h4 {
+        font-size: 1rem;
+    }
+
+    .empty-box p {
+        font-size: 0.8rem;
+    }
+
+    }
+
+    /* ----- Dark Mode ----- */
+    [data-bs-theme="dark"] .stat-card {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .stat-card h6 {
+            color: #a0a0a0 !important;
+        }
+
+        [data-bs-theme="dark"] .stat-card h3 {
+            color: #e0e0e0 !important;
+        }
+
+    [data-bs-theme="dark"] .table-modern {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .table-modern thead {
+            background: #1a6b77 !important;
+        }
+
+        [data-bs-theme="dark"] .table-modern td {
+            border-color: #495057 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-bs-theme="dark"] .table-modern tbody tr:hover {
+            background: rgba(44, 140, 153, 0.10) !important;
+        }
+
+    [data-bs-theme="dark"] .mobile-schedule-card {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .mobile-schedule-card .mobile-value {
+            color: #e0e0e0 !important;
+        }
+
+        [data-bs-theme="dark"] .mobile-schedule-card .mobile-label {
+            color: #a0a0a0 !important;
+        }
+
+    [data-bs-theme="dark"] .page-header p {
+        color: #a0a0a0 !important;
+    }
+
+    [data-bs-theme="dark"] .page-header .date-badge {
+        background: #2d2d2d !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #495057 !important;
     }
 </style>
 
-<!-- HEADER STATS -->
-<div class="schedule-header">
+<div class="container py-2 py-md-4">
 
-    <div class="stat-card">
-        <h6>Today</h6>
-        <h3>@Model.TodayCount</h3>
+    <!-- HEADER -->
+    <div class="page-header">
+        <div>
+            <h2>
+                <i class="fas fa-calendar-alt"></i>
+                My Schedule
+            </h2>
+            <p>
+                <i class="fas fa-list me-1"></i>
+                View and manage your daily tasks
+            </p>
+        </div>
+        <div>
+            <span class="date-badge">
+                <i class="fas fa-clock me-1"></i>
+                @DateTime.Now.ToString("dd MMM yyyy")
+            </span>
+        </div>
     </div>
 
-    <div class="stat-card">
-        <h6>Upcoming</h6>
-        <h3>@Model.UpcomingCount</h3>
+    <!-- STATS CARDS -->
+    <div class="schedule-header">
+
+        <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <h6><i class="fas fa-calendar-day me-1"></i>Today</h6>
+                    <h3>@Model.TodayCount</h3>
+                </div>
+                <span class="stat-icon"><i class="fas fa-sun"></i></span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <h6><i class="fas fa-calendar-plus me-1"></i>Upcoming</h6>
+                    <h3>@Model.UpcomingCount</h3>
+                </div>
+                <span class="stat-icon"><i class="fas fa-clock"></i></span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <h6><i class="fas fa-exclamation-triangle me-1"></i>High Priority</h6>
+                    <h3>@Model.HighPriorityCount</h3>
+                </div>
+                <span class="stat-icon"><i class="fas fa-flag"></i></span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <h6><i class="fas fa-check-circle me-1"></i>Completed</h6>
+                    <h3>@Model.CompletedCount</h3>
+                </div>
+                <span class="stat-icon"><i class="fas fa-check-double"></i></span>
+            </div>
+        </div>
+
     </div>
 
-    <div class="stat-card">
-        <h6>High Priority</h6>
-        <h3>@Model.HighPriorityCount</h3>
-    </div>
+    <!-- SCHEDULE TABLE - DESKTOP VIEW -->
+    <div class="table-modern desktop-table">
 
-    <div class="stat-card">
-        <h6>Completed</h6>
-        <h3>@Model.CompletedCount</h3>
-    </div>
+        <div class="table-responsive">
 
-</div>
+            <table>
 
-<!-- TABLE -->
-<div class="table-modern">
-
-    <table style="width:100%; border-collapse: collapse;">
-
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Customer</th>
-                <th>Title</th>
-                <th>Location</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            @if (Model.Plans == null || !Model.Plans.Any())
-            {
-                <tr>
-                    <td colspan="7" class="empty-box">
-                        No schedules found
-                    </td>
-                </tr>
-            }
-            else
-            {
-                foreach (var item in Model.Plans)
-                {
+                <thead>
                     <tr>
+                        <th>Time</th>
+                        <th>Customer</th>
+                        <th>Title</th>
+                        <th>Location</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
 
-                        <td>@item.PlannedDate.ToString("dd MMM · HH:mm")</td>
+                <tbody>
 
-                        <td>@(item.CustomerName ?? item.Customer?.Name ?? "N/A")</td>
+                    @if (Model.Plans == null || !Model.Plans.Any())
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-box">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <h4>No Schedules Found</h4>
+                                    <p>You don't have any scheduled tasks yet.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model.Plans)
+                        {
+                            <tr>
 
-                        <td>@(item.Title ?? "-")</td>
+                                <td>
+                                    <div style="font-weight:600;color:var(--dark);">
+                                        @item.PlannedDate.ToString("dd MMM")
+                                    </div>
+                                    <div style="font-size:0.8rem;color:#6c7e97;">
+                                        @item.PlannedDate.ToString("HH:mm")
+                                    </div>
+                                </td>
 
-                        <td>@(item.Location ?? "-")</td>
+                                <td>
+                                    <div style="font-weight:600;">
+                                        <i class="fas fa-user me-1" style="color:var(--main);"></i>
+                                        @(item.CustomerName ?? item.Customer?.Name ?? "N/A")
+                                    </div>
+                                </td>
 
-                        <td>
-                            <span class="badge-modern"
-                                  style="background:
-                              @(item.Priority?.ToLower() == "high" ? "#e74c3c" :
-                                item.Priority?.ToLower() == "medium" ? "#f1c40f" :
-                                "#95a5a6")">
+                                <td>
+                                    <div style="font-weight:500;">
+                                        @(item.Title ?? "-")
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div style="font-size:0.85rem;color:#6c7e97;">
+                                        <i class="fas fa-map-marker-alt me-1" style="color:var(--main);"></i>
+                                        @(item.Location ?? "-")
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="badge-modern
+                                        @(item.Priority?.ToLower() == "high" ? "badge-priority-high" :
+                                          item.Priority?.ToLower() == "medium" ? "badge-priority-medium" :
+                                          "badge-priority-low")">
+                                        @item.Priority
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge-modern
+                                        @(item.Status == "Completed" ? "badge-status-completed" :
+                                          item.Status == "In Progress" ? "badge-status-progress" :
+                                          "badge-status-pending")">
+                                        @item.Status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="btn-group-actions">
+
+                                        @if (item.Status == "Pending")
+                                        {
+                                            <a asp-action="Start"
+                                               asp-route-id="@item.PlanId"
+                                               class="btn-modern btn-start">
+                                                <i class="fas fa-play"></i> Start
+                                            </a>
+                                        }
+
+                                        @if (item.Status == "In Progress")
+                                        {
+                                            <a asp-action="Continue"
+                                               asp-route-id="@item.PlanId"
+                                               class="btn-modern btn-continue">
+                                                <i class="fas fa-forward"></i> Continue
+                                            </a>
+                                        }
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.PlanId"
+                                           class="btn-modern btn-view">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- SCHEDULE CARDS - MOBILE VIEW -->
+    <div class="mobile-view">
+
+        @if (Model.Plans == null || !Model.Plans.Any())
+        {
+            <div class="empty-box" style="background:white;border-radius:16px;padding:2rem 1rem;border:1px solid rgba(44,140,153,0.06);">
+                <i class="fas fa-calendar-times"></i>
+                <h4>No Schedules Found</h4>
+                <p>You don't have any scheduled tasks yet.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var item in Model.Plans)
+            {
+                <div class="mobile-schedule-card">
+
+                    <!-- Date & Time -->
+                    <div class="mobile-row">
+                        <span class="mobile-label">Time</span>
+                        <span class="mobile-value" style="font-weight:600;color:var(--dark);">
+                            <i class="far fa-calendar-alt me-1" style="color:var(--main);"></i>
+                            @item.PlannedDate.ToString("dd MMM")
+                            <span style="margin-left:0.3rem;font-weight:400;color:#6c7e97;">
+                                <i class="far fa-clock me-1"></i>
+                                @item.PlannedDate.ToString("HH:mm")
+                            </span>
+                        </span>
+                    </div>
+
+                    <!-- Customer -->
+                    <div class="mobile-row">
+                        <span class="mobile-label">Customer</span>
+                        <span class="mobile-value" style="font-weight:600;">
+                            <i class="fas fa-user me-1" style="color:var(--main);"></i>
+                            @(item.CustomerName ?? item.Customer?.Name ?? "N/A")
+                        </span>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="mobile-row">
+                        <span class="mobile-label">Title</span>
+                        <span class="mobile-value">
+                            <span class="title-text">@(item.Title ?? "-")</span>
+                        </span>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="mobile-row">
+                        <span class="mobile-label">Location</span>
+                        <span class="mobile-value" style="color:#6c7e97;">
+                            <i class="fas fa-map-marker-alt me-1" style="color:var(--main);"></i>
+                            @(item.Location ?? "-")
+                        </span>
+                    </div>
+
+                    <!-- Priority & Status -->
+                    <div class="mobile-row">
+                        <span class="mobile-label">Priority</span>
+                        <span class="mobile-value">
+                            <span class="badge-modern
+                                @(item.Priority?.ToLower() == "high" ? "badge-priority-high" :
+                                  item.Priority?.ToLower() == "medium" ? "badge-priority-medium" :
+                                  "badge-priority-low")" style="font-size:0.7rem;padding:0.15rem 0.7rem;">
                                 @item.Priority
                             </span>
-                        </td>
-
-                        <td>
-                            <span class="badge-modern"
-                                  style="background:
-                              @(item.Status == "Completed" ? "#27ae60" :
-                                item.Status == "In Progress" ? "#2c8c99" :
-                                "#f39c12")">
+                        </span>
+                        <span class="mobile-label" style="min-width:50px;">Status</span>
+                        <span class="mobile-value">
+                            <span class="badge-modern
+                                @(item.Status == "Completed" ? "badge-status-completed" :
+                                  item.Status == "In Progress" ? "badge-status-progress" :
+                                  "badge-status-pending")" style="font-size:0.7rem;padding:0.15rem 0.7rem;">
                                 @item.Status
                             </span>
-                        </td>
+                        </span>
+                    </div>
 
-                        <td>
+                    <!-- Actions -->
+                    <div class="mobile-actions">
 
-                            @if (item.Status == "Pending")
-                            {
-                                <a asp-action="Start"
-                                   asp-route-id="@item.PlanId"
-                                   class="btn-modern btn-start">
-                                    Start
-                                </a>
-                            }
-
-                            @if (item.Status == "In Progress")
-                            {
-                                <a asp-action="Continue"
-                                   asp-route-id="@item.PlanId"
-                                   class="btn-modern btn-cont">
-                                    Continue
-                                </a>
-                            }
-
-                            <a asp-action="Details"
+                        @if (item.Status == "Pending")
+                        {
+                            <a asp-action="Start"
                                asp-route-id="@item.PlanId"
-                               class="btn-modern btn-view">
-                                View
+                               class="btn-sm-mobile btn-start">
+                                <i class="fas fa-play"></i> Start
                             </a>
+                        }
 
-                        </td>
+                        @if (item.Status == "In Progress")
+                        {
+                            <a asp-action="Continue"
+                               asp-route-id="@item.PlanId"
+                               class="btn-sm-mobile btn-continue">
+                                <i class="fas fa-forward"></i> Continue
+                            </a>
+                        }
 
-                    </tr>
-                }
+                        <a asp-action="Details"
+                           asp-route-id="@item.PlanId"
+                           class="btn-sm-mobile btn-view">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+
+                    </div>
+
+                </div>
             }
+        }
 
-        </tbody>
-
-    </table>
+    </div>
 
 </div>

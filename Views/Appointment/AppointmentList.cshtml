@@ -1,0 +1,1127 @@
+﻿@model IEnumerable<Appointment>
+@{
+    ViewData["Title"] = "Appointment List";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #2c8c99;
+        --primary-dark: #1a6b77;
+        --primary-light: #4ca6b3;
+        --primary-soft: rgba(44, 140, 153, 0.08);
+        --primary-opacity-10: rgba(44, 140, 153, 0.10);
+        --font-base: 17px;
+    }
+
+    /* ----- Base ----- */
+    body {
+        font-size: var(--font-base);
+    }
+
+    .container {
+        padding: 16px 14px !important;
+        max-width: 100% !important;
+    }
+
+    /* ----- Page Header ----- */
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+    }
+
+        .page-header .header-left h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+            .page-header .header-left h3 i {
+                font-size: 1.6rem;
+            }
+
+        .page-header .header-left p {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .page-header .header-badge {
+            background: var(--primary-opacity-10);
+            color: var(--primary-color);
+            padding: 0.3rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    /* ----- Card ----- */
+    .table-card {
+        border-radius: 24px !important;
+        border: 1px solid rgba(44, 140, 153, 0.06) !important;
+        box-shadow: 0 4px 24px rgba(44, 140, 153, 0.06) !important;
+        overflow: hidden;
+    }
+
+        .table-card .card-header {
+            background: white !important;
+            border-bottom: 1px solid rgba(44, 140, 153, 0.06) !important;
+            padding: 0.8rem 1.2rem !important;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+            .table-card .card-header h5 {
+                font-size: 1.05rem;
+                font-weight: 600;
+                color: var(--primary-color);
+                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .table-card .card-header .status-filter {
+                display: flex;
+                gap: 0.4rem;
+                flex-wrap: wrap;
+            }
+
+                .table-card .card-header .status-filter .filter-badge {
+                    padding: 0.15rem 0.8rem;
+                    border-radius: 40px;
+                    font-size: 0.7rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: 0.2s;
+                    border: 2px solid transparent;
+                    background: #f8f9fa;
+                    color: #6c757d;
+                    text-decoration: none;
+                }
+
+                    .table-card .card-header .status-filter .filter-badge:hover {
+                        background: var(--primary-opacity-10);
+                        color: var(--primary-color);
+                    }
+
+                    .table-card .card-header .status-filter .filter-badge.active {
+                        background: var(--primary-color);
+                        color: white;
+                        border-color: var(--primary-color);
+                    }
+
+                    .table-card .card-header .status-filter .filter-badge.pending {
+                        border-color: #f39c12;
+                    }
+
+                    .table-card .card-header .status-filter .filter-badge.assigned {
+                        border-color: #17a2b8;
+                    }
+
+                    .table-card .card-header .status-filter .filter-badge.completed {
+                        border-color: #28a745;
+                    }
+
+    /* ----- Table ----- */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0;
+    }
+
+    .table-custom {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        min-width: 700px;
+        margin-bottom: 0;
+    }
+
+        .table-custom thead th {
+            background: var(--primary-opacity-10);
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 0.82rem;
+            padding: 0.9rem 1rem;
+            border-bottom: 2px solid rgba(44, 140, 153, 0.08);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .table-custom tbody td {
+            padding: 0.8rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(44, 140, 153, 0.06);
+            font-size: 0.9rem;
+        }
+
+        .table-custom tbody tr:hover {
+            background: var(--primary-opacity-10);
+            transition: background 0.2s;
+        }
+
+        .table-custom tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom .customer-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .table-custom .customer-phone {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .table-custom .appointment-date {
+            font-weight: 500;
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+
+        .table-custom .appointment-time {
+            font-size: 0.78rem;
+            color: #6c757d;
+        }
+
+        .table-custom .appointment-location {
+            font-size: 0.88rem;
+        }
+
+    /* ----- Badges ----- */
+    .badge-status {
+        padding: 0.25rem 0.9rem;
+        border-radius: 40px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+    }
+
+    .badge-pending {
+        background: #fef3d7;
+        color: #8a6d0b;
+    }
+
+        .badge-pending i {
+            color: #f39c12;
+        }
+
+    .badge-assigned {
+        background: #d7eef3;
+        color: #0e5a66;
+    }
+
+        .badge-assigned i {
+            color: #17a2b8;
+        }
+
+    .badge-progress {
+        background: #cce5ff;
+        color: #004085;
+    }
+
+        .badge-progress i {
+            color: #007bff;
+        }
+
+    .badge-completed {
+        background: #d4edda;
+        color: #0f6b3a;
+    }
+
+        .badge-completed i {
+            color: #28a745;
+        }
+
+    .badge-other {
+        background: #e9ecef;
+        color: #495057;
+    }
+
+    /* ----- Buttons ----- */
+    .btn-group-actions {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm-custom {
+        padding: 0.3rem 0.9rem;
+        border-radius: 8px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        border: none;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+        .btn-sm-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .btn-sm-custom:active {
+            transform: translateY(0);
+        }
+
+    .btn-assign {
+        background: var(--primary-color);
+        color: white;
+    }
+
+        .btn-assign:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+    .btn-reassign {
+        background: #f39c12;
+        color: white;
+    }
+
+        .btn-reassign:hover {
+            background: #d68910;
+            color: white;
+        }
+
+    .btn-view {
+        background: #17a2b8;
+        color: white;
+    }
+
+        .btn-view:hover {
+            background: #138496;
+            color: white;
+        }
+
+    /* ----- Mobile Card View ----- */
+    .mobile-appointment-card {
+        background: white;
+        border-radius: 16px;
+        padding: 0.8rem 0.7rem;
+        margin-bottom: 0.7rem;
+        border: 1px solid rgba(44, 140, 153, 0.06);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        transition: 0.2s;
+    }
+
+        .mobile-appointment-card:hover {
+            box-shadow: 0 4px 20px rgba(44, 140, 153, 0.08);
+        }
+
+        .mobile-appointment-card .mobile-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.2rem 0;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+        }
+
+        .mobile-appointment-card .mobile-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #6c7e97;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            min-width: 70px;
+        }
+
+        .mobile-appointment-card .mobile-value {
+            font-size: 0.85rem;
+            color: #1e293b;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+            .mobile-appointment-card .mobile-value .customer {
+                font-weight: 700;
+                color: var(--primary-dark);
+            }
+
+        .mobile-appointment-card .mobile-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 0.4rem;
+            padding-top: 0.4rem;
+            border-top: 1px solid rgba(44, 140, 153, 0.06);
+        }
+
+        .mobile-appointment-card .btn-sm-mobile {
+            padding: 0.2rem 0.7rem;
+            font-size: 0.65rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+            .mobile-appointment-card .btn-sm-mobile:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            }
+
+    /* ----- Empty State ----- */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--primary-color);
+            opacity: 0.2;
+        }
+
+        .empty-state h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 0.8rem;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+    /* ----- Responsive ----- */
+    @@media (max-width: 992px) {
+        .container
+
+    {
+        padding: 12px 10px !important;
+    }
+
+    .page-header .header-left h3 {
+        font-size: 1.5rem;
+    }
+
+    .page-header .header-left p {
+        font-size: 0.85rem;
+    }
+
+    .page-header .header-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 1rem;
+    }
+
+    .table-custom {
+        font-size: 0.85rem;
+        min-width: 620px;
+    }
+
+        .table-custom thead th {
+            font-size: 0.72rem;
+            padding: 0.7rem 0.8rem;
+        }
+
+        .table-custom tbody td {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.82rem;
+        }
+
+    .btn-sm-custom {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.7rem;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        body
+
+    {
+        font-size: 16px;
+    }
+
+    .container {
+        padding: 10px 6px !important;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .page-header .header-left h3 {
+            font-size: 1.2rem;
+        }
+
+            .page-header .header-left h3 i {
+                font-size: 1.2rem;
+            }
+
+        .page-header .header-left p {
+            font-size: 0.8rem;
+        }
+
+        .page-header .header-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.8rem;
+            align-self: flex-start;
+        }
+
+    .table-card {
+        border-radius: 18px !important;
+    }
+
+        .table-card .card-header {
+            padding: 0.6rem 0.8rem !important;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .table-card .card-header h5 {
+                font-size: 0.9rem;
+            }
+
+            .table-card .card-header .status-filter .filter-badge {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.6rem;
+            }
+
+    /* Hide desktop table on mobile */
+    .desktop-table {
+        display: none !important;
+    }
+
+    /* Show mobile cards */
+    .mobile-view {
+        display: block !important;
+    }
+
+    }
+
+    @@media (min-width: 769px) {
+        .mobile-view
+
+    {
+        display: none !important;
+    }
+
+    .desktop-table {
+        display: block !important;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        body
+
+    {
+        font-size: 15px;
+    }
+
+    .container {
+        padding: 6px 3px !important;
+    }
+
+    .page-header .header-left h3 {
+        font-size: 1rem;
+    }
+
+        .page-header .header-left h3 i {
+            font-size: 1rem;
+        }
+
+    .page-header .header-left p {
+        font-size: 0.7rem;
+    }
+
+    .page-header .header-badge {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.6rem;
+    }
+
+    .table-card {
+        border-radius: 14px !important;
+    }
+
+        .table-card .card-header {
+            padding: 0.4rem 0.6rem !important;
+        }
+
+            .table-card .card-header h5 {
+                font-size: 0.8rem;
+            }
+
+            .table-card .card-header .status-filter .filter-badge {
+                font-size: 0.55rem;
+                padding: 0.05rem 0.5rem;
+            }
+
+    .mobile-appointment-card {
+        padding: 0.5rem 0.4rem;
+        border-radius: 12px;
+    }
+
+        .mobile-appointment-card .mobile-label {
+            font-size: 0.55rem;
+            min-width: 55px;
+        }
+
+        .mobile-appointment-card .mobile-value {
+            font-size: 0.75rem;
+        }
+
+        .mobile-appointment-card .btn-sm-mobile {
+            font-size: 0.55rem;
+            padding: 0.15rem 0.5rem;
+        }
+
+    .badge-status {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.6rem;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+    }
+
+    .empty-state h4 {
+        font-size: 1rem;
+    }
+
+    .empty-state p {
+        font-size: 0.8rem;
+    }
+
+    }
+
+    /* ----- Dark Mode ----- */
+    [data-bs-theme="dark"] .table-card {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .table-card .card-header {
+            background: #2d2d2d !important;
+            border-color: #495057 !important;
+        }
+
+            [data-bs-theme="dark"] .table-card .card-header .filter-badge {
+                background: #3d3d3d !important;
+                color: #a0a0a0 !important;
+            }
+
+                [data-bs-theme="dark"] .table-card .card-header .filter-badge.active {
+                    background: var(--primary-color) !important;
+                    color: white !important;
+                }
+
+    [data-bs-theme="dark"] .table-custom {
+        color: #e0e0e0;
+    }
+
+        [data-bs-theme="dark"] .table-custom thead th {
+            background: rgba(44, 140, 153, 0.08);
+            border-color: #495057;
+            color: rgba(44, 140, 153, 0.9);
+        }
+
+        [data-bs-theme="dark"] .table-custom tbody td {
+            border-color: #495057;
+        }
+
+        [data-bs-theme="dark"] .table-custom tbody tr:hover {
+            background: rgba(44, 140, 153, 0.10);
+        }
+
+        [data-bs-theme="dark"] .table-custom .customer-name {
+            color: #e0e0e0;
+        }
+
+    [data-bs-theme="dark"] .mobile-appointment-card {
+        background: #2d2d2d !important;
+        border-color: #495057 !important;
+    }
+
+        [data-bs-theme="dark"] .mobile-appointment-card .mobile-value {
+            color: #e0e0e0 !important;
+        }
+
+        [data-bs-theme="dark"] .mobile-appointment-card .mobile-label {
+            color: #a0a0a0 !important;
+        }
+
+    [data-bs-theme="dark"] .page-header .header-left p {
+        color: #a0a0a0 !important;
+    }
+
+    [data-bs-theme="dark"] .page-header .header-badge {
+        background: rgba(44, 140, 153, 0.15) !important;
+        color: #7fcbd4 !important;
+    }
+
+    [data-bs-theme="dark"] .empty-state h4 {
+        color: #7fcbd4 !important;
+    }
+
+    [data-bs-theme="dark"] .empty-state p {
+        color: #a0a0a0 !important;
+    }
+</style>
+
+<div class="container py-2 py-md-4">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-left">
+            <h3>
+                <i class="fas fa-calendar-check"></i>
+                Appointment List
+            </h3>
+            <p>
+                <i class="fas fa-list me-1"></i>
+                Manage all appointments and assignments
+            </p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
+            <span class="header-badge">
+                <i class="fas fa-calendar-alt me-1"></i>
+                @Model.Count() Appointments
+            </span>
+            <a asp-action="Create" class="btn btn-primary btn-sm" style="background:var(--primary-color);border:none;border-radius:60px;padding:0.4rem 1.2rem;font-weight:600;font-size:0.85rem;display:inline-flex;align-items:center;gap:0.4rem;">
+                <i class="fas fa-plus-circle"></i>
+                New
+            </a>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card card shadow-sm">
+
+        <div class="card-header">
+            <h5>
+                <i class="fas fa-list-ul me-2"></i>
+                All Appointments
+            </h5>
+            <div class="status-filter">
+                <a href="#" class="filter-badge active" data-filter="all">All</a>
+                <a href="#" class="filter-badge pending" data-filter="pending">Pending</a>
+                <a href="#" class="filter-badge assigned" data-filter="assigned">Assigned</a>
+                <a href="#" class="filter-badge completed" data-filter="completed">Completed</a>
+            </div>
+        </div>
+
+        <!-- DESKTOP TABLE VIEW -->
+        <div class="card-body p-0 desktop-table">
+            <div class="table-responsive">
+                <table class="table-custom" id="appointmentTable">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Technician</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr data-status="@item.Status.ToLower()">
+                                    <td>
+                                        <span class="customer-name">
+                                            <i class="fas fa-user me-1" style="color:var(--primary-color);font-size:0.8rem;"></i>
+                                            @item.Customer?.Name
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="customer-phone">
+                                            <i class="fas fa-phone me-1" style="font-size:0.7rem;"></i>
+                                            @item.Customer?.Phone
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="appointment-date">
+                                            <i class="far fa-calendar-alt me-1" style="color:var(--primary-color);"></i>
+                                            @item.ScheduledDate.ToString("dd-MM-yyyy")
+                                        </div>
+                                        <div class="appointment-time">
+                                            <i class="far fa-clock me-1"></i>
+                                            @item.ScheduledDate.ToString("HH:mm")
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="appointment-location">
+                                            <i class="fas fa-map-marker-alt me-1" style="color:var(--primary-color);"></i>
+                                            @item.Location
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.Status == "Pending")
+                                        {
+                                            <span class="badge-status badge-pending">
+                                                <i class="fas fa-clock"></i>
+                                                Pending
+                                            </span>
+                                        }
+                                        else if (item.Status == "Assigned")
+                                        {
+                                            <span class="badge-status badge-assigned">
+                                                <i class="fas fa-user-check"></i>
+                                                Assigned
+                                            </span>
+                                        }
+                                        else if (item.Status == "In Progress")
+                                        {
+                                            <span class="badge-status badge-progress">
+                                                <i class="fas fa-spinner fa-pulse"></i>
+                                                In Progress
+                                            </span>
+                                        }
+                                        else if (item.Status == "Completed")
+                                        {
+                                            <span class="badge-status badge-completed">
+                                                <i class="fas fa-check-circle"></i>
+                                                Completed
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-status badge-other">
+                                                @item.Status
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.Technician != null)
+                                        {
+                                            <span style="font-weight:500;color:#28a745;">
+                                                <i class="fas fa-user-tie me-1"></i>
+                                                @item.Technician.Name
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                <i class="fas fa-user-slash me-1"></i>
+                                                Not Assigned
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group-actions" style="justify-content:center;">
+
+                                            @if (item.Status == "Pending")
+                                            {
+                                                <a asp-controller="AdminService"
+                                                   asp-action="Assign"
+                                                   asp-route-id="@item.AppointmentId"
+                                                   class="btn-sm-custom btn-assign">
+                                                    <i class="fas fa-user-plus"></i>
+                                                    Assign
+                                                </a>
+                                            }
+
+                                            @if (item.Status == "Assigned")
+                                            {
+                                                <a asp-controller="ReAssign"
+                                                   asp-action="Create"
+                                                   asp-route-appointmentId="@item.AppointmentId"
+                                                   class="btn-sm-custom btn-reassign">
+                                                    <i class="fas fa-redo"></i>
+                                                    ReAssign
+                                                </a>
+                                            }
+
+                                            <a asp-controller="Appointment"
+                                               asp-action="Details"
+                                               asp-route-id="@item.AppointmentId"
+                                               class="btn-sm-custom btn-view">
+                                                <i class="fas fa-eye"></i>
+                                                View
+                                            </a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="empty-state py-2">
+                                        <i class="fas fa-calendar-times"></i>
+                                        <h4>No Appointments Found</h4>
+                                        <p>Start by creating your first appointment</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MOBILE CARD VIEW -->
+        <div class="card-body p-2 mobile-view">
+            @if (Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="mobile-appointment-card" data-status="@item.Status.ToLower()">
+
+                        <!-- Customer & Phone -->
+                        <div class="mobile-row">
+                            <span class="mobile-label">Customer</span>
+                            <span class="mobile-value">
+                                <span class="customer">
+                                    <i class="fas fa-user me-1" style="color:var(--primary-color);"></i>
+                                    @item.Customer?.Name
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="mobile-row">
+                            <span class="mobile-label">Phone</span>
+                            <span class="mobile-value">
+                                <i class="fas fa-phone me-1" style="color:var(--primary-color);"></i>
+                                @item.Customer?.Phone
+                            </span>
+                        </div>
+
+                        <!-- Date & Location -->
+                        <div class="mobile-row">
+                            <span class="mobile-label">Date</span>
+                            <span class="mobile-value">
+                                <i class="far fa-calendar-alt me-1" style="color:var(--primary-color);"></i>
+                                @item.ScheduledDate.ToString("dd-MM-yyyy")
+                                <span style="margin-left:0.3rem;font-weight:400;color:#6c7e97;">
+                                    <i class="far fa-clock me-1"></i>
+                                    @item.ScheduledDate.ToString("HH:mm")
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="mobile-row">
+                            <span class="mobile-label">Location</span>
+                            <span class="mobile-value">
+                                <i class="fas fa-map-marker-alt me-1" style="color:var(--primary-color);"></i>
+                                @item.Location
+                            </span>
+                        </div>
+
+                        <!-- Status & Technician -->
+                        <div class="mobile-row">
+                            <span class="mobile-label">Status</span>
+                            <span class="mobile-value">
+                                @if (item.Status == "Pending")
+                                {
+                                    <span class="badge-status badge-pending" style="font-size:0.6rem;padding:0.15rem 0.6rem;">
+                                        <i class="fas fa-clock"></i>
+                                        Pending
+                                    </span>
+                                }
+                                else if (item.Status == "Assigned")
+                                {
+                                    <span class="badge-status badge-assigned" style="font-size:0.6rem;padding:0.15rem 0.6rem;">
+                                        <i class="fas fa-user-check"></i>
+                                        Assigned
+                                    </span>
+                                }
+                                else if (item.Status == "In Progress")
+                                {
+                                    <span class="badge-status badge-progress" style="font-size:0.6rem;padding:0.15rem 0.6rem;">
+                                        <i class="fas fa-spinner fa-pulse"></i>
+                                        In Progress
+                                    </span>
+                                }
+                                else if (item.Status == "Completed")
+                                {
+                                    <span class="badge-status badge-completed" style="font-size:0.6rem;padding:0.15rem 0.6rem;">
+                                        <i class="fas fa-check-circle"></i>
+                                        Completed
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status badge-other" style="font-size:0.6rem;padding:0.15rem 0.6rem;">
+                                        @item.Status
+                                    </span>
+                                }
+                            </span>
+                        </div>
+
+                        <div class="mobile-row">
+                            <span class="mobile-label">Technician</span>
+                            <span class="mobile-value">
+                                @if (item.Technician != null)
+                                {
+                                    <span style="color:#28a745;font-weight:500;">
+                                        <i class="fas fa-user-tie me-1"></i>
+                                        @item.Technician.Name
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        <i class="fas fa-user-slash me-1"></i>
+                                        Not Assigned
+                                    </span>
+                                }
+                            </span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mobile-actions">
+
+                            @if (item.Status == "Pending")
+                            {
+                                <a asp-controller="AdminService"
+                                   asp-action="Assign"
+                                   asp-route-id="@item.AppointmentId"
+                                   class="btn-sm-mobile btn-assign">
+                                    <i class="fas fa-user-plus"></i>
+                                    Assign
+                                </a>
+                            }
+
+                            @if (item.Status == "Assigned")
+                            {
+                                <a asp-controller="ReAssign"
+                                   asp-action="Create"
+                                   asp-route-appointmentId="@item.AppointmentId"
+                                   class="btn-sm-mobile btn-reassign">
+                                    <i class="fas fa-redo"></i>
+                                    ReAssign
+                                </a>
+                            }
+
+                            <a asp-controller="Appointment"
+                               asp-action="Details"
+                               asp-route-id="@item.AppointmentId"
+                               class="btn-sm-mobile btn-view">
+                                <i class="fas fa-eye"></i>
+                                View
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state py-4">
+                    <i class="fas fa-calendar-times"></i>
+                    <h4>No Appointments Found</h4>
+                    <p>Start by creating your first appointment</p>
+                </div>
+            }
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // ============================================
+        // FILTER FUNCTIONALITY
+        // ============================================
+        const filterLinks = document.querySelectorAll('.filter-badge');
+        const rows = document.querySelectorAll('#appointmentTable tbody tr[data-status]');
+        const mobileCards = document.querySelectorAll('.mobile-appointment-card[data-status]');
+
+        filterLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remove active class from all filters
+                filterLinks.forEach(l => l.classList.remove('active'));
+
+                // Add active class to clicked filter
+                this.classList.add('active');
+
+                const filter = this.getAttribute('data-filter');
+
+                // Filter table rows
+                rows.forEach(row => {
+                    const status = row.getAttribute('data-status');
+                    if (filter === 'all' || status === filter) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Filter mobile cards
+                mobileCards.forEach(card => {
+                    const status = card.getAttribute('data-status');
+                    if (filter === 'all' || status === filter) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // ============================================
+        // CONFIRM FOR REASSIGN
+        // ============================================
+        document.querySelectorAll('.btn-reassign').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Are you sure you want to reassign this appointment?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+
+        // ============================================
+        // CONFIRM FOR ASSIGN
+        // ============================================
+        document.querySelectorAll('.btn-assign').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Assign a technician to this appointment?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+
+    });
+</script>

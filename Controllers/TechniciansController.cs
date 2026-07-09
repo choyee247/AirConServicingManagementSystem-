@@ -4,6 +4,8 @@ using AirConServicingManagementSystem.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AirConServicingManagementSystem.Controllers
 {
@@ -80,43 +82,130 @@ namespace AirConServicingManagementSystem.Controllers
         }
 
 
-        // GET: Technicians/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "TechnicianAuth"
+                );
+            }
+
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id == userId);
+
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+
+            ViewBag.Username = user.Username;
+            ViewBag.Role = user.Role;
+
+
             return View();
         }
-
-        // POST: Technicians/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TechnicianViewModel viewModel)
+        public async Task<IActionResult> Create(
+    TechnicianViewModel viewModel)
         {
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "TechnicianAuth"
+                );
+            }
+
+
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id == userId);
+
+
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+
+
             if (ModelState.IsValid)
             {
+
                 var technician = new Technician
                 {
                     Name = viewModel.Name,
+
                     PhoneNumber = viewModel.PhoneNumber,
-                    Email = viewModel.Email,
+
                     Address = viewModel.Address,
-                    TechnicianRole = viewModel.TechnicianRole,
-                    JoinDate = viewModel.JoinDate ?? DateTime.Now,
-                    LeaveDate = viewModel.LeaveDate,
-                    IsAvailable = viewModel.IsAvailable,
+
+
+                    TechnicianRole = user.Role,
+
+                    Email = $"{user.Username}@temp.com",
+
+                    JoinDate = viewModel.JoinDate,
+
+
+                    IsAvailable = true,
+
                     CreatedAt = DateTime.Now,
+
                     UpdatedAt = DateTime.Now,
+
                     IsDeleted = false
                 };
 
-                _context.Add(technician);
+
+
+                _context.Technicians.Add(technician);
+
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "Technician created successfully!";
-                return RedirectToAction(nameof(Index));
+
+
+                user.TechnicianId = technician.TechnicianId;
+
+
+                await _context.SaveChangesAsync();
+
+
+
+                HttpContext.Session.SetInt32(
+                    "TechnicianId",
+                    technician.TechnicianId
+                );
+
+
+
+                return RedirectToAction(
+                    "Dashboard",
+                    "TechnicianService"
+                );
+
             }
+
+
+            ViewBag.Username = user.Username;
+            ViewBag.Role = user.Role;
+
+
             return View(viewModel);
         }
-
         // GET: Technicians/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -185,6 +274,326 @@ namespace AirConServicingManagementSystem.Controllers
             }
             return View(viewModel);
         }
+        #region Technician Profile
+
+
+        // GET: Technician Profile
+        public async Task<IActionResult> Profile()
+        {
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+            if (technicianId == null)
+            {
+                return RedirectToAction("Login", "TechnicianLogin");
+            }
+
+
+            var technician = await _context.Technicians
+                .FirstOrDefaultAsync(t =>
+                    t.TechnicianId == technicianId &&
+                    t.IsDeleted == false);
+
+
+            if (technician == null)
+            {
+                return NotFound();
+            }
+
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u =>
+                    u.TechnicianId == technicianId &&
+                    u.IsDeleted == false);
+
+
+
+            var model = new TechnicianProfileVM
+            {
+                TechnicianId = technician.TechnicianId,
+
+                Username = user?.Username,
+
+                Name = technician.Name,
+
+                PhoneNumber = technician.PhoneNumber,
+
+                Address = technician.Address,
+
+                Email = technician.Email,
+
+                TechnicianRole = technician.TechnicianRole,
+
+                JoinDate = technician.JoinDate,
+
+                IsAvailable = technician.IsAvailable
+            };
+
+
+            return View(model);
+        }
+
+        // GET: Edit Profile
+        public async Task<IActionResult> EditProfile()
+        {
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+            if (technicianId == null)
+            {
+                return RedirectToAction("Login", "TechnicianLogin");
+            }
+
+
+            var technician = await _context.Technicians
+                .FirstOrDefaultAsync(t =>
+                    t.TechnicianId == technicianId &&
+                    t.IsDeleted == false);
+
+
+            if (technician == null)
+            {
+                return NotFound();
+            }
+
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u =>
+                    u.TechnicianId == technicianId &&
+                    u.IsDeleted == false);
+
+
+
+            var model = new TechnicianProfileVM
+            {
+                TechnicianId = technician.TechnicianId,
+
+                Username = user?.Username,
+
+                Name = technician.Name,
+
+                PhoneNumber = technician.PhoneNumber,
+
+                Address = technician.Address,
+
+                Email = technician.Email,
+
+                TechnicianRole = technician.TechnicianRole,
+
+                JoinDate = technician.JoinDate,
+
+                IsAvailable = technician.IsAvailable
+            };
+
+
+            return View(model);
+        }
+        // POST: Edit Profile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(
+            TechnicianProfileVM model)
+        {
+
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+
+            if (technicianId == null)
+            {
+                return RedirectToAction("Login", "TechnicianLogin");
+            }
+
+
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+
+
+            var technician = await _context.Technicians
+                .FirstOrDefaultAsync(t =>
+                    t.TechnicianId == technicianId &&
+                    t.IsDeleted == false);
+
+
+
+            if (technician == null)
+            {
+                return NotFound();
+            }
+
+
+
+            // Update only editable fields
+
+            technician.Name = model.Name;
+
+            technician.PhoneNumber = model.PhoneNumber;
+
+            technician.Address = model.Address;
+
+            technician.Email = model.Email;
+
+            technician.UpdatedAt = DateTime.Now;
+
+
+
+            _context.Technicians.Update(technician);
+
+            await _context.SaveChangesAsync();
+
+
+
+            TempData["SuccessMessage"] =
+                "Profile updated successfully";
+
+
+
+            return RedirectToAction(nameof(Profile));
+        }
+        private string ComputeSha256Hash(string rawData)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(
+                    Encoding.UTF8.GetBytes(rawData));
+
+                return Convert.ToBase64String(bytes);
+            }
+        }
+        // GET: Change Password
+        public IActionResult ChangePassword()
+        {
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+
+            if (technicianId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "TechnicianLogin");
+            }
+
+
+            return View();
+        }
+        // POST: Change Password
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(
+            string currentPassword,
+            string newPassword,
+            string confirmPassword)
+        {
+
+
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+
+            if (technicianId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "TechnicianLogin");
+            }
+
+
+
+
+            if (string.IsNullOrEmpty(currentPassword) ||
+                string.IsNullOrEmpty(newPassword) ||
+                string.IsNullOrEmpty(confirmPassword))
+            {
+                ViewBag.Error =
+                    "All fields are required.";
+
+                return View();
+            }
+
+
+
+
+
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error =
+                    "New password and confirm password do not match.";
+
+                return View();
+            }
+
+
+
+
+
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u =>
+                    u.TechnicianId == technicianId &&
+                    u.IsDeleted == false);
+
+
+
+
+            if (user == null)
+            {
+                ViewBag.Error =
+                    "User account not found.";
+
+                return View();
+            }
+
+
+
+
+
+            // Check old password
+
+            var currentHash =
+                ComputeSha256Hash(currentPassword);
+
+
+
+
+            if (user.PasswordHash != currentHash)
+            {
+                ViewBag.Error =
+                    "Current password is incorrect.";
+
+                return View();
+            }
+
+
+
+
+
+
+            // Update new password
+
+            user.PasswordHash =
+                ComputeSha256Hash(newPassword);
+
+
+
+            user.UpdatedAt = DateTime.Now;
+
+
+
+            _context.Users.Update(user);
+
+
+            await _context.SaveChangesAsync();
+
+
+
+
+            ViewBag.Success =
+                "Password changed successfully.";
+
+            return View();
+
+        }
+        #endregion
 
         // GET: Technicians/Delete/5
         public async Task<IActionResult> Delete(int? id)

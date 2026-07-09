@@ -1,0 +1,505 @@
+﻿@{
+    ViewData["Title"] = "Create Technician Account";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Modern, responsive UI with color #2c8c99 -->
+<div class="page-wrapper">
+    <div class="form-card">
+        <!-- Header -->
+        <div class="card-header">
+            <div class="header-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div>
+                <h3 class="card-title">Create Technician Account</h3>
+                <p class="card-subtitle">Add a new technician to the team</p>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert-modern alert-danger-modern">
+                <i class="fas fa-exclamation-circle"></i>
+                @ViewBag.Error
+            </div>
+        }
+
+        <!-- Form -->
+        <form asp-action="Create" method="post" class="modern-form" autocomplete="off">
+            @Html.AntiForgeryToken()
+
+            <!-- Username -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-user"></i> Username
+                </label>
+                <div class="input-wrapper">
+                    <input type="text"
+                           name="username"
+                           class="form-control"
+                           placeholder="Enter new username"
+                           autocomplete="off"
+                           required />
+                    <span class="input-icon"><i class="fas fa-user-circle"></i></span>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                <div class="input-wrapper">
+                    <input type="password"
+                           name="password"
+                           class="form-control"
+                           placeholder="Enter new password"
+                           autocomplete="new-password"
+                           required />
+                    <span class="input-icon"><i class="fas fa-key"></i></span>
+                </div>
+            </div>
+
+            <!-- Role -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-user-tag"></i> Technician Role
+                </label>
+                <div class="input-wrapper">
+                    <select name="role" class="form-control" required>
+                        <option value="">-- Select Role --</option>
+                        <option value="Senior">Senior Technician</option>
+                        <option value="Junior">Junior Technician</option>
+                    </select>
+                    <span class="input-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Create Account
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Font Awesome (if not already in layout) -->
+@* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" /> *@
+<link rel="stylesheet" href="~/fontawesome/css/beta3allmin600.css" />
+<style>
+    /* ----- global reset & base ----- */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: #f4f7fc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .page-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 90vh;
+        padding: 1.5rem;
+    }
+
+    /* ----- main card ----- */
+    .form-card {
+        max-width: 600px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 32px;
+        box-shadow: 0 20px 60px rgba(44, 140, 153, 0.12), 0 8px 24px rgba(0, 0, 0, 0.04);
+        padding: 2.2rem 2.5rem;
+        transition: box-shadow 0.3s ease, transform 0.2s;
+        border: 1px solid rgba(44, 140, 153, 0.08);
+    }
+
+        .form-card:hover {
+            box-shadow: 0 30px 80px rgba(44, 140, 153, 0.16);
+        }
+
+    /* ----- header ----- */
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(44, 140, 153, 0.10);
+    }
+
+    .header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        background: rgba(44, 140, 153, 0.10);
+        border-radius: 18px;
+        color: #2c8c99;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+        transition: background 0.2s;
+    }
+
+    .card-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1a2e35;
+        letter-spacing: -0.02em;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .card-subtitle {
+        color: #5e6f7a;
+        font-size: 0.95rem;
+        margin: 0.2rem 0 0 0;
+        font-weight: 400;
+    }
+
+    /* ----- modern alert ----- */
+    .alert-modern {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: #fff5f5;
+        border-left: 5px solid #e53e3e;
+        color: #b91c1c;
+        padding: 0.9rem 1.2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 8px rgba(229, 62, 62, 0.04);
+    }
+
+        .alert-modern i {
+            font-size: 1.2rem;
+            color: #e53e3e;
+        }
+
+    /* ----- form elements ----- */
+    .modern-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.6rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #1f3a44;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        letter-spacing: -0.01em;
+    }
+
+        .form-label i {
+            color: #2c8c99;
+            width: 1.2rem;
+            font-size: 0.95rem;
+        }
+
+    .input-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.85rem 1rem 0.85rem 2.8rem;
+        font-size: 1rem;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 18px;
+        background: #fafcfe;
+        transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s;
+        color: #1a2e35;
+        font-weight: 450;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+        .form-control:focus {
+            border-color: #2c8c99;
+            outline: none;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(44, 140, 153, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: #a0b3c0;
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+    /* custom select arrow */
+    select.form-control {
+        background-image: none;
+        cursor: pointer;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8ba0ad;
+        font-size: 1rem;
+        pointer-events: none;
+        transition: color 0.2s;
+        line-height: 1;
+    }
+
+    .form-control:focus + .input-icon,
+    .input-wrapper:focus-within .input-icon {
+        color: #2c8c99;
+    }
+
+    /* ----- buttons ----- */
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.8rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid rgba(44, 140, 153, 0.08);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.7rem 1.8rem;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        letter-spacing: 0.01em;
+        background: transparent;
+        flex: 0 1 auto;
+        min-width: 140px;
+    }
+
+    .btn-primary {
+        background: #2c8c99;
+        color: white;
+        box-shadow: 0 4px 14px rgba(44, 140, 153, 0.25);
+    }
+
+        .btn-primary:hover {
+            background: #237a86;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(44, 140, 153, 0.30);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+    .btn-secondary {
+        background: #eef3f7;
+        color: #1f3a44;
+        border: 1px solid #dce5ec;
+    }
+
+        .btn-secondary:hover {
+            background: #e2eaf0;
+            border-color: #c0ced8;
+            transform: translateY(-2px);
+        }
+
+    .btn i {
+        font-size: 1rem;
+    }
+
+    /* ----- responsive (mobile first) ----- */
+    @@media (max-width: 640px) {
+        .page-wrapper
+
+    {
+        padding: 1rem;
+        min-height: 80vh;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+
+    .form-card {
+        padding: 1.8rem 1.2rem;
+        border-radius: 28px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+    }
+
+    .header-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+        border-radius: 16px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+    }
+
+    .card-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        padding: 0.8rem 1rem 0.8rem 2.6rem;
+        font-size: 0.95rem;
+        border-radius: 16px;
+    }
+
+    .input-icon {
+        left: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1.2rem;
+        min-width: unset;
+    }
+
+    .alert-modern {
+        font-size: 0.9rem;
+        padding: 0.7rem 1rem;
+        border-radius: 14px;
+    }
+
+    }
+
+    @@media (max-width: 400px) {
+        .form-card
+
+    {
+        padding: 1.5rem 1rem;
+    }
+
+    .card-title {
+        font-size: 1.3rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+    }
+
+    }
+
+    /* small touch for larger screens */
+    @@media (min-width: 768px) {
+        .form-actions
+
+    {
+        flex-wrap: nowrap;
+    }
+
+    .btn {
+        flex: 1 0 auto;
+    }
+
+    .btn-secondary {
+        flex: 0 1 auto;
+    }
+
+    }
+
+    /* remove default select arrow in Firefox */
+    select.form-control {
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    /* optional : focus visible */
+    .form-control:focus-visible {
+        outline: 2px solid #2c8c99;
+        outline-offset: 1px;
+    }
+
+    /* custom select arrow hidden, we use fontawesome */
+    select.form-control {
+        background-image: none;
+    }
+
+    /* extra polish for select */
+    .input-wrapper select.form-control {
+        padding-right: 2.8rem;
+    }
+
+        .input-wrapper select.form-control + .input-icon {
+            right: 1rem;
+            left: auto;
+            pointer-events: none;
+            font-size: 0.8rem;
+            color: #8ba0ad;
+        }
+
+        .input-wrapper select.form-control:focus + .input-icon {
+            color: #2c8c99;
+        }
+
+    /* consistent spacing for the chevron */
+    .input-wrapper .fa-chevron-down {
+        font-size: 0.8rem;
+        right: 1rem;
+        left: auto;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* override for password icon position (already left) */
+    .input-wrapper .fa-key,
+    .input-wrapper .fa-user-circle {
+        left: 1rem;
+        right: auto;
+    }
+
+    /* small fix for alert icon */
+    .alert-modern i {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    /* extra polish for mobile tap */
+    .btn, .form-control, select {
+        -webkit-tap-highlight-color: transparent;
+    }
+</style>
