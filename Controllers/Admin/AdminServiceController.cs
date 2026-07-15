@@ -17,7 +17,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
         {
             var services = await _context.ServiceRequests
                 .Include(s => s.Customer)
-                .Include(s => s.AirCon)
+                .Include(s => s.AirConUnits)
                 .Include(s => s.Technician)
                 .Include(s => s.ServiceRecords)
                 .Include(s => s.Appointment)

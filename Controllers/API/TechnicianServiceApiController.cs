@@ -42,14 +42,14 @@ namespace AirConServicingManagementSystem.Controllers
         {
             var data = await _context.ServiceRequests
                 .Include(s => s.Customer)
-                .Include(s => s.AirCon)
+                //.Include(s => s.AirCon)
                 .Where(s => s.TechnicianId == techId && s.Status == ServiceStatus.Assigned)
                 .Select(s => new
                 {
                     s.ServiceId,
                     s.Status,
                     Customer = s.Customer.Name,
-                    AirCon = s.AirCon.AirConType
+                    //AirCon = s.AirCon.AirConType
                 })
                 .ToListAsync();
 
@@ -60,13 +60,13 @@ namespace AirConServicingManagementSystem.Controllers
         {
             var data = await _context.ServiceRequests
                 .Include(s => s.Customer)
-                .Include(s => s.AirCon)
+                //.Include(s => s.AirCon)
                 .Where(s => s.Status == ServiceStatus.Pending)
                 .Select(s => new
                 {
                     s.ServiceId,
                     Customer = s.Customer.Name,
-                    AirCon = s.AirCon.AirConType,
+                    //AirCon = s.AirCon.AirConType,
                     s.Status
                 })
                 .ToListAsync();

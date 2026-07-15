@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AirConServicingManagementSystem.Models;
+using AirConServicingManagementSystem.ViewModels;
 
 namespace AirConServicingManagementSystem.Controllers
 {
@@ -44,56 +45,179 @@ namespace AirConServicingManagementSystem.Controllers
             return View(aircon);
         }
 
-        public async Task<IActionResult> Create(int serviceId, bool isAnother = false)
+        public async Task<IActionResult> Create(int serviceId)
         {
             ViewBag.ServiceId = serviceId;
-            ViewBag.IsAnother = isAnother;
+
 
             var service = await _context.ServiceRequests
                 .Include(x => x.Appointment)
-                    .ThenInclude(a => a.Customer)
+                .ThenInclude(x => x.Customer)
                 .FirstOrDefaultAsync(x => x.ServiceId == serviceId);
+
+
 
             if (service == null)
                 return NotFound();
 
-            ViewBag.CustomerName = service.Appointment.Customer.Name;
-            ViewBag.CustomerPhone = service.Appointment.Customer.Phone;
-            ViewBag.AppointmentId = service.AppointmentId;
 
-            ViewBag.Brands = await _context.AirConBrands
+
+            ViewBag.CustomerName =
+                service.Appointment.Customer.Name;
+
+
+            ViewBag.CustomerPhone =
+                service.Appointment.Customer.Phone;
+
+
+
+            ViewBag.ACCount =
+                await _context.AirConUnits
+                .CountAsync(x => x.CustomerId == service.CustomerId);
+
+
+
+            ViewBag.Brands =
+                await _context.AirConBrands
                 .Where(x => x.IsDeleted != true)
                 .ToListAsync();
 
-            return View();
+
+
+            return View(new AddAirConUnitViewModel
+            {
+                ServiceId = serviceId,
+                Items = new List<CartAirConItem>()
+            });
+
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AirConUnit aircon, int serviceId)
+        public async Task<IActionResult> Create(
+           AddAirConUnitViewModel model)
         {
-            var serviceRequest = await _context.ServiceRequests
-                .FirstOrDefaultAsync(x => x.ServiceId == serviceId);
 
-            if (serviceRequest == null)
-                return NotFound("ServiceRequest not found");
+            var service = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x =>
+                x.ServiceId == model.ServiceId);
 
-            // ⭐ SAFE FIX (NO NAVIGATION)
-            aircon.CustomerId = serviceRequest.CustomerId;
 
-            aircon.CreatedAt = DateTime.Now;
-            aircon.IsDeleted = false;
 
-            _context.AirConUnits.Add(aircon);
+            if (service == null)
+                return NotFound();
+
+
+
+            foreach (var item in model.Items)
+            {
+
+
+                for (int i = 0; i < item.Quantity; i++)
+                {
+
+
+                    var aircon = new AirConUnit
+                    {
+
+                        CustomerId = service.CustomerId,
+
+
+                        BrandId = item.BrandId,
+
+
+                        ModelId = item.ModelId,
+
+                        SerialNumber = item.SerialNumber,
+
+                        CapacityHp = item.CapacityHp,
+
+
+                        AirConType = item.AirConType,
+
+
+                        InstallationType =
+                            item.InstallationType,
+
+
+                        InstallationDate =
+                            item.InstallationDate,
+
+
+                        CreatedAt = DateTime.Now,
+
+
+                        IsDeleted = false
+
+                    };
+
+
+
+                    _context.AirConUnits.Add(aircon);
+
+
+
+                    await _context.SaveChangesAsync();
+
+
+
+                    if (item.InstallationType == "New")
+                    {
+
+
+                        if (item.ContractStartDate.HasValue &&
+                           item.ContractEndDate.HasValue)
+                        {
+
+
+                            var warranty = new Warranty
+                            {
+
+                                AirConId = aircon.Id,
+
+
+                                StartDate =
+                                    item.ContractStartDate.Value,
+
+
+                                EndDate =
+                                    item.ContractEndDate.Value,
+
+
+                                IsActive = true
+
+                            };
+
+
+
+                            _context.Warranties.Add(warranty);
+
+
+                        }
+
+                    }
+
+
+                }
+
+
+            }
+
+
+
+            service.Status = "In Progress";
+
+            //service.UpdatedAt = DateTime.Now;   
+
             await _context.SaveChangesAsync();
 
-            serviceRequest.AirConId = aircon.Id;
-            serviceRequest.Status = "In Progress";
 
-            _context.ServiceRequests.Update(serviceRequest);
-            await _context.SaveChangesAsync();
 
-            return RedirectToAction("Assigned", "TechnicianService");
+            return RedirectToAction(
+      "Complete",
+      "TechnicianService",
+      new { id = service.ServiceId });
+
         }
 
         // POST: Create

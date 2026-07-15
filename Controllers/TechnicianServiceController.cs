@@ -129,9 +129,9 @@ public class TechnicianServiceController : Controller
 
         var list = await _context.ServiceRequests
              .Include(x => x.Customer)
-             .Include(x => x.AirCon)
+             .Include(x => x.AirConUnits)
                  .ThenInclude(a => a.Brand)
-             .Include(x => x.AirCon)
+             .Include(x => x.AirConUnits)
                  .ThenInclude(a => a.Model)
              .Where(x =>
                  x.TechnicianId == techId &&
@@ -152,7 +152,7 @@ public class TechnicianServiceController : Controller
 
         var data = await _context.ServiceRequests
             .Include(s => s.Customer)
-            .Include(s => s.AirCon)
+            .Include(s => s.AirConUnits)
             .Where(s => s.Status == ServiceStatus.Pending)
             .ToListAsync();
 
@@ -168,7 +168,7 @@ public class TechnicianServiceController : Controller
 
         var data = await _context.ServiceRequests
             .Include(s => s.Customer)
-            .Include(s => s.AirCon)
+            .Include(s => s.AirConUnits)
             .Where(s => s.TechnicianId == techId && s.Status == ServiceStatus.Accepted)
             .ToListAsync();
 
@@ -184,7 +184,7 @@ public class TechnicianServiceController : Controller
 
         var data = await _context.ServiceRequests
             .Include(s => s.Customer)
-            .Include(s => s.AirCon)
+            .Include(s => s.AirConUnits)
             .Where(s => s.TechnicianId == techId && s.Status == ServiceStatus.Completed)
             .ToListAsync();
 
@@ -302,18 +302,13 @@ public class TechnicianServiceController : Controller
             return Content("Already Completed");
 
         // ❗ VALIDATION FIX (IMPORTANT)
-        if (!service.AirConId.HasValue)
-            return Content("AirCon not assigned yet ❌");
+        //if (!service.AirConId.HasValue)
+        //    return Content("AirCon not assigned yet ❌");
 
-        // =========================
-        // 1. COMPLETE SERVICE REQUEST
-        // =========================
+        
         service.Status = "Completed";
         service.CompletedAt = DateTime.Now;
-
-        // =========================
-        // 2. NEXT SERVICE CALC
-        // =========================
+       
         DateTime nextServiceDate = model.ACCondition switch
         {
             "Good" => DateTime.Now.AddMonths(6),
@@ -322,9 +317,6 @@ public class TechnicianServiceController : Controller
             _ => DateTime.Now.AddMonths(3)
         };
 
-        // =========================
-        // 3. SERVICE RECORD (FIXED)
-        // =========================
         var record = await _context.ServiceRecords
             .FirstOrDefaultAsync(r => r.ServiceRequestId == service.ServiceId);
 
@@ -334,7 +326,7 @@ public class TechnicianServiceController : Controller
             {
                 ServiceRequestId = service.ServiceId,
                 CustomerId = service.CustomerId,
-                AirConUnitId = service.AirConId.Value,   // ✅ SAFE NOW
+                //AirConUnitId = service.AirConId.Value,   // ✅ SAFE NOW
                 TechnicianId = techId,
                 CreatedAt = DateTime.Now,
                 IsDeleted = false
@@ -358,9 +350,6 @@ public class TechnicianServiceController : Controller
         record.NextServiceDue = nextServiceDate;
         record.UpdatedAt = DateTime.Now;
 
-        // =========================
-        // 4. TECH STATUS RESET
-        // =========================
         var technician = await _context.Technicians
             .FirstOrDefaultAsync(t => t.TechnicianId == techId);
 
@@ -386,9 +375,7 @@ public class TechnicianServiceController : Controller
         {
             schedule.Status = "Completed";
         }
-        // =========================
-        // 5. SAVE ALL
-        // =========================
+     
         CreateServiceReminder(service, model.ACCondition);
 
         await _context.SaveChangesAsync();
@@ -421,7 +408,7 @@ public class TechnicianServiceController : Controller
         var reminder = new ServiceReminder
         {
             CustomerId = service.CustomerId,
-            AirConUnitId = service.AirConId.Value,
+            //AirConUnitId = service.AirConId.Value,
             ServiceRequestId = service.ServiceId,
 
             ReminderType = "Next", // 🔥 shorten (safe for DB)
@@ -459,7 +446,7 @@ public class TechnicianServiceController : Controller
             var service = new ServiceRequest
             {
                 CustomerId = reminder.CustomerId,
-                AirConId = reminder.AirConUnitId,
+                //AirConId = reminder.AirConUnitId,
                 Status = "Assigned",
                 CreatedAt = DateTime.Now,
                 ServiceType = "Reminder Service",

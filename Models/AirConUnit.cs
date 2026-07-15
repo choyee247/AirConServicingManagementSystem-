@@ -48,6 +48,8 @@ public partial class AirConUnit
     [StringLength(50)]
     public string? InstallationType { get; set; }
 
+    public int? ServiceId { get; set; }
+
     [ForeignKey("BrandId")]
     [InverseProperty("AirConUnits")]
     public virtual AirConBrand Brand { get; set; } = null!;
@@ -63,14 +65,15 @@ public partial class AirConUnit
     [InverseProperty("AirConUnits")]
     public virtual AirConModel Model { get; set; } = null!;
 
+    [ForeignKey("ServiceId")]
+    [InverseProperty("AirConUnits")]
+    public virtual ServiceRequest? Service { get; set; }
+
     [InverseProperty("AirConUnit")]
     public virtual ICollection<ServiceRecord> ServiceRecords { get; set; } = new List<ServiceRecord>();
 
     [InverseProperty("AirConUnit")]
     public virtual ICollection<ServiceReminder> ServiceReminders { get; set; } = new List<ServiceReminder>();
-
-    [InverseProperty("AirCon")]
-    public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
 
     [InverseProperty("AirCon")]
     public virtual Warranty? Warranty { get; set; }

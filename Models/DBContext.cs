@@ -112,6 +112,8 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.Model).WithMany(p => p.AirConUnits)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__AirConUni__Model__46E78A0C");
+
+            entity.HasOne(d => d.Service).WithMany(p => p.AirConUnits).HasConstraintName("FK_AirConUnits_ServiceRequests");
         });
 
         modelBuilder.Entity<Appointment>(entity =>
@@ -306,10 +308,6 @@ public partial class DBContext : DbContext
             entity.Property(e => e.PaymentStatus).HasDefaultValue("Unpaid");
             entity.Property(e => e.RequestedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Status).HasDefaultValue("Pending");
-
-            entity.HasOne(d => d.AirCon).WithMany(p => p.ServiceRequests)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK_ServiceRequests_AirConUnits");
 
             entity.HasOne(d => d.Appointment).WithMany(p => p.ServiceRequests).HasConstraintName("FK_ServiceRequests_Appointments");
 

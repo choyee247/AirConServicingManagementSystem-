@@ -635,36 +635,63 @@
 
                                             @if (item.ServiceRequest.Status == "In Progress")
                                             {
-                                                if (item.ServiceRequest.AirConId == null)
+
+                                                var acCount = item.ServiceRequest.AirConUnits?.Count ?? 0;
+
+
+                                                if (acCount == 0)
                                                 {
-                                                    <!-- FIRST TIME -->
+                                                    <!-- FIRST TIME ADD AC -->
+
                                                     <a asp-controller="AirConUnit"
                                                        asp-action="Create"
                                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        class="btn-sm-custom btn-fill-ac">
+
                                                         <i class="fas fa-plus-circle"></i>
+
                                                         Fill AC Detail
+
                                                     </a>
+
                                                 }
                                                 else
                                                 {
-                                                    <!-- ALREADY EXISTS -->
+
+                                                    <!-- VIEW / EDIT EXISTING AC -->
+
+
                                                     <a asp-controller="AirConUnit"
-                                                       asp-action="Edit"
-                                                       asp-route-id="@item.ServiceRequest.AirConId"
+                                                       asp-action="Index"
+                                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        class="btn-sm-custom btn-edit-ac">
+
                                                         <i class="fas fa-edit"></i>
-                                                        Edit AC
+
+                                                        View / Edit AC
+
                                                     </a>
+
+
+
+                                                    <!-- ADD MORE AC -->
+
                                                     <a asp-controller="AirConUnit"
                                                        asp-action="Create"
                                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        asp-route-isAnother="true"
                                                        class="btn-sm-custom btn-another-ac">
+
+
                                                         <i class="fas fa-plus"></i>
-                                                        + Another AC
+
+                                                        Another AC
+
                                                     </a>
+
+
                                                 }
+
                                             }
 
                                             @if (item.ServiceRequest.Status == "Completed")
@@ -778,8 +805,11 @@
 
                             @if (item.ServiceRequest.Status == "In Progress")
                             {
-                                if (item.ServiceRequest.AirConId == null)
+                                var acCount = item.ServiceRequest.AirConUnits?.Count ?? 0;
+
+                                if (acCount == 0)
                                 {
+                                    <!-- No AC yet -->
                                     <a asp-controller="AirConUnit"
                                        asp-action="Create"
                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
@@ -790,13 +820,16 @@
                                 }
                                 else
                                 {
+                                    <!-- View / Edit AirCons -->
                                     <a asp-controller="AirConUnit"
-                                       asp-action="Edit"
-                                       asp-route-id="@item.ServiceRequest.AirConId"
+                                       asp-action="Index"
+                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                        class="btn-sm-mobile btn-edit-ac">
                                         <i class="fas fa-edit"></i>
-                                        Edit AC
+                                        View / Edit AC
                                     </a>
+
+                                    <!-- Add Another AirCon -->
                                     <a asp-controller="AirConUnit"
                                        asp-action="Create"
                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"

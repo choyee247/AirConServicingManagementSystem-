@@ -213,7 +213,11 @@
                     success: function (data) {
                         modelDropdown.empty().append('<option value="">-- Select Model --</option>');
                         $.each(data, function (i, item) {
-                            modelDropdown.append(`<option value="${item.id}">${item.modelName}</option>`);
+                                    modelDropdown.append(
+        `<option value="${item.id}">
+        ${item.modelName}
+        </option>`
+        );
                         });
                         loading.hide();
                     },
