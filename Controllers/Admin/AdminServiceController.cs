@@ -203,10 +203,13 @@ namespace AirConServicingManagementSystem.Controllers.Admin
                 .Include(r => r.Technician)
                 .Include(r => r.ServiceRequest)
                     .ThenInclude(a => a.Appointment)
-                .Include(r => r.AirConUnit)
-                    .ThenInclude(a => a.Brand)
-                .Include(r => r.AirConUnit)
-                    .ThenInclude(a => a.Model)
+                .Include(r => r.ServiceRecordUnits)
+                    .ThenInclude(x => x.AirConUnit)
+                        .ThenInclude(x => x.Brand)
+
+                .Include(r => r.ServiceRecordUnits)
+                    .ThenInclude(x => x.AirConUnit)
+                        .ThenInclude(x => x.Model)
                 .Where(r => r.IsDeleted != true
                          && r.TechnicianId == technicianId.Value);
 
@@ -240,9 +243,10 @@ namespace AirConServicingManagementSystem.Controllers.Admin
 
             var record = await _context.ServiceRecords
                 .Include(x => x.Customer)
-                .Include(x => x.AirConUnit)
-                    .ThenInclude(x =>x.Brand)
-                    .ThenInclude(x =>x.AirConModels)
+                .Include(x => x.ServiceRecordUnits)
+                    .ThenInclude(r => r.AirConUnit)
+                        .ThenInclude(r =>r.Brand)
+                        .ThenInclude(r =>r.AirConModels)
                 .Include(x => x.Technician)
                 .FirstOrDefaultAsync(x =>
                     x.Id == id &&

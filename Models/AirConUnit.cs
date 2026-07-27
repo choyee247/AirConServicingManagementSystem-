@@ -70,7 +70,13 @@ public partial class AirConUnit
     public virtual ServiceRequest? Service { get; set; }
 
     [InverseProperty("AirConUnit")]
-    public virtual ICollection<ServiceRecord> ServiceRecords { get; set; } = new List<ServiceRecord>();
+    public virtual ICollection<ServicePart> ServiceParts { get; set; } = new List<ServicePart>();
+
+    [InverseProperty("AirConUnit")]
+    public virtual ICollection<ServicePhoto> ServicePhotos { get; set; } = new List<ServicePhoto>();
+
+    [InverseProperty("AirConUnit")]
+    public virtual ICollection<ServiceRecordUnit> ServiceRecordUnits { get; set; } = new List<ServiceRecordUnit>();
 
     [InverseProperty("AirConUnit")]
     public virtual ICollection<ServiceReminder> ServiceReminders { get; set; } = new List<ServiceReminder>();

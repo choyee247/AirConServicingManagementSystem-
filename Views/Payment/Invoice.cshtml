@@ -1,0 +1,282 @@
+﻿@model Payment
+@{
+    ViewData["Title"] = "Invoice";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+<div class="invoice-box">
+
+
+    <div class="text-center">
+
+        <h2>
+            AirCon Servicing
+        </h2>
+
+        <p>
+            Service Invoice
+        </p>
+
+    </div>
+
+
+
+    <hr />
+
+
+    <div class="row">
+
+
+        <div class="col">
+
+            <h5>
+                Customer
+            </h5>
+
+
+            <p>
+
+                @Model.ServiceRecord.Customer.Name
+
+                <br />
+
+                @Model.ServiceRecord.Customer.Phone
+
+            </p>
+
+
+        </div>
+
+
+
+        <div class="col text-end">
+
+
+            <h5>
+                Invoice No
+            </h5>
+
+
+            <p>
+
+                @Model.InvoiceNo
+
+            </p>
+
+
+            <p>
+
+                @Model.PaymentDate
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <hr />
+
+
+
+    <h5>
+        Service Details
+    </h5>
+
+
+
+    <table class="table table-bordered">
+
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    AirCon
+                </th>
+
+
+                <th>
+                    Condition
+                </th>
+
+
+                <th>
+                    Next Service
+                </th>
+
+
+            </tr>
+
+
+        </thead>
+
+
+
+        <tbody>
+
+
+            @foreach (var item in
+            Model.ServiceRecord.ServiceRecordUnits)
+            {
+
+
+                <tr>
+
+
+                    <td>
+
+                        @item.AirConUnit.Brand.BrandName
+
+                        <br />
+
+                        @item.AirConUnit.Model.ModelName
+
+
+                    </td>
+
+
+                    <td>
+
+                        @item.Accondition
+
+                    </td>
+
+
+
+                    <td>
+
+                        @item.NextServiceDue
+                    </td>
+
+
+
+                </tr>
+
+
+            }
+
+
+
+        </tbody>
+
+
+
+    </table>
+
+
+
+    <hr />
+
+
+
+
+    <div class="text-end">
+
+
+        <h4>
+
+            Total :
+
+            @Model.Amount?.ToString("N0")
+            MMK
+
+        </h4>
+
+
+        <h5>
+
+            Paid :
+
+            @Model.PaidAmount?.ToString("N0")
+            MMK
+
+        </h5>
+
+
+
+        <h5>
+
+            Change :
+
+            @Model.ChangeAmount?.ToString("N0")
+            MMK
+
+        </h5>
+
+
+
+    </div>
+
+
+
+    <hr />
+
+
+
+    <div class="text-center">
+
+
+        <p>
+
+            Technician:
+
+            @Model.ServiceRecord.Technician.Name
+
+        </p>
+
+
+        <p>
+            Thank you for using our service
+        </p>
+
+
+    </div>
+
+
+
+
+    <button onclick="window.print()"
+            class="btn btn-primary">
+
+        <i class="fas fa-print"></i>
+
+        Print
+
+    </button>
+
+
+
+</div>
+<style>
+    .invoice-box {
+        max-width: 900px;
+        margin: auto;
+        padding: 30px;
+        background: white;
+        box-shadow: 0 0 10px #ccc;
+    }
+
+
+    @@media print {
+        button
+
+    {
+        display: none;
+    }
+
+
+    body {
+        background: white;
+    }
+
+
+    .invoice-box {
+        box-shadow: none;
+    }
+
+    }
+</style>

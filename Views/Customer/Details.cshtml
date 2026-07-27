@@ -9,10 +9,13 @@
     var airconCount = Model.AirConUnits?.Count ?? 0;
 
     var allServiceRecords = Model.AirConUnits?
-        .Where(a => a.ServiceRecords != null)
-        .SelectMany(a => a.ServiceRecords)
-        .OrderByDescending(s => s.ServiceDate)
-        .ToList() ?? new List<ServiceRecord>();
+       .Where(a => a.ServiceRecordUnits != null)
+       .SelectMany(a => a.ServiceRecordUnits)
+       .Where(x => x.ServiceRecord != null)
+       .Select(x => x.ServiceRecord)
+       .OrderByDescending(s => s.ServiceDate)
+       .ToList()
+       ?? new List<ServiceRecord>();
 
     var serviceCount = allServiceRecords.Count;
     var completedCount = allServiceRecords.Count(s => s.Status == "Completed");
@@ -149,10 +152,13 @@
                             <div class="detail-label">
                                 @item.NextServiceDue?.ToString("dd MMM yyyy")
                             </div>
-                            <div class="detail-value">
-                                @item.AirConUnit?.Brand?.BrandName
-                                @item.AirConUnit?.Model?.ModelName
-                            </div>
+                            @foreach (var unit in item.ServiceRecordUnits)
+                            {
+                                <div>
+                                    @unit.AirConUnit.Brand.BrandName
+                                    @unit.AirConUnit.Model.ModelName
+                                </div>
+                            }
                         </div>
                     }
                 }
@@ -175,9 +181,12 @@
         {
             foreach (var aircon in Model.AirConUnits)
             {
-                var services = aircon.ServiceRecords?
+                var services = aircon.ServiceRecordUnits?
+                .Where(x => x.ServiceRecord != null)
+                .Select(x => x.ServiceRecord)
                 .OrderByDescending(s => s.ServiceDate)
-                .ToList() ?? new List<ServiceRecord>();
+                .ToList()
+                ?? new List<ServiceRecord>();
 
                 <div class="aircon-card">
 
@@ -340,8 +349,21 @@
                                 </td>
 
                                 <td>
-                                    @record.AirConUnit?.Brand?.BrandName
-                                    @record.AirConUnit?.Model?.ModelName
+                                    @if (record.ServiceRecordUnits != null &&
+                                   record.ServiceRecordUnits.Any())
+                                    {
+                                        foreach (var unit in record.ServiceRecordUnits)
+                                        {
+                                            <div>
+                                                @unit.AirConUnit?.Brand?.BrandName
+                                                @unit.AirConUnit?.Model?.ModelName
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
                                 </td>
 
                                 <td>@(record.ServiceType ?? "N/A")</td>

@@ -210,10 +210,13 @@ public class CustomerDashboardController : Controller
         int customerId = 1;
 
         var services = await _context.ServiceRecords
-            .Include(s => s.AirConUnit)
-                .ThenInclude(a => a.Brand)
+            .Include(s => s.ServiceRecordUnits)
+                .ThenInclude(s => s.AirConUnit)
+                    .ThenInclude(a => a.Brand)
             .Include(s => s.Technician)
-            .Include(s => s.ServiceWarranties)
+            .Include(s => s.ServiceRecordUnits)
+                .ThenInclude(s => s.AirConUnit)
+                    .ThenInclude(a => a.Warranty)
             .Where(s => s.CustomerId == customerId && s.IsDeleted != true)
             .OrderByDescending(s => s.ServiceDate)
             .ToListAsync();

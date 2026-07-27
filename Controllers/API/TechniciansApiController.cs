@@ -63,7 +63,7 @@ namespace AirConServicingManagementSystem.Controllers.API
         {
             var technician = await _context.Technicians
                 .Include(t => t.Appointments)
-                .Include(t => t.Payments)
+                //.Include(t => t.Payments)
                 .Include(t => t.ServiceRequests)
                 .FirstOrDefaultAsync(t => t.TechnicianId == id && !t.IsDeleted);
 

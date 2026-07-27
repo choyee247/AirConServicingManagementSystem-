@@ -72,7 +72,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
                 CompletedServices = _context.ServiceRequests
                     .Count(s => s.Status == "Completed"),
 
-                WarrantyCases = _context.ServiceWarranties
+                WarrantyCases = _context.Warranties
                     .Count(),
                 RecentFeedbacks = feedbacks,
 
@@ -90,8 +90,8 @@ namespace AirConServicingManagementSystem.Controllers.Admin
 
                 ResolvedComplaints = _context.Complaints.Count(x => x.Status == "Resolved"),
 
-                ExpiringWarranty = _context.ServiceWarranties
-                    .Count(w => w.WarrantyEndDate <= today.AddDays(30)),
+                ExpiringWarranty = _context.Warranties
+                    .Count(w => w.EndDate <= today.AddDays(30)),
 
                 Technicians = technicians,
 

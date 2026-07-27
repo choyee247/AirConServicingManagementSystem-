@@ -1,4 +1,4 @@
-﻿@model List<AirConServicingManagementSystem.Models.ServiceRecord>
+﻿@model List<AirConServicingManagementSystem.Models.ServiceRecordUnit>
 
 @{
     ViewData["Title"] = "Service Records";
@@ -237,21 +237,21 @@
                                 <div>
 
                                     <div class="fw-bold">
-                                        @item.Customer?.Name
+                                        @item.ServiceRecord.Customer?.Name
                                     </div>
 
 
                                     <small class="text-muted">
-                                        @item.Customer?.Phone
+                                        @item.ServiceRecord.Customer?.Phone
                                     </small>
 
 
                                     <br />
 
 
-                                    @if (item.Customer?.CustomerLocations != null)
+                                    @if (item.ServiceRecord.Customer?.CustomerLocations != null)
                                     {
-                                        foreach (var loc in item.Customer.CustomerLocations)
+                                        foreach (var loc in item.ServiceRecord.Customer.CustomerLocations)
                                         {
 
                                             <small class="text-secondary">
@@ -275,7 +275,7 @@
 
                                 <span class="fw-semibold">
 
-                                    @item.Technician?.Name
+                                    @item.ServiceRecord.Technician?.Name
 
                                 </span>
 
@@ -326,7 +326,7 @@
 
                             <td>
 
-                                @if (item.Status == "Completed")
+                                @if (item.ServiceRecord.Status == "Completed")
                                 {
 
                                     <span class="badge-status-success">
@@ -351,7 +351,7 @@
 
                             <td>
 
-                                @item.ServiceType
+                                @item.ServiceRecord.ServiceType
 
                             </td>
 
@@ -367,13 +367,13 @@
 
                                     <a asp-controller="ServiceRequest"
                                        asp-action="Details"
-                                       asp-route-appointmentId="@item.ServiceRequest.Appointment.AppointmentId"
+                                       asp-route-appointmentId="@item.ServiceRecord.ServiceRequest.Appointment.AppointmentId"
                                        class="btn btn-sm btn-detail">
 
                                         <i class="fas fa-eye"></i>
 
                                     </a>
-                                    @if (item.Status == "Completed")
+                                    @if (item.ServiceRecord.Status == "Completed")
                                     {
                                         <a asp-controller="ReAppointment"
                                            asp-action="Create"
@@ -394,7 +394,7 @@
 
                                         <input type="hidden"
                                                name="id"
-                                               value="@item.ServiceRequestId" />
+                                               value="@item.ServiceRecord.ServiceRequestId" />
 
                                         <button class="btn btn-sm btn-delete">
 

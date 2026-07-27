@@ -70,9 +70,6 @@ public partial class ServiceRequest
     [InverseProperty("ServiceRequest")]
     public virtual ICollection<CustomerFeedback> CustomerFeedbacks { get; set; } = new List<CustomerFeedback>();
 
-    [InverseProperty("Service")]
-    public virtual Payment? Payment { get; set; }
-
     [InverseProperty("ServiceRequest")]
     public virtual ICollection<ServiceRecord> ServiceRecords { get; set; } = new List<ServiceRecord>();
 

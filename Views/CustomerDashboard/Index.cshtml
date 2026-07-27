@@ -7,13 +7,13 @@
 @{
     // All service records from all aircons
     var allServiceRecords = Model.AirConUnits
-        .SelectMany(a => a.ServiceRecords)
-        .Where(s => s.IsDeleted != true)
+        .SelectMany(a => a.ServiceRecordUnits)
+        .Where(s => s.ServiceRecord.IsDeleted != true)
         .ToList();
 
     var lastServiceDate = allServiceRecords
-        .OrderByDescending(s => s.ServiceDate)
-        .FirstOrDefault()?.ServiceDate;
+        .OrderByDescending(s => s.ServiceRecord.ServiceDate)
+        .FirstOrDefault()?.ServiceRecord.ServiceDate;
 
     // All reminders from all aircons
     var allReminders = Model.AirConUnits

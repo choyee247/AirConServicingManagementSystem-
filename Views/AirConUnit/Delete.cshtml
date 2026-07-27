@@ -1,0 +1,482 @@
+﻿@model AirConServicingManagementSystem.Models.AirConUnit
+
+@{
+    ViewData["Title"] = "Remove AirCon Unit";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+
+<div class="container-fluid">
+
+    <div class="form-container">
+
+
+        <div class="form-header">
+
+            <i class="fas fa-trash-alt text-danger"></i>
+
+            <h3>
+                Remove Air Conditioning Units
+            </h3>
+
+        </div>
+
+
+
+        <form asp-action="Delete"
+              asp-controller="AirConUnit"
+              method="post">
+
+
+            @Html.AntiForgeryToken()
+
+
+            <input type="hidden"
+                   asp-for="Id" />
+
+
+            <input type="hidden"
+                   name="serviceId"
+                   value="@ViewBag.ServiceId" />
+
+
+
+            <div class="alert alert-warning">
+
+                <i class="fas fa-exclamation-triangle"></i>
+
+                Are you sure you want to remove this AirCon Unit?
+
+            </div>
+
+
+
+
+            <div class="aircon-card">
+
+
+                <div class="row">
+
+
+                    <div class="col-md-6">
+
+                        <label>
+                            Customer
+                        </label>
+
+                        <input class="form-control"
+                               value="@Model.Customer?.Name"
+                               readonly />
+
+                    </div>
+
+
+
+                    <div class="col-md-6">
+
+                        <label>
+                            Phone
+                        </label>
+
+                        <input class="form-control"
+                               value="@Model.Customer?.Phone"
+                               readonly />
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <div class="row mt-3">
+
+
+                    <div class="col-md-4">
+
+                        <label>
+                            Brand
+                        </label>
+
+
+                        <input class="form-control"
+                               value="@Model.Brand?.BrandName"
+                               readonly />
+
+                    </div>
+
+
+
+
+                    <div class="col-md-4">
+
+                        <label>
+                            Model
+                        </label>
+
+
+                        <input class="form-control"
+                               value="@Model.Model?.ModelName"
+                               readonly />
+
+                    </div>
+
+
+
+
+                    <div class="col-md-4">
+
+                        <label>
+                            Capacity HP
+                        </label>
+
+
+                        <input class="form-control"
+                               value="@Model.CapacityHp HP"
+                               readonly />
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+                <div class="row mt-3">
+
+
+                    <div class="col-md-6">
+
+
+                        <label>
+                            AirCon Type
+                        </label>
+
+
+                        <input class="form-control"
+                               value="@Model.AirConType"
+                               readonly />
+
+
+                    </div>
+
+
+
+                    <div class="col-md-6">
+
+
+                        <label>
+                            Installation Type
+                        </label>
+
+
+                        <input class="form-control"
+                               value="@Model.InstallationType"
+                               readonly />
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <div class="row mt-3">
+
+
+                    <div class="col-md-6">
+
+
+                        <label class="fw-bold">
+
+                            Remove Quantity
+
+                        </label>
+
+
+
+                        <div class="input-group">
+
+
+                            <button type="button"
+                                    class="btn btn-outline-danger"
+                                    id="minusQty">
+
+                                -
+
+                            </button>
+
+
+
+
+                            <input type="number"
+                                   class="form-control text-center"
+                                   id="RemoveQuantity"
+                                   name="RemoveQuantity"
+                                   value="1"
+                                   min="1"
+                                   max="@ViewBag.TotalQuantity" />
+
+
+
+
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    id="plusQty">
+
+                                +
+
+                            </button>
+
+
+                        </div>
+
+
+
+                        <small class="text-muted">
+
+                            Maximum @ViewBag.TotalQuantity Units
+
+                        </small>
+
+
+                    </div>
+
+
+
+
+
+                    <div class="col-md-6">
+
+
+                        <label>
+                            Serial Number
+                        </label>
+
+
+                        <input class="form-control"
+                               value="@Model.SerialNumber"
+                               readonly />
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <div class="alert alert-info mt-4">
+
+                    Remaining After Remove :
+
+                    <strong>
+
+                        <span id="remainingQty">
+                            @ViewBag.TotalQuantity
+                        </span>
+
+                        Units
+
+                    </strong>
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+            <div class="mt-4 d-flex gap-2">
+
+
+
+                <button type="submit"
+                        class="btn btn-danger">
+
+
+                    <i class="fas fa-trash"></i>
+
+                    Confirm Remove
+
+
+                </button>
+
+
+
+
+                <a asp-controller="AirConUnit"
+                   asp-action="Edit"
+                   asp-route-id="@Model.Id"
+                   asp-route-serviceId="@ViewBag.ServiceId"
+                   class="btn btn-warning">
+
+
+                    <i class="fas fa-edit"></i>
+
+                    Edit Instead
+
+
+                </a>
+
+
+
+
+
+                <a asp-controller="TechnicianService"
+                   asp-action="Complete"
+                   asp-route-id="@ViewBag.ServiceId"
+                   class="btn btn-secondary">
+
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Cancel
+
+
+                </a>
+
+
+            </div>
+
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+
+@section Scripts {
+
+
+    <script>
+
+
+        document.addEventListener("DOMContentLoaded",function(){
+
+
+            const input =
+                document.getElementById("RemoveQuantity");
+
+
+            const plus =
+                document.getElementById("plusQty");
+
+
+            const minus =
+                document.getElementById("minusQty");
+
+
+            const remaining =
+                document.getElementById("remainingQty");
+
+
+
+            let total =
+                parseInt(input.max);
+
+
+
+            function updateRemaining()
+            {
+
+                let remove =
+                    parseInt(input.value) || 1;
+
+
+                remaining.innerText =
+                    total - remove;
+
+            }
+
+
+
+            plus.onclick=function()
+            {
+
+                let value =
+                    parseInt(input.value);
+
+
+                if(value < total)
+                {
+
+                    input.value=value+1;
+
+                    updateRemaining();
+
+                }
+
+            }
+
+
+
+
+
+            minus.onclick=function()
+            {
+
+                let value =
+                    parseInt(input.value);
+
+
+
+                if(value > 1)
+                {
+
+                    input.value=value-1;
+
+                    updateRemaining();
+
+                }
+
+            }
+
+
+
+            input.onchange=function()
+            {
+
+                let value =
+                    parseInt(input.value);
+
+
+
+                if(value < 1)
+                    input.value=1;
+
+
+
+                if(value > total)
+                    input.value=total;
+
+
+
+                updateRemaining();
+
+            }
+
+
+
+        });
+
+
+    </script>
+
+
+}

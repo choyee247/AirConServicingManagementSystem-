@@ -208,7 +208,8 @@ namespace AirConServicingManagementSystem.Controllers
 
             var records = await _context.ServiceRecords
                 .Include(r => r.Technician)
-                .Include(r => r.AirConUnit)
+                .Include(s => s.ServiceRecordUnits)
+                    .ThenInclude(s => s.AirConUnit)
                 .Where(r =>
                     r.CustomerId == customerId &&
                     r.IsDeleted != true)

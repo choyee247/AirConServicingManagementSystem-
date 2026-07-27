@@ -1,0 +1,100 @@
+﻿@using AirConServicingManagementSystem.ViewsModels
+@model PaymentViewModel
+@{
+    ViewData["Title"] = "Payment";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+
+<h3>
+    Payment
+</h3>
+
+
+
+<form asp-action="Create"
+      method="post">
+
+
+    <input type="hidden"
+           asp-for="ServiceRecordId" />
+
+
+    <div>
+
+        <label>
+            Invoice No
+        </label>
+
+        <input class="form-control"
+               asp-for="InvoiceNo"
+               readonly />
+
+    </div>
+
+
+
+    <div>
+
+        <label>
+            Amount
+        </label>
+
+        <input class="form-control"
+               asp-for="Amount"
+               readonly />
+
+    </div>
+
+
+
+    <div>
+
+        <label>
+            Customer Paid
+        </label>
+
+        <input class="form-control"
+               asp-for="PaidAmount" />
+
+    </div>
+
+
+
+    <div>
+
+        <label>
+            Payment Method
+        </label>
+
+
+        <select class="form-control"
+                asp-for="PaymentMethod">
+
+
+            <option>
+                Cash
+            </option>
+
+
+            <option>
+                Bank Transfer
+            </option>
+
+
+        </select>
+
+
+    </div>
+
+
+
+    <button class="btn btn-success mt-3">
+
+        Complete Payment
+
+    </button>
+
+
+
+</form>

@@ -120,35 +120,52 @@
 
                         <div class="col-md-6">
 
-
                             <label>
                                 Brand
                             </label>
 
 
-                            <select class="form-select brandSelect"
-                                    name="Items[0].BrandId">
+                            <div class="input-group">
 
 
-                                <option value="">
-                                    -- Select Brand --
-                                </option>
+                                <select class="form-select brandSelect"
+                                        name="Items[0].BrandId">
 
 
-                                @foreach (var brand in ViewBag.Brands)
-                                {
-
-                                    <option value="@brand.Id">
-
-                                        @brand.BrandName
-
+                                    <option value="">
+                                        -- Select Brand --
                                     </option>
 
-                                }
+
+                                    @foreach (var brand in ViewBag.Brands)
+                                    {
+
+                                        <option value="@brand.Id">
+
+                                            @brand.BrandName
+
+                                        </option>
+
+                                    }
 
 
-                            </select>
+                                </select>
 
+
+
+                                <a asp-controller="AirConBrand"
+                                   asp-action="CreateBrand"
+                                   class="btn btn-success"
+                                   title="Add New Brand">
+
+
+                                    <i class="fas fa-plus"></i>
+
+
+                                </a>
+
+
+                            </div>
 
 
                         </div>
@@ -164,23 +181,33 @@
                                 Model
                             </label>
 
+                            <div class="input-group">
 
-                            <select class="form-select modelSelect"
-                                    name="Items[0].ModelId">
-
-
-                                <option>
-
-                                    -- Select Model --
-
-                                </option>
+                                <select class="form-select modelSelect"
+                                        name="Items[0].ModelId">
 
 
-                            </select>
+                                    <option>
+
+                                        -- Select Model --
+
+                                    </option>
 
 
+                                </select>
+                                <a asp-controller="AirConModel"
+                                   asp-action="CreateModel"
+                                   class="btn btn-success"
+                                   title="Add New Model">
+
+
+                                    <i class="fas fa-plus"></i>
+
+
+                                </a>
+
+                            </div>
                         </div>
-
 
                     </div>
 
@@ -365,7 +392,9 @@
                             <select class="form-select installType"
                                     name="Items[0].InstallationType">
 
-
+                                <option>
+                                    -- Select --
+                                </option>
                                 <option value="Existing">
 
                                     Existing Repair
@@ -660,7 +689,7 @@
 
                 let name = $(this).attr("name");
 
-                name = name.replace(/\Items\[\d+\]/, `Items[${index}]`);
+                name = name.replace(/\Items\[\d+\]/g, `Items[${index}]`);
 
                 $(this).attr("name", name);
 
