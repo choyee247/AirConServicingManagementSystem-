@@ -17,7 +17,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
         {
             var services = await _context.ServiceRequests
                 .Include(s => s.Customer)
-                .Include(s => s.AirCon)
+                .Include(s => s.AirConUnits)
                 .Include(s => s.Technician)
                 .Include(s => s.ServiceRecords)
                 .Include(s => s.Appointment)
@@ -125,12 +125,25 @@ namespace AirConServicingManagementSystem.Controllers.Admin
                 .Include(a => a.Customer)
                 .FirstOrDefaultAsync(a => a.AppointmentId == id);
 
+
             if (appointment == null)
                 return NotFound();
 
-            ViewBag.Technicians = await _context.Technicians
-                .Where(t => !t.IsDeleted)
+
+
+            var busyTechnicianIds = await _context.ServiceRecords
+                .Where(sr => sr.Status == "In Progress")
+                .Select(sr => sr.TechnicianId)
                 .ToListAsync();
+
+
+
+            ViewBag.Technicians = await _context.Technicians
+                .Where(t => !t.IsDeleted
+                         && !busyTechnicianIds.Contains(t.TechnicianId))
+                .ToListAsync();
+
+
 
             return View(appointment);
         }
@@ -182,7 +195,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             TempData["SuccessMessage"] =
                 "Technician assigned successfully.";
 
-            return RedirectToAction("Index", "Appointment");
+            return RedirectToAction("AppointmentList", "Appointment");
         }
         public async Task<IActionResult> Records(string search)
         {
@@ -203,10 +216,13 @@ namespace AirConServicingManagementSystem.Controllers.Admin
                 .Include(r => r.Technician)
                 .Include(r => r.ServiceRequest)
                     .ThenInclude(a => a.Appointment)
-                .Include(r => r.AirConUnit)
-                    .ThenInclude(a => a.Brand)
-                .Include(r => r.AirConUnit)
-                    .ThenInclude(a => a.Model)
+                .Include(r => r.ServiceRecordUnits)
+                    .ThenInclude(x => x.AirConUnit)
+                        .ThenInclude(x => x.Brand)
+
+                .Include(r => r.ServiceRecordUnits)
+                    .ThenInclude(x => x.AirConUnit)
+                        .ThenInclude(x => x.Model)
                 .Where(r => r.IsDeleted != true
                          && r.TechnicianId == technicianId.Value);
 
@@ -240,9 +256,10 @@ namespace AirConServicingManagementSystem.Controllers.Admin
 
             var record = await _context.ServiceRecords
                 .Include(x => x.Customer)
-                .Include(x => x.AirConUnit)
-                    .ThenInclude(x =>x.Brand)
-                    .ThenInclude(x =>x.AirConModels)
+                .Include(x => x.ServiceRecordUnits)
+                    .ThenInclude(r => r.AirConUnit)
+                        .ThenInclude(r =>r.Brand)
+                        .ThenInclude(r =>r.AirConModels)
                 .Include(x => x.Technician)
                 .FirstOrDefaultAsync(x =>
                     x.Id == id &&

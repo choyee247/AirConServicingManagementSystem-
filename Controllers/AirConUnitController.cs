@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AirConServicingManagementSystem.Models;
+using AirConServicingManagementSystem.ViewModels;
 
 namespace AirConServicingManagementSystem.Controllers
 {
@@ -44,56 +45,190 @@ namespace AirConServicingManagementSystem.Controllers
             return View(aircon);
         }
 
-        public async Task<IActionResult> Create(int serviceId, bool isAnother = false)
+        public async Task<IActionResult> Create(int serviceId)
         {
             ViewBag.ServiceId = serviceId;
-            ViewBag.IsAnother = isAnother;
+
 
             var service = await _context.ServiceRequests
                 .Include(x => x.Appointment)
-                    .ThenInclude(a => a.Customer)
+                .ThenInclude(x => x.Customer)
                 .FirstOrDefaultAsync(x => x.ServiceId == serviceId);
+
+
 
             if (service == null)
                 return NotFound();
 
-            ViewBag.CustomerName = service.Appointment.Customer.Name;
-            ViewBag.CustomerPhone = service.Appointment.Customer.Phone;
-            ViewBag.AppointmentId = service.AppointmentId;
 
-            ViewBag.Brands = await _context.AirConBrands
+
+            ViewBag.CustomerName =
+                service.Appointment.Customer.Name;
+
+
+            ViewBag.CustomerPhone =
+                service.Appointment.Customer.Phone;
+
+
+
+            ViewBag.ACCount =
+                await _context.AirConUnits
+                .CountAsync(x => x.CustomerId == service.CustomerId);
+
+
+
+            ViewBag.Brands =
+                await _context.AirConBrands
                 .Where(x => x.IsDeleted != true)
                 .ToListAsync();
 
-            return View();
+
+
+            return View(new AddAirConUnitViewModel
+            {
+                ServiceId = serviceId,
+                Items = new List<CartAirConItem>()
+            });
+
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AirConUnit aircon, int serviceId)
+        public async Task<IActionResult> Create(
+           AddAirConUnitViewModel model)
         {
-            var serviceRequest = await _context.ServiceRequests
-                .FirstOrDefaultAsync(x => x.ServiceId == serviceId);
 
-            if (serviceRequest == null)
-                return NotFound("ServiceRequest not found");
+            var service = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x =>
+                x.ServiceId == model.ServiceId);
 
-            // ⭐ SAFE FIX (NO NAVIGATION)
-            aircon.CustomerId = serviceRequest.CustomerId;
 
-            aircon.CreatedAt = DateTime.Now;
-            aircon.IsDeleted = false;
 
-            _context.AirConUnits.Add(aircon);
-            await _context.SaveChangesAsync();
+            if (service == null)
+                return NotFound();
 
-            serviceRequest.AirConId = aircon.Id;
-            serviceRequest.Status = "In Progress";
 
-            _context.ServiceRequests.Update(serviceRequest);
-            await _context.SaveChangesAsync();
 
-            return RedirectToAction("Assigned", "TechnicianService");
+            foreach (var item in model.Items)
+            {
+
+                Console.WriteLine(
+        $"BrandId={item.BrandId}, ModelId={item.ModelId}"
+    );
+                for (int i = 0; i < item.Quantity; i++)
+                {
+
+
+                    var aircon = new AirConUnit
+                    {
+
+                        CustomerId = service.CustomerId,
+
+
+                        BrandId = item.BrandId,
+
+
+                        ModelId = item.ModelId,
+
+                        SerialNumber = item.SerialNumber,
+
+                        CapacityHp = item.CapacityHp,
+
+
+                        AirConType = item.AirConType,
+
+
+                        InstallationType =
+                            item.InstallationType,
+
+
+                        InstallationDate =
+                            item.InstallationDate,
+
+
+                        CreatedAt = DateTime.Now,
+
+
+                        IsDeleted = false
+
+                    };
+
+                    var modelExists =
+    await _context.AirConModels
+    .AnyAsync(x => x.Id == item.ModelId);
+
+
+                    if (!modelExists)
+                    {
+                        return BadRequest(
+                            "Invalid AirCon Model Id : "
+                            + item.ModelId
+                        );
+                    }
+
+                    _context.AirConUnits.Add(aircon);
+
+
+
+                    await _context.SaveChangesAsync();
+
+
+
+                    if (item.InstallationType == "New")
+                    {
+
+
+                        if (item.ContractStartDate.HasValue &&
+                           item.ContractEndDate.HasValue)
+                        {
+
+
+                            var warranty = new Warranty
+                            {
+
+                                AirConId = aircon.Id,
+
+
+                                StartDate =
+                                    item.ContractStartDate.Value,
+
+
+                                EndDate =
+                                    item.ContractEndDate.Value,
+
+
+                                IsActive = true
+
+                            };
+
+
+
+                            _context.Warranties.Add(warranty);
+
+                            await _context.SaveChangesAsync();
+
+
+                        }
+
+                    }
+
+
+                }
+
+
+            }
+
+
+
+            service.Status = "In Progress";
+
+
+
+            return RedirectToAction(
+      "Complete",
+      "TechnicianService",
+      new { id = service.ServiceId });
+
         }
 
         // POST: Create
@@ -122,85 +257,391 @@ namespace AirConServicingManagementSystem.Controllers
         //    return View(aircon);
         //}
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(
+     int id,
+     int serviceId)
         {
+
             var aircon = await _context.AirConUnits
-                .FirstOrDefaultAsync(a => a.Id == id && a.IsDeleted != true);
+                .Include(x => x.Customer)
+                .Include(x => x.Brand)
+                .Include(x => x.Model)
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.IsDeleted != true);
 
-            if (aircon == null) return NotFound();
 
-            ViewBag.Brands = await _context.AirConBrands
-                .Where(b => b.IsDeleted != true)
+
+            if (aircon == null)
+                return NotFound();
+
+
+            ViewBag.ServiceId = serviceId;
+
+
+            ViewBag.Brands =
+                await _context.AirConBrands
+                .Where(x => x.IsDeleted != true)
                 .ToListAsync();
 
-            ViewBag.Models = await _context.AirConModels
-                .Where(m => m.BrandId == aircon.BrandId && m.IsDeleted != true)
+
+
+
+            ViewBag.Models =
+                await _context.AirConModels
+                .Where(x =>
+                    x.BrandId == aircon.BrandId &&
+                    x.IsDeleted != true)
                 .ToListAsync();
 
-            ViewBag.Customers = await _context.Customers
-                .Where(c => c.IsDeleted != true)
-                .ToListAsync();
 
-            return View(aircon);
+
+            ViewBag.CustomerName = aircon.Customer?.Name;
+            ViewBag.CustomerPhone = aircon.Customer?.Phone;
+
+
+            // Same Brand + Model + Installation Type Count
+
+            var quantity =
+                await _context.AirConUnits
+                .CountAsync(x =>
+                    x.CustomerId == aircon.CustomerId &&
+                    x.BrandId == aircon.BrandId &&
+                    x.ModelId == aircon.ModelId &&
+                    x.InstallationType == aircon.InstallationType &&
+                    x.IsDeleted != true);
+
+
+
+
+
+            var vm = new EditAirConUnitViewModel
+            {
+
+                Id = aircon.Id,
+
+
+                CustomerId = aircon.CustomerId,
+
+
+                BrandId = aircon.BrandId,
+
+
+                ModelId = aircon.ModelId,
+
+
+                BrandName = aircon.Brand?.BrandName,
+
+
+                ModelName = aircon.Model?.ModelName,
+
+
+                SerialNumber = aircon.SerialNumber,
+
+
+                CapacityHp = aircon.CapacityHp,
+
+
+                AirConType = aircon.AirConType,
+
+
+                InstallationType = aircon.InstallationType,
+
+
+                InstallationDate = aircon.InstallationDate,
+
+
+
+                Quantity = quantity,
+
+
+
+                CustomerName =
+                    aircon.Customer?.Name,
+
+
+                CustomerPhone =
+                    aircon.Customer?.Phone,
+
+
+
+                ServiceId = serviceId
+
+            };
+
+
+
+
+            return View(vm);
+
         }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(AirConUnit model)
+        public async Task<IActionResult> Edit(
+            EditAirConUnitViewModel model,
+            DateTime? ContractStartDate,
+            DateTime? ContractEndDate,
+            int serviceId)
+
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 ViewBag.Brands = await _context.AirConBrands
-                    .Where(b => b.IsDeleted != true)
+                    .Where(x => x.IsDeleted != true)
                     .ToListAsync();
 
                 ViewBag.Models = await _context.AirConModels
-                    .Where(m => m.BrandId == model.BrandId && m.IsDeleted != true)
-                    .ToListAsync();
-
-                ViewBag.Customers = await _context.Customers
-                    .Where(c => c.IsDeleted != true)
+                    .Where(x => x.BrandId == model.BrandId &&
+                                x.IsDeleted != true)
                     .ToListAsync();
 
                 return View(model);
             }
 
             var aircon = await _context.AirConUnits
-                .FirstOrDefaultAsync(a => a.Id == model.Id && a.IsDeleted != true);
+                .FirstOrDefaultAsync(x => x.Id == model.Id &&
+                                          x.IsDeleted != true);
 
-            if (aircon == null) return NotFound();
+            if (aircon == null)
+                return NotFound();
 
-            // UPDATE ONLY REQUIRED FIELDS
             aircon.BrandId = model.BrandId;
             aircon.ModelId = model.ModelId;
-            aircon.AirConType = model.AirConType;
+            aircon.SerialNumber = model.SerialNumber;
             aircon.CapacityHp = model.CapacityHp;
+            aircon.AirConType = model.AirConType;
+            aircon.InstallationType = model.InstallationType;
             aircon.InstallationDate = model.InstallationDate;
-
             aircon.UpdatedAt = DateTime.Now;
 
+            // ===============================
+            // Quantity Sync
+            // ===============================
+
+            var currentUnits = await _context.AirConUnits
+                .Where(x =>
+                    x.CustomerId == aircon.CustomerId &&
+                    x.BrandId == aircon.BrandId &&
+                    x.ModelId == aircon.ModelId &&
+                    x.InstallationType == aircon.InstallationType &&
+                    x.IsDeleted != true)
+                .ToListAsync();
+
+
+
+            int currentQuantity = currentUnits.Count;
+
+
+
+            // Add New Units
+
+            if (model.Quantity > currentQuantity)
+            {
+                int addCount = model.Quantity - currentQuantity;
+
+
+                for (int i = 0; i < addCount; i++)
+                {
+
+                    var newUnit = new AirConUnit
+                    {
+                        CustomerId = aircon.CustomerId,
+
+                        BrandId = aircon.BrandId,
+
+                        ModelId = aircon.ModelId,
+
+                        CapacityHp = aircon.CapacityHp,
+
+                        AirConType = aircon.AirConType,
+
+                        InstallationType = aircon.InstallationType,
+
+                        InstallationDate = aircon.InstallationDate,
+
+                        CreatedAt = DateTime.Now,
+
+                        IsDeleted = false
+                    };
+
+
+                    _context.AirConUnits.Add(newUnit);
+
+                }
+            }
+
+
+
+            // Remove Units
+
+            else if (model.Quantity < currentQuantity)
+            {
+
+                int removeCount =
+                    currentQuantity - model.Quantity;
+
+
+                var removeUnits =
+                    currentUnits
+                    .OrderByDescending(x => x.Id)
+                    .Take(removeCount)
+                    .ToList();
+
+
+
+                foreach (var item in removeUnits)
+                {
+                    item.IsDeleted = true;
+                    item.DeletedAt = DateTime.Now;
+                }
+
+            }
+
+            var warranty = await _context.Warranties
+                .FirstOrDefaultAsync(x => x.AirConId == aircon.Id);
+
+            if (aircon.InstallationType == "New")
+            {
+                if (warranty == null)
+                {
+                    if (ContractStartDate.HasValue &&
+                        ContractEndDate.HasValue)
+                    {
+                        warranty = new Warranty
+                        {
+                            AirConId = aircon.Id,
+                            StartDate = ContractStartDate.Value,
+                            EndDate = ContractEndDate.Value,
+                            IsActive = true
+                        };
+
+                        _context.Warranties.Add(warranty);
+                    }
+                }
+                else
+                {
+                    warranty.StartDate = ContractStartDate ?? warranty.StartDate;
+                    warranty.EndDate = ContractEndDate ?? warranty.EndDate;
+                    warranty.IsActive = true;
+                }
+            }
+            else
+            {
+                if (warranty != null)
+                {
+                    warranty.IsActive = false;
+                }
+            }
+
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(
+                "Complete",
+                "TechnicianService",
+                new
+                {
+                    id = serviceId
+                });
         }
 
-        // GET: Delete (Soft Delete)
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(
+    int id,
+    int serviceId)
         {
             var aircon = await _context.AirConUnits
-                .FirstOrDefaultAsync(a => a.Id == id && a.IsDeleted != true);
+                .Include(x => x.Customer)
+                .Include(x => x.Brand)
+                .Include(x => x.Model)
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.IsDeleted != true);
 
-            if (aircon == null) return NotFound();
 
-            // Soft delete
-            aircon.IsDeleted = true;
-            aircon.DeletedAt = DateTime.Now;
+            if (aircon == null)
+                return NotFound();
 
-            _context.Update(aircon);
+            ViewBag.TotalQuantity =
+            await _context.AirConUnits
+            .CountAsync(x =>
+                x.CustomerId == aircon.CustomerId &&
+                x.BrandId == aircon.BrandId &&
+                x.ModelId == aircon.ModelId &&
+                x.InstallationType == aircon.InstallationType &&
+                x.IsDeleted == false);
+
+            ViewBag.ServiceId = serviceId;
+
+
+            return View(aircon);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(
+            int id,
+            int RemoveQuantity,
+            int serviceId)
+        {
+
+            Console.WriteLine($"Id = {id}");
+            Console.WriteLine($"RemoveQuantity = {RemoveQuantity}");
+            Console.WriteLine($"ServiceId = {serviceId}");
+
+            var aircon = await _context.AirConUnits
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.IsDeleted != true);
+
+
+
+            if (aircon == null)
+                return NotFound();
+
+
+
+            // Find all matching AirCon Units
+
+            var units = await _context.AirConUnits
+                .Where(x =>
+                    x.CustomerId == aircon.CustomerId &&
+                    x.BrandId == aircon.BrandId &&
+                    x.ModelId == aircon.ModelId &&
+                    x.InstallationType == aircon.InstallationType &&
+                    x.IsDeleted == false)
+                .OrderByDescending(x => x.Id)
+                .Take(RemoveQuantity)
+                .ToListAsync();
+
+            Console.WriteLine($"Found Units = {units.Count}");
+            // Soft Delete Selected Quantity
+
+            foreach (var item in units)
+            {
+                item.IsDeleted = true;
+                item.DeletedAt = DateTime.Now;
+
+                var warranty = await _context.Warranties
+                    .FirstOrDefaultAsync(x => x.AirConId == item.Id);
+
+                if (warranty != null)
+                {
+                    warranty.IsActive = false;
+                }
+            }
+
             await _context.SaveChangesAsync();
+            Console.WriteLine("Deleted Successfully");
 
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(
+                "Complete",
+                "TechnicianService",
+                new
+                {
+                    id = serviceId
+                });
+
         }
 
         // AJAX: Get Models by Brand

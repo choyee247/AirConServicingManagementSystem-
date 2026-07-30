@@ -13,8 +13,6 @@ public partial class ServiceRequest
 
     public int CustomerId { get; set; }
 
-    public int? AirConId { get; set; }
-
     public int? TechnicianId { get; set; }
 
     [StringLength(100)]
@@ -55,9 +53,8 @@ public partial class ServiceRequest
 
     public int? AppointmentId { get; set; }
 
-    [ForeignKey("AirConId")]
-    [InverseProperty("ServiceRequests")]
-    public virtual AirConUnit? AirCon { get; set; }
+    [InverseProperty("Service")]
+    public virtual ICollection<AirConUnit> AirConUnits { get; set; } = new List<AirConUnit>();
 
     [ForeignKey("AppointmentId")]
     [InverseProperty("ServiceRequests")]
@@ -72,9 +69,6 @@ public partial class ServiceRequest
 
     [InverseProperty("ServiceRequest")]
     public virtual ICollection<CustomerFeedback> CustomerFeedbacks { get; set; } = new List<CustomerFeedback>();
-
-    [InverseProperty("Service")]
-    public virtual Payment? Payment { get; set; }
 
     [InverseProperty("ServiceRequest")]
     public virtual ICollection<ServiceRecord> ServiceRecords { get; set; } = new List<ServiceRecord>();

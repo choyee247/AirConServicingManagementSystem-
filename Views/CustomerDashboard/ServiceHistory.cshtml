@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ServiceRecord>
+﻿@model IEnumerable<ServiceRecordUnit>
 @{
     ViewData["Title"] = "Service History";
     Layout = "~/Views/Shared/_CustomerLayout.cshtml";
@@ -18,10 +18,10 @@
         @foreach (var s in Model)
         {
             <tr>
-                <td>@s.ServiceDate?.ToString("dd MMM yyyy")</td>
+                <td>@s.ServiceRecord.ServiceDate?.ToString("dd MMM yyyy")</td>
                 <td>@s.AirConUnit.Brand.BrandName</td>
-                <td>@s.ServiceType</td>
-                <td>@s.Technician.Name</td>
+                <td>@s.ServiceRecord.ServiceType</td>
+                <td>@s.ServiceRecord.Technician.Name</td>
                 <td>@s.NextServiceDue?.ToString("dd MMM yyyy")</td>
             </tr>
         }

@@ -38,7 +38,7 @@ namespace AirConServicingManagementSystem.Controllers
 
             var services = await _context.ServiceRequests
              .Include(x => x.Customer)
-             .Include(x => x.AirCon)
+             .Include(x => x.AirConUnits)
              .Where(x => x.TechnicianId == technicianId)
              .Select(x => new ServiceRequestCreateVM
              {
@@ -99,7 +99,7 @@ namespace AirConServicingManagementSystem.Controllers
             model.RequestedAt = DateTime.Now;
             model.CreatedAt = DateTime.Now;
             model.PaymentStatus = "Unpaid";
-            model.AirConId = null;
+            //model.AirConId = null;
             model.AppointmentId = appointmentId;
 
             _context.ServiceRequests.Add(model);
@@ -118,16 +118,24 @@ namespace AirConServicingManagementSystem.Controllers
             }
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            //return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(
+                "Create",
+                "AirConUnit",
+                new
+                {
+                    serviceId = model.ServiceId
+                });
         }
         public async Task<IActionResult> Details(int appointmentId)
         {
             var service = await _context.ServiceRequests
                 .Include(x => x.Customer)
                 .Include(x => x.Technician)
-                .Include(x => x.AirCon)
+                .Include(x => x.AirConUnits)
                     .ThenInclude(x => x.Brand)
-                .Include(x => x.AirCon)
+                .Include(x => x.AirConUnits)
                     .ThenInclude(x => x.Model)
                 .FirstOrDefaultAsync(x => x.AppointmentId == appointmentId);
 
@@ -163,11 +171,11 @@ namespace AirConServicingManagementSystem.Controllers
 
             var data = await _context.ServiceRequests
                 .Include(s => s.Technician)
-                .Include(s => s.AirCon)
+                .Include(s => s.AirConUnits)
                     .ThenInclude(a => a.Brand)
-                .Include(s => s.AirCon)
+                .Include(s => s.AirConUnits)
                     .ThenInclude(a => a.Model)
-                .Include(s => s.AirCon)
+                .Include(s => s.AirConUnits)
                     .ThenInclude(a => a.Warranty)
                 .Where(s => s.CustomerId == customerId)
                 .OrderByDescending(s => s.RequestedAt)
@@ -200,7 +208,8 @@ namespace AirConServicingManagementSystem.Controllers
 
             var records = await _context.ServiceRecords
                 .Include(r => r.Technician)
-                .Include(r => r.AirConUnit)
+                .Include(s => s.ServiceRecordUnits)
+                    .ThenInclude(s => s.AirConUnit)
                 .Where(r =>
                     r.CustomerId == customerId &&
                     r.IsDeleted != true)

@@ -1,4 +1,4 @@
-﻿@model ServiceRecord
+﻿@model ServiceRecordUnit
 @{
     ViewData["Title"] = "Service Record Details";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
@@ -254,15 +254,15 @@
                     <div class="info-grid">
                         <div class="info-row">
                             <span class="info-label"><i class="fas fa-user"></i> Full Name:</span>
-                            <span class="info-value">@Model.Customer.Name</span>
+                            <span class="info-value">@Model.ServiceRecord.Customer.Name</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label"><i class="fas fa-phone-alt"></i> Phone:</span>
-                            <span class="info-value">@Model.Customer.Phone</span>
+                            <span class="info-value">@Model.ServiceRecord.Customer.Phone</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label"><i class="fas fa-map-marker-alt"></i> Address:</span>
-                            <span class="info-value">@Model.Customer.Address</span>
+                            <span class="info-value">@Model.ServiceRecord.Customer.Address</span>
                         </div>
                     </div>
                 </div>
@@ -292,19 +292,19 @@
                     <div class="info-grid">
                         <div class="info-row">
                             <span class="info-label"><i class="far fa-calendar-check"></i> Service Date:</span>
-                            <span class="info-value">@(Model.ServiceDate?.ToString("dd/MM/yyyy") ?? "N/A")</span>
+                            <span class="info-value">@(Model.ServiceRecord.ServiceDate?.ToString("dd/MM/yyyy") ?? "N/A")</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label"><i class="fas fa-chart-line"></i> Status:</span>
                             <span class="info-value">
                                 <span class="status-badge">
-                                    <i class="fas fa-check-circle"></i> @Model.Status
+                                    <i class="fas fa-check-circle"></i> @Model.ServiceRecord.Status
                                 </span>
                             </span>
                         </div>
                         <div class="info-row">
                             <span class="info-label"><i class="fas fa-concierge-bell"></i> Service Type:</span>
-                            <span class="info-value">@Model.ServiceType</span>
+                            <span class="info-value">@Model.ServiceRecord.ServiceType</span>
                         </div>
                     </div>
 
@@ -334,7 +334,7 @@
                     </div>
                     <div class="alert-modern alert-parts">
                         <i class="fas fa-cogs"></i>
-                        @Model.PartsReplaced
+                        @Model.ServiceRecord.PartsReplaced
                     </div>
 
                     <!-- TECHNICIAN NOTE -->
@@ -343,7 +343,7 @@
                     </div>
                     <div class="alert-modern alert-note">
                         <i class="fas fa-sticky-note"></i>
-                        @Model.TechnicianNote
+                        @Model.ServiceRecord.TechnicianNote
                     </div>
 
                     <div class="soft-divider"></div>

@@ -1,0 +1,883 @@
+﻿@{
+    ViewData["Title"] = "Invoice Preview";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+@model AirConServicingManagementSystem.ViewModels.CompleteServiceViewModel
+
+@{
+    var existingUnits = Model.Units
+        .Where(x => x.InstallationType == "Existing" && x.IsSelected)
+        .ToList();
+
+    var installUnits = Model.Units
+        .Where(x => x.InstallationType == "New" && x.IsSelected)
+        .ToList();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Invoice Preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/fontawesome/css/beta3allmin600.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fc;
+            padding: 0.5rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .invoice-wrapper {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* modern card – clean, soft shadow */
+        .invoice-card {
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            border: 1px solid rgba(44, 140, 153, 0.06);
+        }
+
+        /* header – brand color #2c8c99 */
+        .invoice-header {
+            background: #2c8c99;
+            padding: 1.2rem 1.8rem;
+            color: white;
+        }
+
+            .invoice-header h2 {
+                font-weight: 600;
+                font-size: 1.6rem;
+                letter-spacing: -0.3px;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+                .invoice-header h2 i {
+                    font-size: 1.8rem;
+                    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05));
+                }
+
+            .invoice-header .job-badge {
+                background: rgba(255,255,255,0.15);
+                padding: 4px 16px;
+                border-radius: 40px;
+                font-weight: 500;
+                font-size: 0.9rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+        .invoice-body {
+            padding: 1.5rem 1.5rem 2rem 1.5rem;
+        }
+
+        /* info cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card {
+            background: #f9fcfe;
+            border-radius: 20px;
+            border: 1px solid #eaf0f5;
+            padding: 1rem 1.2rem;
+            transition: 0.1s;
+        }
+
+            .info-card .label {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                color: #5a7288;
+                font-weight: 600;
+            }
+
+            .info-card .value {
+                font-weight: 600;
+                font-size: 1rem;
+                color: #1a2a3a;
+                margin-top: 2px;
+                word-break: break-word;
+            }
+
+            .info-card .badge-status {
+                background: #2c8c99;
+                color: white;
+                padding: 2px 14px;
+                border-radius: 30px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                display: inline-block;
+            }
+
+        /* section titles */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2e3a;
+            margin: 1.4rem 0 0.6rem 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid rgba(44, 140, 153, 0.12);
+            padding-bottom: 0.3rem;
+        }
+
+            .section-title i {
+                color: #2c8c99;
+                width: 1.6rem;
+            }
+
+        /* table – fully responsive */
+        .table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 0.5rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 480px;
+        }
+
+            .table th {
+                background: #f0f6fa;
+                color: #1a2a3a;
+                font-weight: 600;
+                padding: 0.6rem 0.8rem;
+                text-align: left;
+                border-bottom: 2px solid #dce5ec;
+            }
+
+            .table td {
+                padding: 0.5rem 0.8rem;
+                border-bottom: 1px solid #eaeef3;
+                vertical-align: middle;
+            }
+
+        .table-striped tbody tr:nth-child(odd) {
+            background: #f9fbfd;
+        }
+
+        .table-bordered {
+            border: 1px solid #dee6ed;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+            .table-bordered th,
+            .table-bordered td {
+                border: 1px solid #dee6ed;
+            }
+
+        .table thead th {
+            background: #f0f6fa;
+        }
+
+        .badge {
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.7rem;
+        }
+
+        .badge-success {
+            background: #1f8b6b;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #c74a5a;
+            color: white;
+        }
+
+        .badge-secondary {
+            background: #b0c4ce;
+            color: #1f2e3a;
+        }
+
+        /* buttons */
+        .btn {
+            border: none;
+            padding: 0.6rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.15s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: #e2edf3;
+            color: #1f2e3a;
+        }
+
+            .btn-secondary:hover {
+                background: #d0dde6;
+            }
+
+        .btn-success {
+            background: #2c8c99;
+            color: white;
+            box-shadow: 0 6px 14px rgba(44, 140, 153, 0.2);
+        }
+
+            .btn-success:hover {
+                background: #236e78;
+                transform: translateY(-1px);
+                box-shadow: 0 8px 18px rgba(44, 140, 153, 0.25);
+            }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #b0c4ce;
+            color: #1f2e3a;
+        }
+
+            .btn-outline:hover {
+                background: #f0f5f9;
+            }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .total-box {
+            background: #f6fafc;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid #e2edf3;
+            max-width: 360px;
+            margin-left: auto;
+        }
+
+            .total-box table {
+                width: 100%;
+                font-size: 0.9rem;
+            }
+
+            .total-box td {
+                padding: 0.2rem 0.4rem;
+            }
+
+            .total-box .grand {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: #2c8c99;
+            }
+
+        /* responsive */
+       
+            .invoice-header
+
+        {
+            padding: 1rem 1rem;
+        }
+
+        .invoice-header h2 {
+            font-size: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+            .invoice-header h2 i {
+                font-size: 1.3rem;
+            }
+
+        .invoice-body {
+            padding: 1rem 0.8rem 1.5rem 0.8rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+
+        .info-card {
+            padding: 0.7rem 0.8rem;
+        }
+            /* Invoice Photo Gallery */
+
+            .photo-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: 10px;
+            }
+
+
+            .invoice-photo {
+                width: 140px !important;
+                height: 140px !important;
+                max-width: 140px !important;
+                max-height: 140px !important;
+                object-fit: cover !important;
+                border-radius: 10px;
+                border: 1px solid #ddd;
+                cursor: pointer;
+                transition: .3s;
+            }
+
+
+                .invoice-photo:hover {
+                    transform: scale(1.08);
+                }
+
+            .photo-item {
+                width: 140px;
+                height: 140px;
+            }
+
+        .table {
+            font-size: 0.75rem;
+            min-width: 400px;
+        }
+
+            .table th, .table td {
+                padding: 0.3rem 0.4rem;
+            }
+
+        .action-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+            .action-bar .btn {
+                justify-content: center;
+                width: 100%;
+            }
+
+        .total-box {
+            max-width: 100%;
+            margin-left: 0;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            .info-grid
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        .invoice-header h2 {
+            font-size: 1rem;
+        }
+
+        .invoice-header .job-badge {
+            font-size: 0.7rem;
+            padding: 2px 10px;
+        }
+
+        .table {
+            font-size: 0.7rem;
+            min-width: 340px;
+        }
+
+        }
+
+        /* helper */
+        .mt-2 {
+            margin-top: 0.4rem;
+        }
+
+        .mt-3 {
+            margin-top: 0.6rem;
+        }
+
+        .mt-4 {
+            margin-top: 1.2rem;
+        }
+
+        .mt-5 {
+            margin-top: 1.8rem;
+        }
+
+        .mb-0 {
+            margin-bottom: 0;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.2rem;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .justify-content-between {
+            justify-content: space-between;
+        }
+
+        .justify-content-end {
+            justify-content: flex-end;
+        }
+
+        .gap-2 {
+            gap: 0.4rem;
+        }
+
+        .text-end {
+            text-align: right;
+        }
+
+        .text-white {
+            color: white;
+        }
+
+        .text-success {
+            color: #1f8b6b;
+        }
+
+        .fw-bold {
+            font-weight: 700;
+        }
+
+        .border-0 {
+            border: 0;
+        }
+
+        .shadow-lg {
+            box-shadow: 0 12px 30px -8px rgba(0,0,0,0.04);
+        }
+
+        .rounded {
+            border-radius: 30px;
+        }
+    </style>
+</head>
+<body>
+   
+    <div class="invoice-wrapper">
+        <div class="invoice-card">
+            <!-- Header -->
+            <div class="invoice-header">
+                <div class="d-flex flex-wrap align-items-center justify-content-between">
+                    <div>
+                        <h2>
+                            <i class="fas fa-file-invoice"></i>
+                            SERVICE INVOICE
+                            <span style="font-size:0.65rem; font-weight:400; background:rgba(255,255,255,0.12); padding:0 14px; border-radius:40px; margin-left:8px;">AirCon MS</span>
+                        </h2>
+                    </div>
+                    <div class="text-end" style="color:white;">
+                        <div class="job-badge">
+                            <i class="fas fa-hashtag"></i> @Model.JobNo
+                        </div>
+                        <div style="font-size:0.75rem; opacity:0.85; margin-top:2px;">
+                            @DateTime.Now.ToString("dd MMM yyyy")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="invoice-body">
+                <!-- Info Cards -->
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="label"><i class="fas fa-user" style="color:#2c8c99;width:1.2rem;"></i> Customer</div>
+                        <div class="value">@Model.CustomerName</div>
+                        <div style="font-size:0.8rem; color:#4b6379;">@Model.PhoneNumber</div>
+                        <div style="font-size:0.8rem; color:#4b6379;">@Model.Address</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="label"><i class="fas fa-user-cog" style="color:#2c8c99;width:1.2rem;"></i> Technician</div>
+                        <div class="value">@Model.TechnicianName</div>
+                        <div style="font-size:0.8rem; color:#4b6379;">Service: @DateTime.Now.ToString("dd-MM-yyyy")</div>
+                        <div><span class="badge-status" style="margin-top:4px;">Ready to Complete</span></div>
+                    </div>
+                </div>
+
+                <!-- Existing Units -->
+                @if (existingUnits.Any())
+                {
+                    <div class="section-title"><i class="fas fa-snowflake"></i> Existing AirCon Units</div>
+                    <div class="table-wrap">
+                        <table class="table table-bordered">
+                            <thead><tr><th>Brand</th><th>Model</th><th>Total Qty</th><th>Today</th><th>Condition</th><th>Next Service</th></tr></thead>
+                            <tbody>
+                                @foreach (var unit in existingUnits)
+                                {
+                                    <tr>
+                                        <td>@unit.BrandName</td>
+                                        <td>@unit.ModelName</td>
+                                        <td>@unit.TotalQuantity</td>
+                                        <td>@unit.ServiceQuantity</td>
+                                        <td>@unit.Condition</td>
+                                        <td>@(unit.NextServiceDue?.ToString("dd-MM-yyyy") ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <!-- Installation Units -->
+                @if (installUnits.Any())
+                {
+                    <div class="section-title"><i class="fas fa-tools"></i> Installation Units</div>
+                    <div class="table-wrap">
+                        <table class="table table-bordered">
+                            <thead><tr><th>Brand</th><th>Model</th><th>Total Qty</th><th>Today</th><th>Contract</th><th>End</th></tr></thead>
+                            <tbody>
+                                @foreach (var unit in installUnits)
+                                {
+                                    <tr>
+                                        <td>@unit.BrandName</td>
+                                        <td>@unit.ModelName</td>
+                                        <td>@unit.TotalQuantity</td>
+                                        <td>@unit.ServiceQuantity</td>
+                                        <td>@unit.ContractMonths Months</td>
+                                        @* <td>@(unit.IsFreeService ? "<span class='badge badge-success'>FREE</span>" : "<span class='badge badge-danger'>PAID</span>")</td> *@
+                                        <td>@(unit.WarrantyEndDate?.ToString("dd-MM-yyyy") ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <!-- Service Detail -->
+                <div class="section-title"><i class="fas fa-clipboard-list"></i> Service Report</div>
+                <div class="table-wrap">
+                    <table class="table table-striped table-bordered">
+                        <thead><tr><th>AC Unit</th><th>Problem Found</th><th>Repair Action</th></tr></thead>
+                        <tbody>
+                            @foreach (var unit in Model.Units.Where(x => x.IsSelected))
+                            {
+                                <tr>
+                                    <td><strong>@unit.BrandName</strong> <small>@unit.ModelName</small></td>
+                                    @if (unit.InstallationType == "New")
+                                    {
+                                        <td colspan="2" class="text-center">
+                                            <span class="badge badge-success">
+                                                New Installation
+                                            </span>
+                                        </td>
+                                    }
+                                    else if (unit.InstallationType == "Existing")
+                                    {
+                                        <td>
+                                            @unit.ProblemFound
+                                        </td>
+
+                                        <td>
+                                            @unit.RepairAction
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="2">
+                                            Unknown Type
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Parts -->
+                @if (Model.Parts.Any())
+                {
+                    <div class="section-title"><i class="fas fa-microchip"></i> Parts Used</div>
+                    <div class="table-wrap">
+                        <table class="table table-bordered">
+                            <thead><tr><th>Part</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+                            <tbody>
+                                @foreach (var p in Model.Parts)
+                                {
+                                    <tr>
+                                        <td>@p.PartName</td>
+                                        <td>@p.Quantity</td>
+                                        <td>@p.UnitPrice.ToString("N0")</td>
+                                        <td>@p.Total.ToString("N0")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <!-- Charges -->
+                @if (Model.Charges.Any())
+                {
+                    <div class="section-title"><i class="fas fa-receipt"></i> Service Charges</div>
+                    <div class="table-wrap">
+                        <table class="table table-bordered">
+                            @foreach (var c in Model.Charges)
+                            {
+                                <tr><td>@c.Description</td><td>@c.Amount.ToString("N0") MMK</td></tr>
+                            }
+                        </table>
+                    </div>
+                }
+
+                <!-- Expenses -->
+                @if (Model.Expenses.Any())
+                {
+                    <div class="section-title"><i class="fas fa-money-bill"></i> Expenses</div>
+                    <div class="table-wrap">
+                        <table class="table table-bordered">
+                            @foreach (var e in Model.Expenses)
+                            {
+                                <tr><td>@e.Description</td><td>@e.Amount.ToString("N0") MMK</td></tr>
+                            }
+                        </table>
+                    </div>
+                }
+                @if (Model.BeforePhotoPreviews.Any())
+                {
+                    <h5>Before Service</h5>
+
+                    <div class="photo-grid">
+
+                        @foreach (var photo in Model.BeforePhotoPreviews)
+                        {
+                            <div class="photo-item">
+
+                                <img src="@photo"
+                                     class="invoice-photo"
+                                     alt="Service Photo"
+                                     onclick="openImage('@photo')" />
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                @if (Model.AfterPhotoPreviews.Any())
+                {
+                    <h5>After Service</h5>
+
+                    <div class="photo-grid">
+
+                        @foreach (var photo in Model.AfterPhotoPreviews)
+                        {
+                            <div class="photo-item">
+
+                                <img src="@photo"
+                                     class="invoice-photo"
+                                     alt="Service Photo"
+                                     onclick="openImage('@photo')" />
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                @if (Model.ProblemPhotoPreviews.Any())
+                {
+                    <h5>Problem Photos</h5>
+
+                    <div class="photo-grid">
+
+                        @foreach (var photo in Model.ProblemPhotoPreviews)
+                        {
+                            <div class="photo-item">
+
+                                <img src="@photo"
+                                     class="invoice-photo"
+                                     alt="Service Photo"
+                                     onclick="openImage('@photo')" />
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                <!-- Total -->
+                <div class="total-box">
+                    <table>
+                        <tr><td>Sub Total</td><td style="text-align:right;">@Model.SubTotal.ToString("N0") MMK</td></tr>
+                        <tr>
+                            <td style="border-top:1px solid #dce5ec; padding-top:6px;"><strong>Grand Total</strong></td>
+                            <td style="border-top:1px solid #dce5ec; padding-top:6px; text-align:right; font-size:1.2rem; font-weight:700; color:#2c8c99;">@Model.GrandTotal.ToString("N0") MMK</td>
+                        </tr>
+                    </table>
+                </div>
+            
+                <!-- Hidden form for confirmation -->
+                <form asp-action="Complete" method="post" style="margin-top:1.5rem;">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="ServiceId" type="hidden" />
+                    <input asp-for="TechnicianNote" type="hidden" />
+                    <input asp-for="GrandTotal" type="hidden" />
+                    <input asp-for="SubTotal" type="hidden" />
+
+                    @for (int i = 0; i < Model.Units.Count; i++)
+                    {
+                        <input type="hidden" name="Units[@i].BrandName" value="@Model.Units[i].BrandName" />
+                        <input type="hidden" name="Units[@i].ModelName" value="@Model.Units[i].ModelName" />
+                        <input type="hidden" name="Units[@i].InstallationType" value="@Model.Units[i].InstallationType" />
+                        <input type="hidden" name="Units[@i].TotalQuantity" value="@Model.Units[i].TotalQuantity" />
+                        <input type="hidden" name="Units[@i].CompletedQuantity" value="@Model.Units[i].CompletedQuantity" />
+                        <input type="hidden" name="Units[@i].ServiceQuantity" value="@Model.Units[i].ServiceQuantity" />
+                        <input type="hidden" name="Units[@i].Condition" value="@Model.Units[i].Condition" />
+                        <input type="hidden" name="Units[@i].ProblemFound" value="@Model.Units[i].ProblemFound" />
+                        <input type="hidden" name="Units[@i].RepairAction" value="@Model.Units[i].RepairAction" />
+                        <input type="hidden" name="Units[@i].NextServiceDue" value="@Model.Units[i].NextServiceDue?.ToString("yyyy-MM-dd")" />
+                        <input type="hidden" name="Units[@i].ServiceFee" value="@Model.Units[i].ServiceFee" />
+                       @*  <input type="hidden" name="Units[@i].IsSelected" value="@Model.Units[i].IsSelected" />  *@
+                       @*  @if (Model.Units[i].ServiceQuantity > 0)
+                        {
+                            <input type="hidden"
+                                   name="Units[@i].IsSelected"
+                                   value="true" />
+                        }
+                        else
+                        {
+                            <input type="hidden"
+                                   name="Units[@i].IsSelected"
+                                   value="false" />
+                        } *@
+
+                        <input type="hidden"
+                               name="Units[@i].IsSelected"
+                               value="@(Model.Units[i].IsSelected ? "true" : "false")" />
+
+                        @for (int j = 0; j < Model.Units[i].AirConUnitIds.Count; j++)
+                        {
+                            <input type="hidden" name="Units[@i].AirConUnitIds[@j]" value="@Model.Units[i].AirConUnitIds[j]" />
+                        }
+                    }
+
+                    @for (int i = 0; i < Model.Parts.Count; i++)
+                    {
+                        <input type="hidden" name="Parts[@i].PartName" value="@Model.Parts[i].PartName" />
+                        <input type="hidden" name="Parts[@i].Quantity" value="@Model.Parts[i].Quantity" />
+                        <input type="hidden" name="Parts[@i].UnitPrice" value="@Model.Parts[i].UnitPrice" />
+                        <input type="hidden" name="Parts[@i].Total" value="@Model.Parts[i].Total" />
+                    }
+
+                    @for (int i = 0; i < Model.Charges.Count; i++)
+                    {
+                        <input type="hidden" name="Charges[@i].ChargeName" value="@Model.Charges[i].Description" />
+                        <input type="hidden" name="Charges[@i].Amount" value="@Model.Charges[i].Amount" />
+                    }
+
+                    @for (int i = 0; i < Model.Expenses.Count; i++)
+                    {
+                        <input type="hidden" name="Expenses[@i].ExpenseName" value="@Model.Expenses[i].Description" />
+                        <input type="hidden" name="Expenses[@i].Amount" value="@Model.Expenses[i].Amount" />
+                    }
+                 
+
+                    <div class="action-bar">
+                        <button type="button" onclick="history.back()" class="btn btn-secondary">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check"></i> Confirm Complete
+                        </button>
+                    </div>
+                </form>
+
+            </div><!-- /invoice-body -->
+        </div><!-- /invoice-card -->
+    </div><!-- /invoice-wrapper -->
+    <!-- Image Preview Modal -->
+
+    <div id="imageModal"
+         style="
+     display:none;
+     position:fixed;
+     z-index:9999;
+     left:0;
+     top:0;
+     width:100%;
+     height:100%;
+     background:rgba(0,0,0,.8);
+     justify-content:center;
+     align-items:center;">
+
+
+        <span onclick="closeImage()"
+              style="
+          position:absolute;
+          top:20px;
+          right:40px;
+          font-size:40px;
+          color:white;
+          cursor:pointer;">
+            ×
+        </span>
+
+
+        <img id="modalImage"
+             style="
+         max-width:90%;
+         max-height:90%;
+         border-radius:15px;" />
+
+    </div>
+
+
+    <script>
+
+        function openImage(src)
+        {
+            document.getElementById("imageModal").style.display="flex";
+
+            document.getElementById("modalImage").src = src;
+        }
+
+
+        function closeImage()
+        {
+            document.getElementById("imageModal").style.display="none";
+        }
+
+
+    </script>
+</body>
+</html>

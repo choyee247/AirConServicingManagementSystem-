@@ -1,0 +1,542 @@
+﻿@model Payment
+
+@{
+    ViewData["Title"] = "Invoice";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+
+
+<div class="invoice-container">
+
+
+    <!-- HEADER -->
+
+    <div class="invoice-header">
+
+
+        <div>
+            <h2>
+                <i class="fas fa-snowflake"></i>
+                AirCon Servicing
+            </h2>
+
+            <p>
+                Professional Air Conditioner Service
+            </p>
+
+        </div>
+
+
+
+        <div class="invoice-meta">
+
+            <h5>
+                INVOICE
+            </h5>
+
+            <p>
+                No :
+                <b>
+                    @Model.InvoiceNo
+                </b>
+            </p>
+
+            <p>
+                Date :
+                @Model.PaymentDate?.ToString("dd-MM-yyyy")
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <hr />
+
+
+
+    <!-- CUSTOMER + TECHNICIAN -->
+
+
+    <div class="info-grid">
+
+
+        <div class="info-card">
+
+
+            <h5>
+                <i class="fas fa-user"></i>
+                Customer Information
+            </h5>
+
+
+            <p>
+                <b>Name :</b>
+                @Model.ServiceRecord.Customer.Name
+            </p>
+
+
+            <p>
+                <b>Phone :</b>
+                @Model.ServiceRecord.Customer.Phone
+            </p>
+
+
+            <p>
+                <b>Location :</b>
+                @Model.ServiceRecord.Customer.Address
+            </p>
+
+
+        </div>
+
+
+
+
+        <div class="info-card">
+
+
+            <h5>
+                <i class="fas fa-user-cog"></i>
+                Technician Information
+            </h5>
+
+
+            <p>
+                <b>Name :</b>
+                @Model.ServiceRecord.Technician.Name
+            </p>
+
+
+            <p>
+                <b>Service Date :</b>
+                @Model.ServiceRecord.ServiceDate?.ToString("dd-MM-yyyy")
+            </p>
+
+
+            @* <p>
+                <b>Service Type :</b>
+                @Model.ServiceRecord.ServiceType
+            </p> *@
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    <hr />
+
+
+
+
+    <!-- AIRCON DETAILS -->
+
+
+    <h5 class="section-title">
+
+        <i class="fas fa-wind"></i>
+
+        Air Conditioner Details
+
+    </h5>
+
+
+
+    <table class="table invoice-table">
+
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Brand
+                </th>
+
+
+                <th>
+                    Model
+                </th>
+
+
+                <th>
+                    Capacity
+                </th>
+
+
+                <th>
+                    Condition
+                </th>
+
+
+                <th>
+                    Next Service
+                </th>
+
+
+            </tr>
+
+
+        </thead>
+
+
+        <tbody>
+
+
+            @foreach (var item in Model.ServiceRecord.ServiceRecordUnits)
+            {
+
+                <tr>
+
+                    <td>
+                        @item.AirConUnit.Brand.BrandName
+                    </td>
+
+
+                    <td>
+                        @item.AirConUnit.Model.ModelName
+                    </td>
+
+
+                    <td>
+                        @item.AirConUnit.CapacityHp HP
+                    </td>
+
+
+                    <td>
+
+                        @item.Accondition
+
+                    </td>
+
+
+                    <td>
+
+                        @item.NextServiceDue?.ToString("dd-MM-yyyy")
+
+                    </td>
+
+
+                </tr>
+
+
+            }
+
+
+        </tbody>
+
+
+    </table>
+
+
+
+
+
+    <!-- PAYMENT SUMMARY -->
+
+
+    <div class="payment-box">
+
+
+        <h5>
+            Payment Summary
+        </h5>
+
+
+
+        <div class="payment-row">
+
+            <span>
+                Service Cost
+            </span>
+
+
+            <b>
+                @Model.Amount?.ToString("N0")
+                MMK
+            </b>
+
+        </div>
+
+
+
+        <div class="payment-row">
+
+            <span>
+                Paid Amount
+            </span>
+
+
+            <b>
+                @Model.PaidAmount?.ToString("N0")
+                MMK
+            </b>
+
+        </div>
+
+
+
+        <div class="payment-row">
+
+
+            <span>
+                Change
+            </span>
+
+
+            <b>
+                @Model.ChangeAmount?.ToString("N0")
+                MMK
+            </b>
+
+
+        </div>
+
+
+
+
+        <div class="payment-row">
+
+
+            <span>
+                Payment Method
+            </span>
+
+
+            <b>
+                @Model.PaymentMethod
+            </b>
+
+
+        </div>
+
+
+
+
+        <div class="payment-status">
+
+
+            @Model.PaymentStatus
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+    <!-- QR RECEIPT -->
+
+
+    <div class="qr-section">
+
+
+        <div>
+
+
+            <h6>
+                Scan to Verify Receipt
+            </h6>
+
+
+            <img src="~/images/payment-qr.png"
+                 width="120" />
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+    <hr />
+
+
+
+    <div class="footer">
+
+
+        <h5>
+            Thank You
+        </h5>
+
+
+        <p>
+            Thank you for choosing AirCon Servicing.
+        </p>
+
+
+    </div>
+
+
+
+
+    <button onclick="window.print()"
+            class="btn btn-primary print-btn">
+
+
+        <i class="fas fa-print"></i>
+
+        Print Invoice
+
+
+    </button>
+
+
+
+</div>
+
+<style>
+    .invoice-container {
+        max-width: 1000px;
+        margin: auto;
+        background: white;
+        padding: 35px;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0,0,0,.1);
+    }
+
+
+
+    .invoice-header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+
+
+        .invoice-header h2 {
+            color: #2c8c99;
+            font-weight: 800;
+        }
+
+
+
+    .invoice-meta {
+        text-align: right;
+    }
+
+
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+
+
+    .info-card {
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+
+
+        .info-card h5,
+        .section-title {
+            color: #2c8c99;
+            font-weight: 700;
+        }
+
+
+
+    .invoice-table th {
+        background: #2c8c99;
+        color: white;
+    }
+
+
+
+    .payment-box {
+        margin-top: 25px;
+        margin-left: auto;
+        width: 350px;
+    }
+
+
+
+    .payment-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+    }
+
+
+
+    .payment-status {
+        margin-top: 15px;
+        background: #dff9fb;
+        color: #2c8c99;
+        text-align: center;
+        padding: 8px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+
+
+    .qr-section {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+
+
+    .footer {
+        text-align: center;
+    }
+
+
+
+    @@media(max - width:768px) {
+        .invoice-header, .info-grid
+
+    {
+        display: block;
+    }
+
+
+    .invoice-meta {
+        text-align: left;
+        margin-top: 20px;
+    }
+
+    }
+
+
+
+    @@media print {
+
+
+        .print-btn {
+            display: none;
+        }
+
+
+        body {
+            background: white;
+        }
+
+
+        .invoice-container {
+            box-shadow: none;
+        }
+    }
+</style>

@@ -2,16 +2,16 @@
     ViewData["Title"] = "Complete Service";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
+@model AirConServicingManagementSystem.ViewModels.CompleteServiceViewModel
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Complete Service</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Complete Service · Modern</title>
     <!-- Google Font & simple reset for better consistency -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <!-- Font Awesome 6 (free icons) -->
-    @* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> *@
     <link rel="stylesheet" href="~/fontawesome/css/beta3allmin600.css">
     <style>
         * {
@@ -22,112 +22,99 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #f4f7fc; /* soft tech background */
+            background: #f4f7fc;
             line-height: 1.5;
-            padding: 1.25rem;
+            padding: 0.5rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
         }
 
-        /* main container full width, with max-width for large screens */
+        /* main container – full width, max-width for large screens */
         .service-container {
+            width: 100%;
             max-width: 1280px;
             margin: 0 auto;
-            width: 100%;
+            padding: 0.25rem;
         }
 
-        /* card design with modern rounded corners, subtle shadow, and border */
+        /* modern card – softer, cleaner, no heavy shadows */
         .modern-card {
             background: #ffffff;
             border-radius: 28px;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
             overflow: hidden;
             transition: all 0.2s ease;
+            border: 1px solid rgba(44, 140, 153, 0.08);
         }
 
-        .service-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .service-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 14px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background: #fff;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 14px;
-        }
-
-            .service-item:hover {
-                border-color: #2c8c99;
-                box-shadow: 0 3px 10px rgba(44,140,153,0.15);
-            }
-
-            .service-item input {
-                transform: scale(1.2);
-                accent-color: #2c8c99;
-            }
-
-                .service-item input:checked + span {
-                    font-weight: 600;
-                    color: #2c8c99;
-                }
-        /* header with brand color #2c8c99, gradient accent */
+        /* header with brand color #2c8c99 – gradient removed, clean solid */
         .card-header-custom {
-            background: linear-gradient(135deg, #2c8c99 0%, #247a85 100%);
-            padding: 1.4rem 1.8rem;
+            background: #2c8c99;
+            padding: 1.2rem 1.8rem;
             border-bottom: none;
         }
 
             .card-header-custom h4 {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
                 font-weight: 600;
                 letter-spacing: -0.3px;
                 margin: 0;
                 display: flex;
+                flex-wrap: wrap;
                 align-items: center;
-                gap: 12px;
+                gap: 10px;
                 color: white;
             }
 
                 .card-header-custom h4 i {
-                    font-size: 1.8rem;
-                    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+                    font-size: 1.6rem;
+                    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05));
                 }
 
-        /* body padding - responsive */
-        .card-body-custom {
-            padding: 2rem 2rem 2rem 2rem;
+        .badge-tech {
+            font-size: 0.75rem;
+            font-weight: 400;
+            margin-left: auto;
+            background: rgba(255,255,255,0.18);
+            padding: 4px 14px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
         }
 
-        /* form grid system using flex/grid for responsiveness */
+        /* body padding – more compact on mobile */
+        .card-body-custom {
+            padding: 1.5rem 1.5rem 2rem 1.5rem;
+        }
+
+        /* form grid */
         .form-grid {
             display: flex;
             flex-direction: column;
-            gap: 1.6rem;
+            gap: 1.4rem;
         }
 
         .form-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5rem;
+            gap: 1rem 1.5rem;
         }
 
         .form-col {
-            flex: 1;
-            min-width: 200px;
+            flex: 1 1 200px;
+            min-width: 160px;
         }
 
-        /* label style */
+        /* labels */
         .form-label-custom {
             font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
             display: block;
             color: #1f2e3a;
             letter-spacing: -0.2px;
@@ -136,33 +123,37 @@
             .form-label-custom i {
                 color: #2c8c99;
                 width: 1.4rem;
-                margin-right: 6px;
+                margin-right: 4px;
             }
 
-        /* inputs, selects, textarea */
-        .form-control-custom, select.form-control-custom, textarea.form-control-custom {
+        /* inputs, selects, textarea – rounded but not too heavy */
+        .form-control-custom,
+        select.form-control-custom,
+        textarea.form-control-custom {
             width: 100%;
-            padding: 0.8rem 1rem;
+            padding: 0.7rem 1rem;
             font-size: 0.95rem;
-            font-family: 'Inter', monospace;
+            font-family: 'Inter', sans-serif;
             border: 1.5px solid #e2e8f0;
-            border-radius: 18px;
+            border-radius: 20px;
             background-color: #fff;
-            transition: all 0.2s;
+            transition: all 0.15s;
             outline: none;
             color: #1e293b;
         }
 
-            .form-control-custom:focus, select.form-control-custom:focus, textarea.form-control-custom:focus {
+            .form-control-custom:focus,
+            select.form-control-custom:focus,
+            textarea.form-control-custom:focus {
                 border-color: #2c8c99;
-                box-shadow: 0 0 0 4px rgba(44, 140, 153, 0.15);
+                box-shadow: 0 0 0 4px rgba(44, 140, 153, 0.1);
             }
 
         textarea.form-control-custom {
             resize: vertical;
+            min-height: 80px;
         }
 
-        /* specific select arrow custom */
         select.form-control-custom {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c8c99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
@@ -171,7 +162,7 @@
             background-size: 1.2rem;
         }
 
-        /* cost field specific */
+        /* cost symbol */
         .input-group-icon {
             position: relative;
             display: flex;
@@ -191,114 +182,652 @@
             padding-left: 2rem !important;
         }
 
-        /* button modern */
+        /* primary button – brand color */
         .btn-complete {
             background: #2c8c99;
             border: none;
-            padding: 0.9rem 2rem;
+            padding: 0.8rem 2rem;
             border-radius: 40px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: white;
             display: inline-flex;
             align-items: center;
             gap: 0.6rem;
-            transition: all 0.25s;
+            transition: all 0.2s;
             cursor: pointer;
-            box-shadow: 0 6px 14px rgba(44, 140, 153, 0.25);
+            box-shadow: 0 6px 14px rgba(44, 140, 153, 0.2);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
             .btn-complete:hover {
                 background: #236e78;
                 transform: translateY(-2px);
-                box-shadow: 0 12px 20px -8px rgba(44, 140, 153, 0.4);
+                box-shadow: 0 10px 20px -8px rgba(44, 140, 153, 0.35);
             }
 
             .btn-complete:active {
                 transform: translateY(1px);
             }
 
-        /* helper spacing and dividers */
+        .btn-complete-outline {
+            background: transparent;
+            border: 1.5px solid #b0c4ce;
+            color: #2d3f4f;
+            box-shadow: none;
+        }
+
+            .btn-complete-outline:hover {
+                background: #eef4f8;
+                transform: none;
+                box-shadow: none;
+            }
+
+        /* divider */
         .divider-light {
             height: 1px;
             background: linear-gradient(to right, #e2e8f0, transparent);
-            margin: 0.6rem 0 1rem 0;
+            margin: 0.4rem 0 1.2rem 0;
         }
 
-        /* responsive adjustments for mobile */
-        @@media (max-width: 768px) {
-            body
+        /* section titles */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2e3a;
+            margin: 1.2rem 0 0.8rem 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid rgba(44, 140, 153, 0.15);
+            padding-bottom: 0.4rem;
+        }
+
+            .section-title i {
+                color: #2c8c99;
+                width: 1.6rem;
+            }
+
+        .unit-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1f2e3a;
+            margin: 1.2rem 0 0.6rem 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+
+        .unit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e0f7fa;
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+
+
+        .unit-title {
+            margin: 0;
+            color: #1a5f6b;
+            font-weight: 700;
+        }
+
+
+
+        .aircon-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+
+
+        .aircon-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+
+        .icon-box {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #2c8c99;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+
+        .aircon-name h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+
+
+        .aircon-name small {
+            display: block;
+            color: #777;
+        }
+
+
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+
+
+        @@media(max - width:768px) {
+            .unit-header
 
         {
-            padding: 0.8rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+
+
+        .aircon-card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+
+        .action-buttons {
+            width: 100%;
+        }
+
+
+
+            .action-buttons a {
+                flex: 1;
+            }
+
+        }
+
+        /* aircon cards – more compact, softer */
+        .aircon-card {
+            background: #fafcfd;
+            border: 1px solid #eaf0f5;
+            border-radius: 18px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
+            transition: 0.15s;
+        }
+
+            .aircon-card:hover {
+                border-color: #cbdde4;
+            }
+
+            .aircon-card h5 {
+                font-weight: 600;
+                font-size: 1rem;
+                color: #1f2e3a;
+                margin: 0 0 0.1rem 0;
+            }
+
+            .aircon-card p {
+                font-size: 0.9rem;
+                margin: 0.15rem 0;
+                color: #2d4052;
+            }
+
+        .quantity-box {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.2rem;
+            margin-top: 0.5rem;
+            background: #f3f8fb;
+            padding: 0.6rem 0.8rem;
+            border-radius: 14px;
+        }
+
+            .quantity-box p {
+                margin: 0;
+                font-size: 0.85rem;
+            }
+
+            .quantity-box .fw-bold {
+                font-weight: 600;
+            }
+
+        .service-qty-input {
+            width: 100px;
+            border-radius: 30px;
+            border: 1.5px solid #dce5ec;
+            padding: 0.3rem 0.6rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+            .service-qty-input:focus {
+                border-color: #2c8c99;
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(44,140,153,0.1);
+            }
+
+        .contract-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.2rem;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed #d4e0e8;
+            font-size: 0.85rem;
+        }
+
+            .contract-info p {
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+        .badge {
+            background: #2c8c99;
+            color: #fff;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .badge-secondary {
+            background: #b0c4ce;
+            color: #1f2e3a;
+        }
+
+        /* service unit card (hidden until selected) */
+        .service-unit-card {
+            border-radius: 20px;
+            border: 1px solid #e2edf3;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+            .service-unit-card .card-header {
+                background: #f0f6fa;
+                padding: 0.6rem 1.2rem;
+                border-bottom: 1px solid #dce5ec;
+            }
+
+            .service-unit-card .card-body {
+                padding: 1rem 1.2rem;
+            }
+
+        /* table-like sections – responsive */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+            .table th {
+                text-align: left;
+                font-weight: 600;
+                padding: 0.4rem 0.2rem;
+                color: #1f2e3a;
+                border-bottom: 1px solid #dce5ec;
+            }
+
+            .table td {
+                padding: 0.3rem 0.2rem;
+                border-bottom: 1px solid #ecf2f7;
+                vertical-align: middle;
+            }
+
+            .table .form-control {
+                border-radius: 40px;
+                padding: 0.35rem 0.8rem;
+                font-size: 0.85rem;
+                border: 1.5px solid #e2e8f0;
+                background: #fff;
+            }
+
+                .table .form-control:focus {
+                    border-color: #2c8c99;
+                    box-shadow: 0 0 0 3px rgba(44,140,153,0.06);
+                }
+
+            .table .btn-danger {
+                background: #e74c5e;
+                border: none;
+                border-radius: 40px;
+                padding: 0.1rem 0.8rem;
+                font-size: 0.8rem;
+                color: white;
+                font-weight: 500;
+            }
+
+        /* invoice summary */
+        .invoice-box {
+            background: #f6fafc;
+            border-radius: 22px;
+            padding: 1rem 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+            .invoice-box .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.8rem 1.2rem;
+            }
+
+            .invoice-box .col-md-6 {
+                flex: 1 1 180px;
+            }
+
+            .invoice-box label {
+                font-weight: 500;
+                font-size: 0.8rem;
+                color: #3a4f62;
+            }
+
+            .invoice-box .form-control {
+                border-radius: 40px;
+                background: white;
+                border: 1.5px solid #e2e8f0;
+                font-weight: 500;
+                padding: 0.4rem 0.9rem;
+            }
+
+        /* photo preview */
+       /*  #previewArea {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+            #previewArea img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 16px;
+                border: 1px solid #dce5ec;
+            } */
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .preview-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+            .preview-img:hover {
+                transform: scale(1.08);
+                box-shadow: 0 0 12px rgba(0,0,0,.35);
+            }
+
+        .photo-item {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+
+            .photo-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: .3s;
+            }
+
+                .photo-item img:hover {
+                    transform: scale(1.05);
+                }
+
+        .remove-photo {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            background: red;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,.3);
+        }
+
+        /* responsive */
+        @@media (max-width: 768px) {
+        body
+
+        {
+            padding: 0.3rem;
         }
 
         .card-body-custom {
-            padding: 1.5rem;
+            padding: 1rem 0.8rem 1.5rem 0.8rem;
         }
 
         .card-header-custom {
-            padding: 1rem 1.5rem;
+            padding: 0.9rem 1rem;
         }
 
             .card-header-custom h4 {
-                font-size: 1.35rem;
+                font-size: 1.2rem;
+                gap: 6px;
             }
 
-                .card-header-custom h4 i {
-                    font-size: 1.4rem;
-                }
+        .badge-tech {
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            margin-left: 0;
+            width: auto;
+        }
 
         .form-row {
-            gap: 1.2rem;
+            gap: 0.8rem;
+        }
+
+        .form-col {
+            flex: 1 1 100%;
+            min-width: 100%;
         }
 
         .btn-complete {
             width: 100%;
             justify-content: center;
-            padding: 0.85rem;
+            padding: 0.75rem;
         }
 
-        .form-label-custom {
-            font-size: 0.85rem;
+        .aircon-card {
+            padding: 0.8rem 0.8rem;
+        }
+
+        .quantity-box {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.4rem;
+        }
+
+        .service-qty-input {
+            width: 100%;
+        }
+
+        .contract-info {
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .table td, .table th {
+            padding: 0.2rem 0.1rem;
+            font-size: 0.8rem;
+            display: block;
+            width: 100%;
+        }
+
+        .table tr {
+            display: block;
+            margin-bottom: 0.6rem;
+            border-bottom: 1px solid #e2edf3;
+            padding-bottom: 0.4rem;
+        }
+
+        .table thead {
+            display: none;
+        }
+
+        .table td .form-control {
+            width: 100%;
+        }
+
+        .table td:last-child {
+            border-bottom: none;
+        }
+
+        .invoice-box .col-md-6 {
+            flex: 1 1 100%;
+        }
+
+        #previewArea img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .modern-card {
+            border-radius: 18px;
         }
 
         }
 
-        @@media (max-width: 640px) {
-            .form-col
+        @@media (max-width: 480px) {
+            .card-header-custom h4
 
         {
-            min-width: 100%;
+            font-size: 1rem;
+            flex-wrap: wrap;
         }
 
-        .card-body-custom {
-            padding: 1.2rem;
+        .badge-tech {
+            font-size: 0.6rem;
+            padding: 2px 8px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+        }
+
+        .aircon-card h5 {
+            font-size: 0.9rem;
         }
 
         }
 
-        /* custom tooltip / optional style for note */
-        .info-hint {
-            font-size: 0.7rem;
-            color: #5b6e8c;
-            margin-top: 0.25rem;
+        /* helper */
+        .text-muted {
+            color: #6a7f92;
+        }
+
+        .text-success {
+            color: #1f8b6b;
+        }
+
+        .text-danger {
+            color: #c74a5a;
+        }
+
+        .fw-bold {
+            font-weight: 600;
+        }
+
+        .mt-2 {
+            margin-top: 0.4rem;
+        }
+
+        .mt-3 {
+            margin-top: 0.6rem;
+        }
+
+        .mb-0 {
+            margin-bottom: 0;
+        }
+
+        .d-none {
+            display: none;
+        }
+
+        .d-flex {
             display: flex;
+        }
+
+        .align-items-center {
             align-items: center;
-            gap: 0.3rem;
         }
 
-        footer small {
-            display: block;
-            text-align: center;
-            margin-top: 2rem;
-            color: #6c7e97;
-            font-size: 0.75rem;
+        .justify-content-between {
+            justify-content: space-between;
         }
 
-        .required-star:after {
-            content: " *";
-            color: #e53e3e;
+        .gap-2 {
+            gap: 0.4rem;
+        }
+
+        .me-2 {
+            margin-right: 0.4rem;
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        .rounded {
+            border-radius: 30px;
+        }
+
+        .shadow-sm {
+            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+        }
+
+        /* brand color overrides */
+        .bg-primary {
+            background: #2c8c99;
+        }
+
+        .bg-success {
+            background: #1f8b6b;
+        }
+
+        .text-primary {
+            color: #2c8c99;
+        }
+
+        .border-primary {
+            border-color: #2c8c99;
+        }
+
+        .form-check-input:checked {
+            background-color: #2c8c99;
+            border-color: #2c8c99;
         }
     </style>
 </head>
@@ -308,347 +837,1020 @@
             <div class="card-header-custom">
                 <h4>
                     <i class="fas fa-clipboard-check"></i>
-                    Complete Service Report
-                    <span style="font-size: 0.9rem; font-weight: 400; margin-left: auto; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 40px;">
+                    Complete Service 
+                    <span class="badge-tech">
                         <i class="fas fa-wrench"></i> Technician
                     </span>
                 </h4>
             </div>
             <div class="card-body-custom">
 
-                <form asp-action="Complete" method="post" id="completeServiceForm">
+                <form asp-action="Complete" method="post" enctype="multipart/form-data" id="completeServiceForm">
                     @Html.AntiForgeryToken()
-                   @*  <input name="__RequestVerificationToken" type="hidden" value="simulated-token-for-demo" /> *@
+                    <input type="hidden" name="ServiceId" asp-for="ServiceId" />
 
-                    <!-- hidden service id field -->
-                    <input type="hidden" name="ServiceId" value="@Model.ServiceId" />
+                    <!-- Customer Information -->
+                    <div class="section-title"><i class="fas fa-user"></i> Customer Information</div>
+                   
 
-                    <div class="form-grid">
-                        <!-- Summary + Condition row (selects) -->
-                        <div class="form-row">
-                            <div class="form-col">
-                                <label class="form-label-custom">
-                                    <i class="fas fa-list-ul"></i> Service Summary
-                                </label>
+                    <div class="form-row">
 
-                                <div class="service-grid">
+                        <div class="form-col">
+                            <label class="form-label-custom">
+                                Customer Name
+                            </label>
 
-                                    <label class="service-item">
-                                        <input type="checkbox" name="ServiceTypeList" value="General cleaning completed" />
-                                        <span>General cleaning completed</span>
-                                    </label>
+                            <input class="form-control-custom"
+                                   asp-for="CustomerName"
+                                   readonly />
+                        </div>
 
-                                    <label class="service-item">
-                                        <input type="checkbox" name="ServiceTypeList" value="Gas refilled and tested" />
-                                        <span>Gas refilled and tested</span>
-                                    </label>
 
-                                    <label class="service-item">
-                                        <input type="checkbox" name="ServiceTypeList" value="Filter cleaned" />
-                                        <span>Filter cleaned</span>
-                                    </label>
+                        <div class="form-col">
+                            <label class="form-label-custom">
+                                Phone
+                            </label>
 
-                                    <label class="service-item">
-                                        <input type="checkbox" name="ServiceTypeList" value="Indoor/outdoor units cleaned" />
-                                        <span>Indoor/Outdoor cleaned</span>
-                                    </label>
+                            <input class="form-control-custom"
+                                   asp-for="PhoneNumber"
+                                   readonly />
+                        </div>
 
-                                    <label class="service-item">
-                                        <input type="checkbox" name="ServiceTypeList" value="Electrical wiring checked" />
-                                        <span>Electrical checked</span>
-                                    </label>
 
-                                    <label class="service-item">
-                                        <input type="checkbox" name="ServiceTypeList" value="Water leakage fixed" />
-                                        <span>Water leakage fixed</span>
-                                    </label>
+                        <div class="form-col address-col">
+                            <label class="form-label-custom">
+                                Address
+                            </label>
 
-                                    <label class="service-item">
-                                        <input type="checkbox" name="ServiceTypeList" value="Routine maintenance completed" />
-                                        <span>Routine maintenance</span>
-                                    </label>
-                                    <label class="service-item">
-                                        <input type="checkbox" name="ServiceTypeList" value="Other" />
-                                        <span>Other</span>
-                                    </label>
+                            <textarea class="form-control-custom address-box"
+                                      asp-for="Address"
+                                      readonly></textarea>
+                        </div>
+
+
+                        <div class="form-col">
+                            <label class="form-label-custom">
+                                Technician
+                            </label>
+
+                            <input class="form-control-custom"
+                                   asp-for="TechnicianName"
+                                   readonly />
+                        </div> 
+
+
+                       <div class="form-col">
+                            <label class="form-label-custom">
+                                Job No
+                            </label>
+
+                            <input class="form-control-custom"
+                                   asp-for="JobNo"
+                                   readonly />
+                        </div>
+
+                    </div>
+
+                    <!-- AirCon Units -->
+                    <div class="section-title"><i class="fas fa-snowflake"></i> Customer AirCon Units</div>
+
+                    <!-- Existing -->
+                    <div class="unit-header">
+
+                        <div>
+                            <h5 class="unit-title">
+                                <i class="fas fa-boxes"></i>
+                                Existing Units
+                            </h5>
+
+                            <small class="text-muted">
+                                Repair existing customer air conditioners
+                            </small>
+                        </div>
+
+
+                        <a asp-controller="AirConUnit"
+                           asp-action="Create"
+                           asp-route-serviceId="@Model.ServiceId"
+                           class="btn btn-primary btn-sm">
+
+                            <i class="fas fa-plus"></i>
+                            Add
+
+                        </a>
+
+                    </div>
+
+                    @if (Model.Units.Any(x => x.InstallationType == "Existing"))
+                    {
+                        @for (int i = 0; i < Model.Units.Count; i++)
+                        {
+                            var unit = Model.Units[i];
+                            if (unit.InstallationType == "Existing")
+                            {
+                                <div class="aircon-card">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        @* <input type="checkbox" class="form-check-input aircon-selector" data-target="service_@i" asp-for="Units[i].IsSelected" /> *@
+                                       @*  <input type="checkbox"
+                                               name="Units[@i].IsSelected"
+                                               value="true"
+                                        @(unit.IsSelected ? "checked" : "")
+                                               class="form-check-input aircon-selector"
+                                               data-target="service_@i" /> *@
+                                        <input type="hidden"
+                                               name="Units[@i].IsSelected"
+                                               value="false"
+                                               id="selected_@i" />
+
+                                        <input type="checkbox"
+                                               class="form-check-input aircon-selector"
+                                               data-index="@i"
+                                               data-target="service_@i"
+                                        @(unit.IsSelected ? "checked" : "") />
+
+                                        <div class="aircon-card-header">
+
+
+                                            <div class="aircon-name">
+
+
+                                                <div class="icon-box">
+
+                                                    <i class="fas fa-snowflake"></i>
+
+                                                </div>
+
+
+
+                                                <div>
+
+                                                    <h5>
+
+                                                        @unit.BrandName
+
+                                                        <small>
+                                                            @unit.ModelName
+                                                        </small>
+
+                                                    </h5>
+
+
+                                                    <span class="badge bg-info">
+
+                                                        @unit.InstallationType
+
+                                                    </span>
+
+
+                                                </div>
+
+
+                                            </div>
+
+
+
+
+                                            <div class="action-buttons">
+
+
+                                                <a asp-controller="AirConUnit"
+                                                   asp-action="Edit"
+                                                   asp-route-id="@unit.AirConUnitIds.First()"
+                                                   asp-route-serviceId="@Model.ServiceId"
+                                                   class="btn btn-warning btn-sm">
+
+
+                                                    <i class="fas fa-edit"></i>
+
+                                                    Edit
+
+
+                                                </a>
+
+
+
+
+                                                <a asp-controller="AirConUnit"
+                                                   asp-action="Delete"
+                                                   asp-route-id="@unit.AirConUnitIds.First()"
+                                                   asp-route-serviceId="@Model.ServiceId"
+                                                   class="btn btn-danger btn-sm">
+
+
+                                                    <i class="fas fa-trash"></i>
+
+                                                    Remove
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="Units[@i].BrandName" value="@unit.BrandName" />
+                                    <input type="hidden" name="Units[@i].ModelName" value="@unit.ModelName" />
+                                    <input type="hidden"
+                                           name="Units[@i].InstallationType"
+                                           value="@unit.InstallationType" />
+
+                                 @*    <input type="hidden"
+                                           name="Units[@i].Condition"
+                                           value="@unit.Condition" />
+
+                                    <input type="hidden"
+                                           name="Units[@i].ProblemFound"
+                                           value="@unit.ProblemFound" />
+
+                                    <input type="hidden"
+                                           name="Units[@i].RepairAction"
+                                           value="@unit.RepairAction" />
+
+                                    <input type="hidden"
+                                           name="Units[@i].NextServiceDue"
+                                           value="@unit.NextServiceDue?.ToString("yyyy-MM-dd")" /> *@
+
+                                    <div class="quantity-box">
+                                        <p><strong>Total:</strong> @unit.TotalQuantity Units</p>
+                                        <p><strong class="text-success">Completed:</strong> <span id="completed_@i">@unit.CompletedQuantity</span></p>
+                                        <p><strong class="text-danger">Remaining:</strong> <span id="remaining_@i">@unit.RemainingQuantity</span></p>
+                                        <label class="fw-bold" style="min-width:120px;">Today's Qty</label>
+
+                                        <input type="number" class="service-qty-input" name="Units[@i].ServiceQuantity" 
+                                                value="0" min="0" max="@unit.RemainingQuantity"
+                                               data-total="@unit.TotalQuantity" data-completed="@unit.CompletedQuantity"
+                                               data-completed-id="completed_@i" data-remaining-id="remaining_@i"
+                                               data-summary-completed-id="summary_completed_@i" data-summary-remaining-id="summary_remaining_@i" />
+
+                                        <input type="hidden"
+                                               name="Units[@i].TotalQuantity"
+                                               value="@unit.TotalQuantity" />
+
+
+                                        <input type="hidden"
+                                               name="Units[@i].CompletedQuantity"
+                                               value="@unit.CompletedQuantity" />
+                                        <small class="text-muted">max @unit.RemainingQuantity</small>
+                                    </div>
+
+                                   @*  @foreach (var acId in unit.AirConUnitIds)
+                                    {
+                                        <input type="hidden" name="Units[@i].AirConUnitIds" value="@acId" />
+                                    } *@
+                                    @for (int j = 0; j < unit.AirConUnitIds.Count; j++)
+                                    {
+                                        <input type="hidden"
+                                               name="Units[@i].AirConUnitIds[@j]"
+                                               value="@unit.AirConUnitIds[j]" />
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No Existing AirCon Units</p>
+                    }
+
+                    <!-- Installation -->
+                    <div class="unit-header">
+
+
+                        <div>
+
+                            <h5 class="unit-title">
+
+                                <i class="fas fa-plus-circle"></i>
+
+                                Installation Units
+
+                            </h5>
+
+
+                            <small class="text-muted">
+
+                                Newly installed air conditioners
+
+                            </small>
+
+
+                        </div>
+
+
+
+
+                        <a asp-controller="AirConUnit"
+                           asp-action="Create"
+                           asp-route-serviceId="@Model.ServiceId"
+                           class="btn btn-primary btn-sm">
+
+
+                            <i class="fas fa-plus"></i>
+
+                            Add 
+
+
+                        </a>
+
+
+                    </div>
+                    @if (Model.Units.Any(x => x.InstallationType == "New"))
+                    {
+                        @for (int i = 0; i < Model.Units.Count; i++)
+                        {
+                            var unit = Model.Units[i];
+                            if (unit.InstallationType == "New")
+                            {
+                                <div class="aircon-card">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                       @*  <input type="checkbox" class="form-check-input aircon-selector" data-target="service_@i" asp-for="Units[i].IsSelected" /> *@
+                                       @*  <input type="checkbox"
+                                               name="Units[@i].IsSelected"
+                                               value="true"
+                                        @(unit.IsSelected ? "checked" : "")
+                                               class="form-check-input aircon-selector"
+                                               data-target="service_@i" /> *@
+                                        <input type="hidden"
+                                               name="Units[@i].IsSelected"
+                                               value="false"
+                                               id="selected_@i" />
+
+                                        <input type="checkbox"
+                                               class="form-check-input aircon-selector"
+                                               data-index="@i"
+                                               data-target="service_@i"
+                                        @(unit.IsSelected ? "checked" : "") />
+
+                                        <div class="aircon-card-header">
+
+
+                                            <div class="aircon-name">
+
+
+                                                <div class="icon-box">
+
+                                                    <i class="fas fa-snowflake"></i>
+
+                                                </div>
+
+
+
+                                                <div>
+
+                                                    <h5>
+
+                                                        @unit.BrandName
+
+                                                        <small>
+                                                            @unit.ModelName
+                                                        </small>
+
+                                                    </h5>
+
+
+                                                    <span class="badge bg-info">
+
+                                                        @unit.InstallationType
+
+                                                    </span>
+
+
+                                                </div>
+
+
+                                            </div>
+
+
+
+
+                                            <div class="action-buttons">
+
+
+                                                <a asp-controller="AirConUnit"
+                                                   asp-action="Edit"
+                                                   asp-route-id="@unit.AirConUnitIds.First()"
+                                                   asp-route-serviceId="@Model.ServiceId"
+                                                   class="btn btn-warning btn-sm">
+
+
+                                                    <i class="fas fa-edit"></i>
+
+                                                    Edit
+
+
+                                                </a>
+
+
+
+
+                                                <a asp-controller="AirConUnit"
+                                                   asp-action="Delete"
+                                                   asp-route-id="@unit.AirConUnitIds.First()"
+                                                   asp-route-serviceId="@Model.ServiceId"
+                                                   class="btn btn-danger btn-sm">
+
+
+                                                    <i class="fas fa-trash"></i>
+
+                                                    Remove
+
+
+                                                </a>
+
+
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="Units[@i].BrandName" value="@unit.BrandName" />
+                                    <input type="hidden" name="Units[@i].ModelName" value="@unit.ModelName" />
+                                    <input type="hidden"
+                                           name="Units[@i].InstallationType"
+                                           value="@unit.InstallationType" />
+
+                                  @*   <input type="hidden"
+                                           name="Units[@i].Condition"
+                                           value="@unit.Condition" />
+
+                                    <input type="hidden"
+                                           name="Units[@i].ProblemFound"
+                                           value="@unit.ProblemFound" />
+
+                                    <input type="hidden"
+                                           name="Units[@i].RepairAction"
+                                           value="@unit.RepairAction" />
+
+                                    <input type="hidden"
+                                           name="Units[@i].NextServiceDue"
+                                           value="@unit.NextServiceDue?.ToString("yyyy-MM-dd")" /> *@
+                                    @* <input type="hidden"
+                                           name="Units[@i].IsSelected"
+                                           value="@unit.IsSelected" /> *@
+
+                                    <input type="hidden"
+                                           name="Units[@i].ContractMonths"
+                                           value="@unit.ContractMonths" />
+
+                                    <input type="hidden"
+                                           name="Units[@i].MaintenanceMonths"
+                                           value="@unit.MaintenanceMonths" />
+
+                                    <input type="hidden"
+                                           name="Units[@i].WarrantyEndDate"
+                                           value="@unit.WarrantyEndDate?.ToString("yyyy-MM-dd")" />
+
+                                  @*   <input type="hidden"
+                                           name="Units[@i].IsFreeService"
+                                           value="@unit.IsFreeService" /> *@
+
+                                    <div class="quantity-box">
+                                        <p><strong>Total:</strong> @unit.TotalQuantity Units</p>
+                                        <p><strong class="text-success">Completed:</strong> <span id="completed_@i">@unit.CompletedQuantity</span></p>
+                                        <p><strong class="text-danger">Remaining:</strong> <span id="remaining_@i">@unit.RemainingQuantity</span></p>
+                                        <label class="fw-bold" style="min-width:120px;">Today's Qty</label>
+                                        <input type="number" class="service-qty-input" name="Units[@i].ServiceQuantity" value="0" min="0" max="@unit.RemainingQuantity"
+                                               data-total="@unit.TotalQuantity" data-completed="@unit.CompletedQuantity"
+                                               data-completed-id="completed_@i" data-remaining-id="remaining_@i"
+                                               data-summary-completed-id="summary_completed_@i" data-summary-remaining-id="summary_remaining_@i" />
+                                        <input type="hidden"
+                                               name="Units[@i].TotalQuantity"
+                                               value="@unit.TotalQuantity" />
+
+
+                                        <input type="hidden"
+                                               name="Units[@i].CompletedQuantity"
+                                               value="@unit.CompletedQuantity" />
+
+                                        <small class="text-muted">max @unit.RemainingQuantity</small>
+                                    </div>
+
+                                    <div class="contract-info">
+                                        <p><i class="fas fa-file-contract"></i> Contract: <strong>@(unit.ContractMonths ?? 0) Months</strong></p>
+                                        <p><i class="fas fa-tools"></i> Maintenance: <strong>Every @(unit.MaintenanceMonths ?? 0) Months</strong></p>
+                                        @* <p><i class="fas fa-gift"></i> Free Service: @(unit.IsFreeService)</p> *@
+                                        <p><i class="fas fa-calendar"></i> Contract End: <strong>@(unit.WarrantyEndDate?.ToString("yyyy-MM-dd") ?? "-")</strong></p>
+                                    </div>
+
+                                    @* @foreach (var acId in unit.AirConUnitIds)
+                                    {
+                                        <input type="hidden" name="Units[@i].AirConUnitIds" value="@acId" />
+                                    } *@
+                                    @for (int j = 0; j < unit.AirConUnitIds.Count; j++)
+                                    {
+                                        <input type="hidden"
+                                               name="Units[@i].AirConUnitIds[@j]"
+                                               value="@unit.AirConUnitIds[j]" />
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No Installation Units</p>
+                    }
+
+                    <!-- Service Detail Cards (hidden until selected) -->
+                    @for (int i = 0; i < Model.Units.Count; i++)
+                    {
+
+                        var unit = Model.Units[i];
+                        var cardColor = unit.InstallationType == "Existing" ? "bg-primary" : "bg-success";
+                        <div class="service-unit-card d-none" id="service_@i">
+                            <div class="card-header @cardColor text-white d-flex flex-wrap justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0">@unit.BrandName <small>@unit.ModelName</small></h5>
+                                </div>
+                                <div class="badge bg-light text-dark" style="font-size:0.7rem;">
+                                    Total: <strong>@unit.TotalQuantity</strong> &nbsp;|&nbsp; Completed: <strong class="text-success" id="summary_completed_@i">@unit.CompletedQuantity</strong> &nbsp;|&nbsp; Remaining: <strong class="text-danger" id="summary_remaining_@i">@unit.RemainingQuantity</strong>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                @for (int j = 0; j < unit.AirConUnitIds.Count; j++)
+                                {
+                                    <input type="hidden"
+                                           name="Units[@i].AirConUnitIds[@j]"
+                                           value="@unit.AirConUnitIds[j]" />
+                                }
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <label class="form-label-custom">AC Condition</label>
+                                        <select name="Units[@i].Condition"
+                                                id="condition_@i"
+                                                class="form-control-custom"
+                                                onchange="calculateNextService(@i)">
+                                            <option value="">-- Select --</option>
+                                            <option value="Good">Good (6 Months)</option>
+                                            <option value="Normal">Normal (3 Months)</option>
+                                            <option value="Bad">Bad (1 Month)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-col">
+                                        <label class="form-label-custom">Next Service Due</label>
+                                        @* <input type="date" asp-for="Units[i].NextServiceDue" id="nextService_@i" class="form-control-custom" readonly /> *@
+                                        <input type="date"
+                                               name="Units[@i].NextServiceDue"
+                                               id="nextService_@i"
+                                               class="form-control-custom"
+                                               readonly />
+                                    </div>
+                                </div>
+                                @if (unit.InstallationType == "Existing")
+                                {
+                                    <hr class="my-2" />
+
+                                    <div class="form-row">
+
+                                        <div class="form-col">
+                                            <label class="form-label-custom">
+                                                Problem Found
+                                            </label>
+
+                                            <textarea name="Units[@i].ProblemFound"
+                                                      class="form-control-custom"
+                                                      rows="3"
+                                                      placeholder="Describe problem..."></textarea>
+
+                                        </div>
+
+
+                                        <div class="form-col">
+                                            <label class="form-label-custom">
+                                                Repair Action
+                                            </label>
+
+                                            <textarea name="Units[@i].RepairAction"
+                                                      class="form-control-custom"
+                                                      rows="3"
+                                                      placeholder="Describe repair action..."></textarea>
+                                        </div>
+
+                                    </div>
+                                }
+                                else if (unit.InstallationType == "New")
+                                {
+                                    <hr class="my-2" />
+
+                                    <div class="alert alert-success mb-0">
+                                        <i class="fas fa-check-circle"></i>
+
+                                        New Installation Unit - No Repair Required
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Parts -->
+                    <div class="section-title"><i class="fas fa-microchip"></i> Parts Used</div>
+                    <table class="table" id="partsTable">
+                        <thead><tr><th>Part Name</th><th>Qty</th><th>Unit Price</th><th>Total</th><th></th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" name="Parts[0].PartName" class="form-control" placeholder="Capacitor" /></td>
+                                <td><input type="number" name="Parts[0].Quantity" class="form-control qty" value="1" min="1" /></td>
+                                <td><input type="number" name="Parts[0].UnitPrice" class="form-control price" value="0" /></td>
+                                <td><input type="text" class="form-control total" readonly /></td>
+                                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">✕</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn-complete" style="background:#e2edf3;color:#1f2e3a;box-shadow:none;" onclick="addPartRow()">+ Add Part</button>
+
+                    <!-- Charges -->
+                    <div class="section-title"><i class="fas fa-receipt"></i> Service Charges</div>
+                    <table class="table">
+                        <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+                        <tbody>
+                            <tr><td><input class="form-control" name="Charges[0].Description" placeholder="Cleaning Service" /></td><td><input class="form-control chargeAmount" type="number" name="Charges[0].Amount" value="0" /></td></tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Expenses -->
+                    <div class="section-title"><i class="fas fa-money-bill"></i> Other Expenses</div>
+                    <table class="table">
+                        <tr><td><input class="form-control" name="Expenses[0].Description" placeholder="Transportation" /></td><td><input class="form-control expenseAmount" type="number" name="Expenses[0].Amount" value="0" /></td></tr>
+                    </table>
+
+                    <!-- Invoice Summary -->
+                    <div class="section-title"><i class="fas fa-file-invoice-dollar"></i> Invoice Summary</div>
+                    <div class="invoice-box">
+                        <div class="row">
+                            <div class="col-md-6"><label>Parts Total</label><input id="partsTotal" class="form-control" readonly /></div>
+                            <div class="col-md-6"><label>Service Charge Total</label><input id="chargeTotal" class="form-control" readonly /></div>
+                            <div class="col-md-6"><label>Expense Total</label><input id="expenseTotal" class="form-control" readonly /></div>
+                            <div class="col-md-6"><label>Grand Total</label><input id="grandTotal" name="GrandTotal" class="form-control fw-bold" readonly /></div>
+                        </div>
+                    </div>
+
+                    <!-- Photos -->
+                    @* <div class="section-title"><i class="fas fa-camera"></i> Service Photos</div>
+                    <div class="form-row">
+                        <div class="form-col"><label class="form-label-custom">Before Service</label><input type="file" name="ServicePhotos" class="form-control-custom" onchange="previewImages(event)" multiple accept="image/*" /></div>
+                        <div class="form-col"><label class="form-label-custom">After Service</label><input type="file" name="ServicePhotos" class="form-control-custom" onchange="previewImages(event)" multiple accept="image/*" /></div>
+                        <div class="form-col"><label class="form-label-custom">Problem Photo</label><input type="file" name="ServicePhotos" class="form-control-custom" onchange="previewImages(event)" multiple accept="image/*" /></div>
+                    </div>
+                    <div id="previewArea" class="mt-2"></div> *@
+                    <div class="section-title">
+                        <i class="fas fa-camera"></i>
+                        Service Photos
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-col">
+
+                            <label class="form-label-custom">
+                                Before Service
+                            </label>
+
+                            <input type="file"
+                                   id="beforePhotos"
+                                   name="BeforePhotos"
+                                   class="form-control-custom"
+                                   multiple
+                                   accept="image/*">
+
+                            <div id="beforePreview"
+                                 class="preview-container"></div>
+
+                        </div>
+
+
+
+                        <div class="form-col">
+
+                            <label class="form-label-custom">
+                                After Service
+                            </label>
+
+                            <input type="file"
+                                   id="afterPhotos"
+                                   name="AfterPhotos"
+                                   class="form-control-custom"
+                                   multiple
+                                   accept="image/*">
+
+                            <div id="afterPreview"
+                                 class="preview-container"></div>
+
+                        </div>
+
+
+
+                        <div class="form-col">
+
+                            <label class="form-label-custom">
+                                Problem Photo
+                            </label>
+
+                            <input type="file"
+                                   id="problemPhotos"
+                                   name="ProblemPhotos"
+                                   class="form-control-custom"
+                                   multiple
+                                   accept="image/*">
+
+                            <div id="problemPreview"
+                                 class="preview-container"></div>
+
+                        </div>
+
+                    </div>
+                    <!-- Image Preview Modal -->
+                    <div class="modal fade"
+                         id="imageModal"
+                         tabindex="-1">
+
+                        <div class="modal-dialog modal-dialog-centered modal-xl">
+
+                            <div class="modal-content border-0 bg-transparent">
+
+                                <div class="modal-body text-center p-0 position-relative">
+
+                                    <button type="button"
+                                            class="btn-close btn-close-white position-absolute"
+                                            style="top:15px; right:15px; z-index:999;"
+                                            data-bs-dismiss="modal">
+                                    </button>
+
+                                    <img id="modalImage"
+                                         class="img-fluid rounded shadow"
+                                         style="max-height:90vh;">
+
                                 </div>
 
-                                <div class="info-hint">
-                                    <i class="fas fa-info-circle"></i> Select performed actions
-                                </div>
                             </div>
-                            <div class="form-col">
-                                <label class="form-label-custom" for="ACCondition">
-                                    <i class="fas fa-temperature-low"></i> AC Condition
-                                </label>
-                                <select id="ACCondition" name="ACCondition" class="form-control-custom">
-                                    <option value="">-- Select Condition --</option>
-                                    <option value="Good">Good (Healthy AC)</option>
-                                    <option value="Normal">Normal (Minor Issue)</option>
-                                    <option value="Bad">Bad (Serious Issue)</option>
-                                </select>
-                                <div class="info-hint"><i class="fas fa-chart-line"></i> Overall unit health</div>
-                            </div>
+
                         </div>
 
-                        <!-- Problem Found & Repair Action (side by side) -->
-                        <div class="form-row">
-                            <div class="form-col">
+                    </div>
 
-                                <label class="form-label-custom">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Problem Found
-                                </label>
+                    <!-- Actions -->
+                    <div class="divider-light"></div>
+                    <div class="form-row" style="justify-content: flex-end; gap:0.8rem;">
+                        <div class="form-col" style="flex:0 1 auto;">
 
-                                <select class="form-control-custom mb-2"
-                                        onchange="document.getElementById('ProblemFound').value=this.value">
+                            <button type="submit"
+                                    formaction="@Url.Action("PreviewInvoice","TechnicianService")"
+                                    formmethod="post"
+                                    class="btn-complete">
 
-                                    <option value="">-- Select Problem --</option>
+                                <i class="fas fa-file-invoice"></i>
+                                Preview Invoice
 
-                                    <option>Low refrigerant gas</option>
-                                    <option>Air conditioner not cooling</option>
-                                    <option>Weak cooling performance</option>
-                                    <option>Dirty air filter</option>
-                                    <option>Dirty evaporator coil</option>
-                                    <option>Dirty condenser coil</option>
-                                    <option>Fan motor noise</option>
-                                    <option>Fan motor not working</option>
-                                    <option>Compressor not starting</option>
-                                    <option>Water leakage issue</option>
-                                    <option>PCB control board problem</option>
-                                    <option>Remote control not working</option>
-                                    <option>Power supply problem</option>
-                                    <option>Abnormal vibration</option>
-                                    <option>Electrical wiring issue</option>
+                            </button>
 
-                                </select>
-
-
-                                <textarea id="ProblemFound"
-                                          name="ProblemFound"
-                                          class="form-control-custom"
-                                          rows="3"
-                                          placeholder="Describe problem..."></textarea>
-
-                            </div>
-                            <div class="form-col">
-
-                                <label class="form-label-custom">
-                                    <i class="fas fa-screwdriver-wrench"></i>
-                                    Repair Action
-                                </label>
-
-
-                                <select class="form-control-custom mb-2"
-                                        onchange="document.getElementById('RepairAction').value=this.value">
-
-
-                                    <option value="">-- Select Repair Action --</option>
-
-                                    <option>Refilled refrigerant gas</option>
-                                    <option>Cleaned air filter</option>
-                                    <option>Cleaned evaporator coil</option>
-                                    <option>Cleaned condenser coil</option>
-                                    <option>Checked refrigerant pressure</option>
-                                    <option>Repaired water leakage</option>
-                                    <option>Replaced damaged wiring</option>
-                                    <option>Adjusted fan motor</option>
-                                    <option>Replaced fan motor</option>
-                                    <option>Repaired PCB control board</option>
-                                    <option>Replaced capacitor</option>
-                                    <option>Fixed compressor issue</option>
-                                    <option>Tightened electrical connections</option>
-                                    <option>Performed general maintenance</option>
-                                    <option>Tested system operation after repair</option>
-
-
-                                </select>
-
-
-                                <textarea id="RepairAction"
-                                          name="RepairAction"
-                                          class="form-control-custom"
-                                          rows="3"
-                                          placeholder="Describe repair action..."></textarea>
-
-                            </div>
                         </div>
-
-                        <!-- Parts Replaced & Technician Note -->
-                        <div class="form-row">
-                            <div class="form-col">
-
-                                <label class="form-label-custom">
-                                    <i class="fas fa-microchip"></i>
-                                    Parts Replaced
-                                </label>
-
-
-                                <select class="form-control-custom mb-2"
-                                        onchange="document.getElementById('PartsReplaced').value=this.value">
-
-
-                                    <option value="">-- Select Parts --</option>
-
-                                    <option>No Parts Replaced</option>
-                                    <option>Capacitor</option>
-                                    <option>Fan Motor</option>
-                                    <option>PCB Control Board</option>
-                                    <option>Remote Control</option>
-                                    <option>Temperature Sensor</option>
-                                    <option>Thermal Fuse</option>
-                                    <option>Drain Pipe</option>
-                                    <option>Air Filter</option>
-                                    <option>Compressor</option>
-                                    <option>Relay Switch</option>
-                                    <option>Contactor</option>
-                                    <option>Electrical Wiring</option>
-                                    <option>Refrigerant Gas</option>
-                                    <option>Indoor Fan Blade</option>
-
-
-                                </select>
-
-
-                                <textarea id="PartsReplaced"
-                                          name="PartsReplaced"
-                                          class="form-control-custom"
-                                          rows="3"
-                                          placeholder="List replaced parts..."></textarea>
-
-
-                            </div>
-                            <div class="form-col">
-                                <label class="form-label-custom" for="TechnicianNote">
-                                    <i class="fas fa-pen-alt"></i> Technician Note
-                                </label>
-                                <textarea id="TechnicianNote" name="TechnicianNote" class="form-control-custom" rows="3" placeholder="Additional recommendations, observations, or customer advice..."></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Service Cost & Next Service Due Date -->
-                        <div class="form-row">
-                            <div class="form-col">
-                                <label class="form-label-custom" for="ServiceCost">
-                                    <i class="fas fa-dollar-sign"></i> Service Cost
-                                </label>
-                                <div class="input-group-icon">
-                                    @* <span class="cost-symbol">$</span> *@
-                                    <input type="number" id="ServiceCost" name="ServiceCost" class="form-control-custom cost-input" placeholder="eg. 10000">
-                                </div>
-                                <div class="info-hint"><i class="fas fa-receipt"></i> Include parts & labor</div>
-                            </div>
-                            <div class="form-col">
-                                <label class="form-label-custom" for="NextServiceDue">
-                                    <i class="far fa-calendar-alt"></i> Optional Next Service Date
-                                </label>
-                                <input type="date" id="NextServiceDue" name="NextServiceDue" class="form-control-custom" readonly/>
-                                <div class="info-hint"><i class="fas fa-bell"></i> Recommend for preventive maintenance</div>
-                            </div>
-                        </div>
-
-                        <div class="divider-light"></div>
-
-                        <!-- Submit button area with extra flex row -->
-                        <div class="form-row" style="justify-content: flex-end;">
-                            <div class="form-col" style="flex: 0 1 auto;">
-                                <button type="submit" class="btn-complete">
-                                    <i class="fas fa-check-circle"></i> Complete Service
-                                </button>
-                            </div>
-                            <div class="form-col" style="flex: 0 1 auto; text-align: right;">
-                                <button type="reset" class="btn-complete" style="background: #b0c4ce; box-shadow: none;" onclick="return false;">
-                                    <i class="fas fa-undo-alt"></i> Reset
-                                </button>
-                            </div>
+                        <div class="form-col" style="flex:0 1 auto;">
+                            <button type="reset" class="btn-complete btn-complete-outline" onclick="return false;"><i class="fas fa-undo-alt"></i> Reset</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-        
     </div>
 
-    <!-- Simple client-side reset (optional, just for better UX) -->
     <script>
-        (function () {
 
-            const formEl = document.getElementById('completeServiceForm');
+        function calculateNextService(index) {
 
-            if (!formEl) return;
+            let condition =
+                document.getElementById("condition_" + index).value;
 
-            formEl.addEventListener('submit', function (ev) {
+            let months = 0;
 
-                // ❌ DO NOT BLOCK NORMAL SUBMIT (IMPORTANT FIX)
-                // ev.preventDefault();  <-- removed
+            if (condition === "Good")
+                months = 6;
+            else if (condition === "Normal")
+                months = 3;
+            else if (condition === "Bad")
+                months = 1;
+            else {
+                document.getElementById("nextService_" + index).value = "";
+                return;
+            }
 
-                // ✔ OPTIONAL: show loading (can keep or remove)
-                const btn = formEl.querySelector('button[type="submit"]');
-                if (btn) {
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                    btn.disabled = true;
-                }
+            let date = new Date();
+            date.setMonth(date.getMonth() + months);
 
-                // ✔ Collect checkbox values (for debugging only)
-                const selectedServices = [...document.querySelectorAll('input[name="ServiceTypeList"]:checked')]
-                    .map(x => x.value);
+            document.getElementById("nextService_" + index).value =
+                date.toISOString().split('T')[0];
+        }
 
-                console.log("=== SUBMIT DATA DEBUG ===");
-                console.log("ServiceId:", document.getElementById('ServiceId')?.value);
-                console.log("ACCondition:", document.getElementById('ACCondition')?.value);
-                console.log("ServiceTypeList:", selectedServices);
-                console.log("ProblemFound:", document.getElementById('ProblemFound')?.value);
-                console.log("RepairAction:", document.getElementById('RepairAction')?.value);
-                console.log("PartsReplaced:", document.getElementById('PartsReplaced')?.value);
-                console.log("TechnicianNote:", document.getElementById('TechnicianNote')?.value);
-                console.log("ServiceCost:", document.getElementById('ServiceCost')?.value);
-                console.log("NextServiceDue:", document.getElementById('NextServiceDue')?.value);
+        function calculateInvoice() {
+          let partsTotal = 0;
+          document.querySelectorAll("#partsTable tbody tr").forEach(row => {
+            let qty = parseFloat(row.querySelector(".qty")?.value || 0);
+            let price = parseFloat(row.querySelector(".price")?.value || 0);
+            let total = qty * price;
+            row.querySelector(".total").value = total;
+            partsTotal += total;
+          });
+          let chargeTotal = 0;
+          document.querySelectorAll(".chargeAmount").forEach(x => chargeTotal += parseFloat(x.value || 0));
+          let expenseTotal = 0;
+          document.querySelectorAll(".expenseAmount").forEach(x => expenseTotal += parseFloat(x.value || 0));
+          document.getElementById("partsTotal").value = partsTotal;
+          document.getElementById("chargeTotal").value = chargeTotal;
+          document.getElementById("expenseTotal").value = expenseTotal;
+          document.getElementById("grandTotal").value = partsTotal + chargeTotal + expenseTotal;
+        }
 
-                // ✔ IMPORTANT:
-                // DO NOT prevent submit → ASP.NET Controller WILL RECEIVE DATA
-                // Form will post automatically to:
-                // [HttpPost] Complete(CompleteServiceViewModel model)
+        document.addEventListener("input", function() { calculateInvoice(); });
+
+        let partIndex = 1;
+        function addPartRow() {
+          let table = document.querySelector("#partsTable tbody");
+          let row = `<tr><td><input class="form-control" name="Parts[${partIndex}].PartName"/></td><td><input class="form-control qty" type="number" value="1" name="Parts[${partIndex}].Quantity"/></td><td><input class="form-control price" type="number" value="0" name="Parts[${partIndex}].UnitPrice"/></td><td><input class="form-control total" readonly/></td><td><button type="button" class="btn btn-danger" onclick="removeRow(this)">✕</button></td></tr>`;
+          table.insertAdjacentHTML("beforeend", row);
+          partIndex++;
+        }
+
+        function removeRow(btn) {
+          btn.closest("tr").remove();
+          calculateInvoice();
+        }
+
+        // function previewImages(event) {
+        //   let area = document.getElementById("previewArea");
+        //   area.innerHTML = "";
+        //   Array.from(event.target.files).forEach(file => {
+        //     let reader = new FileReader();
+        //     reader.onload = function(e) {
+        //       let img = document.createElement("img");
+        //       img.src = e.target.result;
+        //       img.style.width = "80px";
+        //       img.style.height = "80px";
+        //       img.style.objectFit = "cover";
+        //       img.className = "rounded";
+        //       area.appendChild(img);
+        //     }
+        //     reader.readAsDataURL(file);
+        //   });
+        // }
+
+               function bindPreview(inputId, previewId) {
+
+            const input = document.getElementById(inputId);
+
+            let dt = new DataTransfer();
+
+            input.addEventListener("change", function () {
+
+                Array.from(input.files).forEach(file => {
+
+                    dt.items.add(file);
+
+                });
+
+                input.files = dt.files;
+
+                render();
 
             });
 
-        })();
+            function render() {
 
-                document.addEventListener("DOMContentLoaded", function () {
+                const preview = document.getElementById(previewId);
 
-            const condition = document.getElementById("ACCondition");
-            const nextService = document.getElementById("NextServiceDue");
+                preview.innerHTML = "";
 
-            condition.addEventListener("change", function () {
+                Array.from(dt.files).forEach((file, index) => {
 
-                let monthsToAdd = 0;
+                    const reader = new FileReader();
 
-                switch (this.value) {
-                    case "Good":
-                        monthsToAdd = 6;
-                        break;
+                    reader.onload = function (e) {
 
-                    case "Normal":
-                        monthsToAdd = 3;
-                        break;
+                        const card = document.createElement("div");
 
-                    case "Bad":
-                        monthsToAdd = 1;
-                        break;
+                        card.className = "photo-item";
 
-                    default:
-                        nextService.value = "";
-                        return;
+                        card.innerHTML = `
+                            <img src="${e.target.result}"
+                                 class="preview-img"
+                                 data-src="${e.target.result}">
+
+                            <button type="button"
+                                    class="remove-photo">
+                                ×
+                            </button>
+                        `;
+                       card.querySelector(".preview-img")
+                        .onclick = function () {
+
+                            document.getElementById("modalImage").src = this.src;
+
+                            const modal = new bootstrap.Modal(
+                                document.getElementById("imageModal")
+                            );
+
+                            modal.show();
+
+                        };
+
+                        // Remove Button
+                        card.querySelector(".remove-photo")
+                            .onclick = function () {
+
+                            const newDT = new DataTransfer();
+
+                            Array.from(dt.files)
+                                .forEach((f, i) => {
+
+                                if (i !== index)
+                                    newDT.items.add(f);
+
+                            });
+
+                            dt = newDT;
+
+                            input.files = dt.files;
+
+                            render();
+
+                        };
+
+                        // Preview Click
+                        card.querySelector(".preview-img")
+                            .onclick = function () {
+
+                            document
+                                .getElementById("modalImage")
+                                .src = this.dataset.src;
+
+                            new bootstrap.Modal(
+                                document.getElementById("imageModal")
+                            ).show();
+
+                        };
+
+                        preview.appendChild(card);
+
+                    };
+
+                    reader.readAsDataURL(file);
+
+                });
+
+            }
+
+        }
+
+                bindPreview(
+            "beforePhotos",
+            "beforePreview");
+
+        bindPreview(
+            "afterPhotos",
+            "afterPreview");
+
+        bindPreview(
+            "problemPhotos",
+            "problemPreview");
+
+           document.querySelectorAll(".aircon-selector").forEach(check => {
+
+            const index = check.dataset.index;
+            const hidden = document.getElementById("selected_" + index);
+            const card = document.getElementById(check.dataset.target);
+
+            // Page Load
+            if (check.checked) {
+                hidden.value = "true";
+                card.classList.remove("d-none");
+            }
+
+            check.addEventListener("change", function () {
+
+                if (this.checked) {
+                    hidden.value = "true";
+                    card.classList.remove("d-none");
+                }
+                else {
+                    hidden.value = "false";
+                    card.classList.add("d-none");
                 }
 
-                let today = new Date();
-                today.setMonth(today.getMonth() + monthsToAdd);
-
-                // format YYYY-MM-DD
-                let formatted = today.toISOString().split('T')[0];
-
-                nextService.value = formatted;
             });
 
+        });
+
+        document.querySelectorAll(".service-qty-input").forEach(input => {
+          input.addEventListener("input", function() {
+            let total = parseInt(this.dataset.total);
+            let completed = parseInt(this.dataset.completed);
+            let todayQty = parseInt(this.value) || 0;
+            let newCompleted = completed + todayQty;
+            let newRemaining = total - newCompleted;
+            if (newRemaining < 0) {
+              newRemaining = 0;
+              this.value = total - completed;
+              newCompleted = total;
+            }
+            document.getElementById(this.dataset.completedId).innerText = newCompleted;
+            document.getElementById(this.dataset.remainingId).innerText = newRemaining;
+            document.getElementById(this.dataset.summaryCompletedId).innerText = newCompleted;
+            document.getElementById(this.dataset.summaryRemainingId).innerText = newRemaining;
+          });
         });
     </script>
 </body>

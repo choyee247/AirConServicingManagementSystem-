@@ -41,17 +41,23 @@ public partial class DBContext : DbContext
 
     public virtual DbSet<Payment> Payments { get; set; }
 
+    public virtual DbSet<ServiceCharge> ServiceCharges { get; set; }
+
+    public virtual DbSet<ServiceExpense> ServiceExpenses { get; set; }
+
+    public virtual DbSet<ServicePart> ServiceParts { get; set; }
+
     public virtual DbSet<ServicePhoto> ServicePhotos { get; set; }
 
     public virtual DbSet<ServiceRecord> ServiceRecords { get; set; }
+
+    public virtual DbSet<ServiceRecordUnit> ServiceRecordUnits { get; set; }
 
     public virtual DbSet<ServiceReminder> ServiceReminders { get; set; }
 
     public virtual DbSet<ServiceRequest> ServiceRequests { get; set; }
 
     public virtual DbSet<ServiceTechnician> ServiceTechnicians { get; set; }
-
-    public virtual DbSet<ServiceWarranty> ServiceWarranties { get; set; }
 
     public virtual DbSet<TbStateDivision> TbStateDivisions { get; set; }
 
@@ -112,6 +118,8 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.Model).WithMany(p => p.AirConUnits)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__AirConUni__Model__46E78A0C");
+
+            entity.HasOne(d => d.Service).WithMany(p => p.AirConUnits).HasConstraintName("FK_AirConUnits_ServiceRequests");
         });
 
         modelBuilder.Entity<Appointment>(entity =>
@@ -231,17 +239,36 @@ public partial class DBContext : DbContext
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A38E774B46B");
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__9B556A3883FC02FC");
 
-            entity.Property(e => e.PaidAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
 
-            entity.HasOne(d => d.Service).WithOne(p => p.Payment)
+            entity.HasOne(d => d.ServiceRecord).WithMany(p => p.Payments)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Payments_ServiceRequests");
+                .HasConstraintName("FK_Payment_ServiceRecords");
+        });
 
-            entity.HasOne(d => d.Technician).WithMany(p => p.Payments)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Payments_Technicians");
+        modelBuilder.Entity<ServiceCharge>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ServiceC__3214EC07CFEBFAEA");
+
+            entity.HasOne(d => d.ServiceRecord).WithMany(p => p.ServiceCharges).HasConstraintName("FK__ServiceCh__Servi__2610A626");
+        });
+
+        modelBuilder.Entity<ServiceExpense>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ServiceE__3214EC073EA3C768");
+
+            entity.HasOne(d => d.ServiceRecord).WithMany(p => p.ServiceExpenses).HasConstraintName("FK__ServiceEx__Servi__28ED12D1");
+        });
+
+        modelBuilder.Entity<ServicePart>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ServiceP__3214EC0712C575A8");
+
+            entity.HasOne(d => d.AirConUnit).WithMany(p => p.ServiceParts).HasConstraintName("FK__ServicePa__AirCo__2334397B");
+
+            entity.HasOne(d => d.ServiceRecord).WithMany(p => p.ServiceParts).HasConstraintName("FK__ServicePa__Total__22401542");
         });
 
         modelBuilder.Entity<ServicePhoto>(entity =>
@@ -250,6 +277,8 @@ public partial class DBContext : DbContext
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+
+            entity.HasOne(d => d.AirConUnit).WithMany(p => p.ServicePhotos).HasConstraintName("FK_ServicePhotos_AirConUnits");
 
             entity.HasOne(d => d.ServiceRecord).WithMany(p => p.ServicePhotos)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -264,10 +293,6 @@ public partial class DBContext : DbContext
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
 
-            entity.HasOne(d => d.AirConUnit).WithMany(p => p.ServiceRecords)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ServiceRe__AirCo__5165187F");
-
             entity.HasOne(d => d.Customer).WithMany(p => p.ServiceRecords)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ServiceRe__Custo__5070F446");
@@ -277,6 +302,21 @@ public partial class DBContext : DbContext
             entity.HasOne(d => d.Technician).WithMany(p => p.ServiceRecords)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ServiceRecords_Technicians");
+        });
+
+        modelBuilder.Entity<ServiceRecordUnit>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ServiceR__3214EC07E92A2F94");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.AirConUnit).WithMany(p => p.ServiceRecordUnits)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ServiceRe__AirCo__1E6F845E");
+
+            entity.HasOne(d => d.ServiceRecord).WithMany(p => p.ServiceRecordUnits)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ServiceRe__Servi__1D7B6025");
         });
 
         modelBuilder.Entity<ServiceReminder>(entity =>
@@ -307,10 +347,6 @@ public partial class DBContext : DbContext
             entity.Property(e => e.RequestedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Status).HasDefaultValue("Pending");
 
-            entity.HasOne(d => d.AirCon).WithMany(p => p.ServiceRequests)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK_ServiceRequests_AirConUnits");
-
             entity.HasOne(d => d.Appointment).WithMany(p => p.ServiceRequests).HasConstraintName("FK_ServiceRequests_Appointments");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.ServiceRequests)
@@ -330,18 +366,6 @@ public partial class DBContext : DbContext
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
-        });
-
-        modelBuilder.Entity<ServiceWarranty>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__ServiceW__3214EC07866C283A");
-
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
-
-            entity.HasOne(d => d.ServiceRecord).WithMany(p => p.ServiceWarranties)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ServiceWa__Servi__571DF1D5");
         });
 
         modelBuilder.Entity<TbTownship>(entity =>

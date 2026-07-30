@@ -618,7 +618,7 @@
 
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>Customer</th>
                             <th>Phone</th>
                             <th>Technician</th>
@@ -633,13 +633,14 @@
 
                         @if (Model.Any())
                         {
+                            int i = 1;
                             @foreach (var item in Model)
                             {
                                 <tr>
 
                                     <td>
                                         <strong style="font-size:1.05rem;color:var(--primary-color);">
-                                            #@item.AppointmentId
+                                           @i
                                         </strong>
                                     </td>
 
@@ -777,6 +778,7 @@
                                     </td>
 
                                 </tr>
+                                i++;
                             }
                         }
                         else
@@ -787,10 +789,10 @@
                                         <i class="fas fa-calendar-times"></i>
                                         <h4>No Appointments Found</h4>
                                         <p>Start by creating your first appointment</p>
-                                        <a asp-action="Create" class="btn-primary-teal">
+                                      @*   <a asp-action="Create" class="btn-primary-teal">
                                             <i class="fas fa-plus-circle"></i>
                                             Create Appointment
-                                        </a>
+                                        </a> *@
                                     </div>
                                 </td>
                             </tr>
@@ -809,6 +811,7 @@
 
             @if (Model.Any())
             {
+                int i = 1;
                 @foreach (var item in Model)
                 {
                     <div class="mobile-appointment-card">
@@ -816,9 +819,9 @@
                         <!-- ID & Customer -->
                         <div class="mobile-row">
                             <div>
-                                <span class="mobile-label">ID</span>
+                                <span class="mobile-label">#</span>
                                 <span class="mobile-value fw-bold" style="color:var(--primary-color);font-size:1.05rem;">
-                                    #@item.AppointmentId
+                                    @i
                                 </span>
                             </div>
                             <div>
@@ -963,6 +966,7 @@
                         </div>
 
                     </div>
+                    i++;
                 }
             }
             else

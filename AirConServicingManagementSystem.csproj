@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>AirConServicingManagementSystem</AssemblyName>
+    <RootNamespace>AirConServicingManagementSystem</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +18,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="QRCoder" Version="1.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\service\images\" />
+    <Folder Include="wwwroot\service\paymentslip\" />
   </ItemGroup>
 
 </Project>

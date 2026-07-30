@@ -305,7 +305,7 @@
                                 @s.Customer?.Name
                             </td>
 
-                            <td>
+                          @*   <td>
 
                                 @if (s.AirCon != null)
                                 {
@@ -322,9 +322,9 @@
                                     </span>
                                 }
 
-                            </td>
+                            </td> *@
 
-                            <td>
+                           @*  <td>
 
                                 @if (s.AirCon != null)
                                 {
@@ -359,7 +359,7 @@
                                     </span>
                                 }
 
-                            </td>
+                            </td> *@
 
                            @*  <td>
 
@@ -428,7 +428,13 @@
                                     Complete
 
                                 </a>
-
+                                @* <a asp-controller="Payment"
+                                   asp-action="Create"
+                                   asp-route-serviceId="@s.ServiceId"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    Payment
+                                </a> *@
                             </td>
 
                         </tr>

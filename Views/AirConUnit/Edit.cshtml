@@ -1,7 +1,6 @@
-﻿@model AirConServicingManagementSystem.Models.AirConUnit
-
+﻿@model AirConServicingManagementSystem.ViewModels.EditAirConUnitViewModel
 @{
-    ViewData["Title"] = "Edit Aircon";
+    ViewData["Title"] = "Edit AirCon Unit";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
 
@@ -9,141 +8,887 @@
 
     <div class="form-container">
 
-        <!-- HEADER -->
         <div class="form-header">
+
             <i class="fas fa-edit"></i>
+
             <h3>Edit Air Conditioning Unit</h3>
+
         </div>
 
-        <!-- INFO -->
-        <div class="info-box">
-            <i class="fas fa-info-circle"></i>
-            Update the air conditioning unit details.
-        </div>
+        <form asp-action="Edit"
+              asp-controller="AirConUnit"
+              method="post">
 
-        <form asp-action="Edit" method="post" id="editAirconForm">
+            @Html.AntiForgeryToken()
 
-            <input type="hidden" asp-for="Id" />
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="CustomerId" type="hidden" />
+            <input asp-for="CreatedAt" type="hidden" />
+            <input asp-for="IsDeleted" type="hidden" />
 
-            <!-- CUSTOMER (READ ONLY like Create) -->
+            <input type="hidden"
+                   name="serviceId"
+                   value="@ViewBag.ServiceId" />
+
+            <!-- Customer -->
+
             <div class="form-section">
 
                 <div class="section-title">
-                    <i class="fas fa-user"></i> Customer Information
+
+                    <i class="fas fa-user"></i>
+
+                    Customer Information
+
                 </div>
 
-                <div class="p-3 mt-3 rounded-3 border bg-light d-flex align-items-center">
+                <div class="customer-box">
 
-                    <div class="rounded-circle d-flex justify-content-center align-items-center text-white fw-bold"
-                         style="width:45px;height:45px;background:#2c8c99;">
-                        @Model.Customer?.Name?.Substring(0, 1).ToUpper()
+                    <div class="avatar">
+
+                        @(ViewBag.CustomerName?.ToString().Substring(0,1).ToUpper())
+
                     </div>
 
-                    <div class="ms-3">
-                        <div class="fw-bold">
-                            @Model.Customer?.Name
-                        </div>
-                        <small class="text-muted">
-                            <i class="fas fa-phone me-1"></i>
-                            @Model.Customer?.Phone
-                        </small>
+                    <div>
+
+                        <h5>@ViewBag.CustomerName</h5>
+
+                        <p>
+
+                            <i class="fas fa-phone"></i>
+
+                            @ViewBag.CustomerPhone
+
+                        </p>
+
                     </div>
 
-                </div>
-
-                <input type="hidden" asp-for="CustomerId" />
-
-            </div>
-
-            <!-- BRAND -->
-            <div class="form-section">
-
-                <div class="section-title">
-                    <i class="fas fa-tag"></i> Brand Information
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Brand</label>
-                    <select asp-for="BrandId" class="form-select" id="BrandId">
-                        <option value="">-- Select Brand --</option>
-                        @foreach (var b in ViewBag.Brands)
-                        {
-                            <option value="@b.Id">@b.BrandName</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Model</label>
-                    <select asp-for="ModelId" class="form-select" id="ModelId">
-                        <option value="">-- Select Model --</option>
-                        @foreach (var m in ViewBag.Models)
-                        {
-                            <option value="@m.Id">@m.ModelName</option>
-                        }
-                    </select>
                 </div>
 
             </div>
 
-            <!-- UNIT DETAILS -->
-            <div class="form-section">
+            <!-- AirCon Card -->
 
-                <div class="section-title">
-                    <i class="fas fa-cog"></i> Unit Details
+            <div class="aircon-card">
+
+                <div class="card-header-custom">
+
+                    <h5>
+
+                        <i class="fas fa-snowflake"></i>
+
+                        Edit AirCon Information
+
+                    </h5>
+
                 </div>
 
                 <div class="row">
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">AirCon Type</label>
-                        <select asp-for="AirConType" class="form-select">
-                            <option value="">-- Select Type --</option>
-                            <option>Window</option>
-                            <option>Stand</option>
-                            <option>Wall Split</option>
-                            <option>Cassette</option>
-                            <option>Ceiling Duct</option>
-                            <option>Floor Standing</option>
-                        </select>
+                    <!-- Brand -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Brand
+
+                        </label>
+                        <div class="input-group">
+
+                            <select asp-for="BrandId"
+                                    class="form-select brandSelect"
+                                    asp-items="@(new SelectList(ViewBag.Brands,"Id","BrandName"))">
+
+                                <option value="">
+
+                                    -- Select Brand --
+
+                                </option>
+
+                            </select>
+                            <a asp-controller="AirConBrand"
+                               asp-action="CreateBrand"
+                               class="btn btn-success"
+                               title="Add New Brand">
+
+
+                                <i class="fas fa-plus"></i>
+
+
+                            </a>
+                            <span asp-validation-for="BrandId"
+                                  class="text-danger"></span>
+                        </div>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Capacity (HP)</label>
-                        <select asp-for="CapacityHp" class="form-select">
-                            <option value="">-- Select HP --</option>
-                            <option>0.5</option>
-                            <option>1</option>
-                            <option>1.5</option>
-                            <option>2</option>
-                            <option>2.5</option>
-                            <option>3</option>
-                        </select>
-                    </div>
+                    <!-- Model -->
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Installation Date</label>
-                        <input asp-for="InstallationDate" type="date" class="form-control" />
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Model
+
+                        </label>
+                        <div class="input-group">
+
+                            <select asp-for="ModelId"
+                                    class="form-select modelSelect">
+
+                                <option value="">
+
+                                    -- Select Model --
+
+                                </option>
+
+                                @foreach(var item in ViewBag.Models)
+                                {
+                                    <option value="@item.Id"
+                                            selected="@(item.Id==Model.ModelId)">
+
+                                        @item.ModelName
+
+                                    </option>
+                                }
+
+                            </select>
+                            <a asp-controller="AirConModel"
+                               asp-action="CreateModel"
+                               class="btn btn-success"
+                               title="Add New Model">
+
+
+                                <i class="fas fa-plus"></i>
+
+
+                            </a>
+                            <span asp-validation-for="ModelId"
+                                  class="text-danger"></span>
+                        </div>
                     </div>
 
                 </div>
 
+                <!-- Row -->
+
+                <div class="row mt-3">
+
+                    <div class="col-md-4">
+
+                        <label>
+                            Quantity
+                        </label>
+
+
+                        <div class="input-group">
+
+
+                            <button type="button"
+                                    class="btn btn-outline-secondary minusQty">
+
+                                -
+
+                            </button>
+
+
+
+                            <input type="number"
+                                   id="quantity"
+                                   name="Quantity"
+                                   value="@Model.Quantity"
+                                   class="form-control text-center"
+                                   min="1" />
+
+
+
+                            <button type="button"
+                                    class="btn btn-outline-secondary plusQty">
+
+                                +
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>
+
+                            Serial Number
+
+                        </label>
+
+                        <input asp-for="SerialNumber"
+                               class="form-control"
+                               placeholder="Serial Number"/>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>
+
+                            Capacity HP
+
+                        </label>
+
+                        <select asp-for="CapacityHp"
+                                class="form-select">
+
+                            <option value="0.5">0.5</option>
+                            <option value="1">1</option>
+                            <option value="1.5">1.5</option>
+                            <option value="2">2</option>
+                            <option value="2.5">2.5</option>
+                            <option value="3">3</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+                <!-- AirCon Type + Installation Type -->
+
+                <div class="row mt-3">
+
+
+                    <div class="col-md-6">
+
+
+                        <label>
+
+                            AirCon Type
+
+                        </label>
+
+
+                        <select asp-for="AirConType"
+                                class="form-select">
+
+
+                            <option value="">
+                                -- Select Type --
+                            </option>
+
+
+                            <option value="Window">
+                                Window
+                            </option>
+
+
+                            <option value="Wall Split">
+                                Wall Split
+                            </option>
+
+
+                            <option value="Cassette">
+                                Cassette
+                            </option>
+
+
+                            <option value="Ceiling Duct">
+                                Ceiling Duct
+                            </option>
+
+
+                            <option value="Floor Standing">
+                                Floor Standing
+                            </option>
+
+
+                        </select>
+
+
+                        <span asp-validation-for="AirConType"
+                              class="text-danger"></span>
+
+
+                    </div>
+
+
+
+
+
+                    <div class="col-md-6">
+
+
+                        <label>
+
+                            Installation Type
+
+                        </label>
+
+
+                        <select asp-for="InstallationType"
+                                id="installationType"
+                                class="form-select">
+                            <option>
+                                -- Select --
+                            </option>
+
+                            <option value="Existing">
+
+                                Existing Repair
+
+                            </option>
+
+
+                            <option value="New">
+
+                                New Installation
+
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <!-- Warranty Area -->
+
+
+                <div id="warrantyArea"
+                     class="warranty-area mt-4">
+
+
+
+                    <h6>
+
+                        <i class="fas fa-shield-alt"></i>
+
+                        Warranty Information
+
+                    </h6>
+
+
+
+
+                    <div class="row mt-3">
+
+
+
+                        <div class="col-md-4">
+
+
+                            <label>
+
+                                Installation Date
+
+                            </label>
+
+
+                            <input asp-for="InstallationDate"
+                                   type="date"
+                                   class="form-control" />
+
+
+                        </div>
+
+
+
+
+
+                        <div class="col-md-4">
+
+
+                            <label>
+
+                                Contract Start Date
+
+                            </label>
+
+
+                            <input name="ContractStartDate"
+                                   type="date"
+                                   value="@ViewBag.ContractStartDate"
+                                   class="form-control" />
+
+
+                        </div>
+
+
+
+
+
+                        <div class="col-md-4">
+
+
+                            <label>
+
+                                Contract End Date
+
+                            </label>
+
+
+                            <input name="ContractEndDate"
+                                   type="date"
+                                   value="@ViewBag.ContractEndDate"
+                                   class="form-control" />
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+                </div>
+
+
+
             </div>
 
-            <!-- ACTIONS -->
-            <div class="form-footer">
 
-                <button type="submit" class="btn btn-custom">
-                    <i class="fas fa-save"></i> Update Aircon
+
+
+            <!-- Buttons -->
+
+
+            <div class="mt-4">
+
+
+                <button type="submit"
+                        class="btn btn-success">
+
+
+                    <i class="fas fa-save"></i>
+
+                    Update AirCon
+
+
                 </button>
 
-                <a asp-action="Index" class="btn btn-secondary-custom ms-2">
+
+
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+
+
+                    <i class="fas fa-arrow-left"></i>
+
                     Cancel
+
+
                 </a>
 
+
             </div>
+
+
+
 
         </form>
 
+
     </div>
+
 </div>
+@section Styles {
+
+    <style>
+
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.08);
+        }
+
+
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #e0f7fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+
+
+            .form-header i {
+                font-size: 32px;
+                color: #2c8c99;
+            }
+
+
+
+            .form-header h3 {
+                margin: 0;
+                color: #1a5f6b;
+                font-weight: 700;
+            }
+
+
+
+
+        .form-section {
+            background: #f8fafa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a5f6b;
+            margin-bottom: 15px;
+        }
+
+
+
+
+        .customer-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e5eeee;
+        }
+
+
+
+
+        .avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #2c8c99;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+
+
+
+
+        .aircon-card {
+            background: #ffffff;
+            border: 1px solid #d9eeee;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(44,140,153,.12);
+        }
+
+
+
+
+
+        .card-header-custom {
+            background: #e0f7fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+
+
+            .card-header-custom h5 {
+                margin: 0;
+                color: #1a5f6b;
+                font-weight: 600;
+            }
+
+
+
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+
+
+
+        .warranty-area {
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+
+
+
+        .btn-success {
+            background: #2c8c99;
+            border: none;
+        }
+
+
+
+            .btn-success:hover {
+                background: #1a5f6b;
+            }
+
+
+
+
+        @@media(max-width:768px) {
+
+
+
+            .form-container {
+                padding: 15px;
+            }
+
+
+
+            .form-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+
+
+            .aircon-card {
+                padding: 15px;
+            }
+        }
+
+    </style>
+
+}
+@section Scripts {
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <script>
+
+
+        $(document).ready(function(){
+
+
+
+            // ===============================
+            // Warranty Show Hide
+            // ===============================
+
+
+            function checkInstallationType(){
+
+
+                let type =
+                $("#installationType").val();
+
+
+
+                if(type=="New"){
+
+
+                    $("#warrantyArea")
+                    .slideDown();
+
+
+                }
+                else{
+
+
+                    $("#warrantyArea")
+                    .slideUp();
+
+
+                }
+
+
+            }
+
+
+
+
+            checkInstallationType();
+
+
+
+
+            $("#installationType")
+            .change(function(){
+
+
+                checkInstallationType();
+
+
+            });
+
+
+
+            ///Quantity////
+                    $(document).on(
+        "click",
+        ".plusQty",
+        function(){
+
+            let input =
+            $(this)
+            .closest(".input-group")
+            .find("input");
+
+
+            let value =
+            parseInt(input.val()) || 1;
+
+
+            input.val(value + 1);
+
+        });
+
+
+
+        $(document).on(
+        "click",
+        ".minusQty",
+        function(){
+
+            let input =
+            $(this)
+            .closest(".input-group")
+            .find("input");
+
+
+            let value =
+            parseInt(input.val()) || 1;
+
+
+            if(value > 1)
+            {
+                input.val(value - 1);
+            }
+
+        });
+
+
+
+            // ===============================
+            // Brand Change Load Model
+            // ===============================
+
+
+            $(".brandSelect").change(function(){
+
+
+                let brandId =
+                $(this).val();
+
+
+
+                let model =
+                $(".modelSelect");
+
+
+
+                model.html(
+
+                "<option>Loading...</option>"
+
+                );
+
+
+
+
+                $.ajax({
+
+
+                    url:
+                    '@Url.Action("GetModelsByBrand", "AirConUnit")',
+
+
+
+                    type:"GET",
+
+
+
+                    data:{
+
+
+                        brandId:brandId
+
+
+                    },
+
+
+
+                    success:function(data){
+
+
+                        model.empty();
+
+
+
+                        model.append(
+
+                        '<option value="">-- Select Model --</option>'
+
+                        );
+
+
+
+
+                        $.each(data,function(i,item){
+
+
+
+                            model.append(
+
+                            `<option value="${item.id}">
+                                ${item.modelName}
+                            </option>`
+
+                            );
+
+
+                        });
+
+
+
+                    }
+
+
+
+                });
+
+
+
+            });
+
+
+
+
+        });
+
+
+
+    </script>
+
+
+}
