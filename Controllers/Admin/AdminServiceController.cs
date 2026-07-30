@@ -125,12 +125,25 @@ namespace AirConServicingManagementSystem.Controllers.Admin
                 .Include(a => a.Customer)
                 .FirstOrDefaultAsync(a => a.AppointmentId == id);
 
+
             if (appointment == null)
                 return NotFound();
 
-            ViewBag.Technicians = await _context.Technicians
-                .Where(t => !t.IsDeleted)
+
+
+            var busyTechnicianIds = await _context.ServiceRecords
+                .Where(sr => sr.Status == "In Progress")
+                .Select(sr => sr.TechnicianId)
                 .ToListAsync();
+
+
+
+            ViewBag.Technicians = await _context.Technicians
+                .Where(t => !t.IsDeleted
+                         && !busyTechnicianIds.Contains(t.TechnicianId))
+                .ToListAsync();
+
+
 
             return View(appointment);
         }
@@ -182,7 +195,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             TempData["SuccessMessage"] =
                 "Technician assigned successfully.";
 
-            return RedirectToAction("Index", "Appointment");
+            return RedirectToAction("AppointmentList", "Appointment");
         }
         public async Task<IActionResult> Records(string search)
         {

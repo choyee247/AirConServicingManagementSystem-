@@ -37,18 +37,46 @@ namespace AirConServicingManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Appointment model)
         {
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+
+            if (technicianId == null)
+            {
+                return RedirectToAction("Login", "TechnicianAuth");
+            }
+
+
             if (ModelState.IsValid)
             {
-                ViewBag.Customers = await _context.Customers.ToListAsync();
+                ViewBag.Customers = await _context.Customers
+                    .Where(c => c.IsDeleted != true)
+                    .ToListAsync();
+
                 return View(model);
             }
 
+
+
             model.Status = "Pending";
 
+
+            // Login Technician Assign
+            model.TechnicianId = technicianId.Value;
+
+
+
+            model.ScheduledDate = model.ScheduledDate;
+
+
+
             _context.Appointments.Add(model);
+
             await _context.SaveChangesAsync();
 
+
+
             TempData["SuccessMessage"] = "Appointment created successfully";
+
 
             return RedirectToAction("Index");
         }
@@ -132,7 +160,15 @@ namespace AirConServicingManagementSystem.Controllers
         // =========================
         public async Task<IActionResult> Index()
         {
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+            if (technicianId == null)
+            {
+                return RedirectToAction("Login", "TechnicianAuth");
+            }
+
             var data = await _context.Appointments
+                .Where(a => a.TechnicianId == technicianId)
                 .Include(a => a.Customer)
                 .Include(a => a.Technician)
                 .Include(a => a.ServiceRequests)

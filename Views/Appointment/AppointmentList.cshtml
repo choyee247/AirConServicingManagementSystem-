@@ -744,6 +744,7 @@
                 <table class="table-custom" id="appointmentTable">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Customer</th>
                             <th>Phone</th>
                             <th>Date</th>
@@ -756,9 +757,11 @@
                     <tbody>
                         @if (Model.Any())
                         {
+                            int i = 1;
                             @foreach (var item in Model)
                             {
                                 <tr data-status="@item.Status.ToLower()">
+                                    <td>@i</td>
                                     <td>
                                         <span class="customer-name">
                                             <i class="fas fa-user me-1" style="color:var(--primary-color);font-size:0.8rem;"></i>
@@ -875,6 +878,7 @@
                                         </div>
                                     </td>
                                 </tr>
+                                i++;
                             }
                         }
                         else

@@ -1,100 +1,437 @@
 ﻿@using AirConServicingManagementSystem.ViewsModels
 @model PaymentViewModel
+
 @{
     ViewData["Title"] = "Payment";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
 
 
-<h3>
-    Payment
-</h3>
+<style>
+
+    body {
+        background:#f4f7fb;
+    }
+
+    .payment-card {
+        background:white;
+        border-radius:18px;
+        padding:25px;
+        box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+
+    .title {
+        color:#2c8c99;
+        font-weight:800;
+        margin-bottom:20px;
+    }
+
+    label {
+        font-weight:600;
+        margin-bottom:6px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius:10px;
+    }
+
+    .section-title {
+        color:#2c8c99;
+        font-weight:700;
+        margin-top:20px;
+        margin-bottom:10px;
+    }
+
+</style>
 
 
 
-<form asp-action="Create"
-      method="post">
+<div class="container py-4">
 
 
-    <input type="hidden"
-           asp-for="ServiceRecordId" />
+    <div class="payment-card">
 
 
-    <div>
+        <h3 class="title">
 
-        <label>
-            Invoice No
-        </label>
+            <i class="fas fa-money-bill-wave"></i>
+            Payment
 
-        <input class="form-control"
-               asp-for="InvoiceNo"
-               readonly />
+        </h3>
+
+
+
+        <form asp-action="Create"
+              method="post"
+              enctype="multipart/form-data">
+
+
+
+            <input type="hidden"
+                   asp-for="ServiceRecordId" />
+
+
+
+            <div class="mb-3">
+
+                <label>
+                    Invoice No
+                </label>
+
+                <input class="form-control"
+                       asp-for="InvoiceNo"
+                       readonly />
+
+            </div>
+
+
+
+
+            <div class="mb-3">
+
+                <label>
+                    Total Amount
+                </label>
+
+                <input class="form-control"
+                       asp-for="Amount"
+                       id="amount"
+                       readonly />
+
+            </div>
+
+
+
+
+            <div class="mb-3">
+
+                <label>
+                    Payment Method
+                </label>
+
+
+                <select class="form-select"
+                        asp-for="PaymentMethod"
+                        id="paymentMethod">
+
+
+                    <option value="Cash">
+                        Cash
+                    </option>
+
+
+                    <option value="KBZPay">
+                        KBZPay
+                    </option>
+
+
+                    <option value="WavePay">
+                        WavePay
+                    </option>
+
+
+                    <option value="AYAPay">
+                        AYA Pay
+                    </option>
+
+
+                    <option value="CBPay">
+                        CB Pay
+                    </option>
+
+
+                    <option value="BankTransfer">
+                        Bank Transfer
+                    </option>
+
+
+                </select>
+
+            </div>
+
+
+
+
+            <!-- CASH SECTION -->
+
+            <div id="cashSection">
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Customer Paid
+                    </label>
+
+
+                    <input class="form-control"
+                           asp-for="PaidAmount"
+                           id="paidAmount"
+                           type="number"
+                           step="0.01" />
+
+                </div>
+
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Change Amount
+                    </label>
+
+
+                    <input class="form-control"
+                           asp-for="ChangeAmount"
+                           id="changeAmount"
+                           readonly />
+
+                </div>
+
+
+            </div>
+
+
+
+
+            <!-- DIGITAL PAYMENT -->
+
+            <div id="digitalSection">
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Transaction No
+                    </label>
+
+
+                    <input class="form-control"
+                           asp-for="TransactionNo" />
+
+                </div>
+
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Payment Slip
+                    </label>
+
+
+                    <input class="form-control"
+                           asp-for="PaymentSlip"
+                           type="file" />
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <!-- BANK SECTION -->
+
+            <div id="bankSection">
+
+
+                <div class="section-title">
+                    Bank Information
+                </div>
+
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Bank Name
+                    </label>
+
+
+                    <input class="form-control"
+                           asp-for="BankName" />
+
+                </div>
+
+
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Account Name
+                    </label>
+
+
+                    <input class="form-control"
+                           asp-for="AccountName" />
+
+                </div>
+
+
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Account No
+                    </label>
+
+
+                    <input class="form-control"
+                           asp-for="AccountNo" />
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <div class="mb-3">
+
+                <label>
+                    Remark
+                </label>
+
+
+                <textarea class="form-control"
+                          asp-for="Remark"
+                          rows="3"></textarea>
+
+
+            </div>
+
+
+
+
+            <button type="submit"
+                    class="btn btn-success px-4">
+
+                <i class="fas fa-check-circle"></i>
+
+                Complete Payment
+
+            </button>
+
+
+
+        </form>
+
 
     </div>
 
 
-
-    <div>
-
-        <label>
-            Amount
-        </label>
-
-        <input class="form-control"
-               asp-for="Amount"
-               readonly />
-
-    </div>
+</div>
 
 
 
-    <div>
 
-        <label>
-            Customer Paid
-        </label>
-
-        <input class="form-control"
-               asp-for="PaidAmount" />
-
-    </div>
+<script>
 
 
-
-    <div>
-
-        <label>
-            Payment Method
-        </label>
+    const method =
+        document.getElementById("paymentMethod");
 
 
-        <select class="form-control"
-                asp-for="PaymentMethod">
+    const cash =
+        document.getElementById("cashSection");
 
 
-            <option>
-                Cash
-            </option>
+    const digital =
+        document.getElementById("digitalSection");
 
 
-            <option>
-                Bank Transfer
-            </option>
-
-
-        </select>
-
-
-    </div>
+    const bank =
+        document.getElementById("bankSection");
 
 
 
-    <button class="btn btn-success mt-3">
+    function changePaymentType()
+    {
 
-        Complete Payment
-
-    </button>
-
+        let value = method.value;
 
 
-</form>
+        cash.style.display = "none";
+        digital.style.display = "none";
+        bank.style.display = "none";
+
+
+
+        if(value === "Cash")
+        {
+            cash.style.display = "block";
+        }
+
+
+        else if(
+            value === "KBZPay" ||
+            value === "WavePay" ||
+            value === "AYAPay" ||
+            value === "CBPay"
+        )
+        {
+            digital.style.display = "block";
+        }
+
+
+        else if(value === "BankTransfer")
+        {
+            digital.style.display = "block";
+            bank.style.display = "block";
+        }
+
+    }
+
+
+
+
+    method.addEventListener(
+        "change",
+        changePaymentType
+    );
+
+
+
+    changePaymentType();
+
+
+
+
+    // Cash Change Calculation
+
+
+    document
+    .getElementById("paidAmount")
+    .addEventListener(
+        "input",
+        function()
+        {
+
+            let amount =
+            parseFloat(
+                document.getElementById("amount").value
+            ) || 0;
+
+
+            let paid =
+            parseFloat(this.value) || 0;
+
+
+
+            document.getElementById("changeAmount").value =
+                paid - amount;
+
+
+        });
+
+
+
+</script>

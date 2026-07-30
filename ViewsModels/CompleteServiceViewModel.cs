@@ -35,6 +35,18 @@ namespace AirConServicingManagementSystem.ViewModels
 
         public List<IFormFile>? ServicePhotos { get; set; }
 
+        public List<IFormFile>? BeforePhotos { get; set; }
+
+        public List<IFormFile>? AfterPhotos { get; set; }
+
+        public List<IFormFile>? ProblemPhotos { get; set; }
+
+
+        public List<string> BeforePhotoPreviews { get; set; } = new();
+
+        public List<string> AfterPhotoPreviews { get; set; } = new();
+
+        public List<string> ProblemPhotoPreviews { get; set; } = new();
         public string? TechnicianNote { get; set; }
 
         public decimal SubTotal { get; set; }

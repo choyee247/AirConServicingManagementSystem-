@@ -43,6 +43,29 @@ public partial class Payment
 
     public bool? IsDeleted { get; set; }
 
+    [StringLength(100)]
+    public string? TransactionNo { get; set; }
+
+    [StringLength(100)]
+    public string? BankName { get; set; }
+
+    [StringLength(100)]
+    public string? AccountName { get; set; }
+
+    [StringLength(100)]
+    public string? AccountNo { get; set; }
+
+    [StringLength(500)]
+    public string? PaymentSlip { get; set; }
+
+    public int? VerifiedBy { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? VerifiedDate { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? UpdatedAt { get; set; }
+
     [ForeignKey("ServiceRecordId")]
     [InverseProperty("Payments")]
     public virtual ServiceRecord ServiceRecord { get; set; } = null!;

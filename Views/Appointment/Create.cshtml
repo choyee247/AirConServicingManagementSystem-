@@ -5,147 +5,267 @@
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
 
+
+<link rel="stylesheet" href="~/css/select2.min(css).css" />
+@* <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet" /> *@
+
 <div class="container py-4">
 
     <div class="card shadow-sm rounded-3">
+
         <div class="card-header bg-white">
+
             <h3 style="color:#2c8c99;font-weight:700;">
                 Create Appointment
             </h3>
+
             <p class="text-muted mb-0">
                 Schedule customer service visit
             </p>
+
         </div>
+
 
         <div class="card-body">
 
+
             <form asp-action="Create" method="post">
+
                 @Html.AntiForgeryToken()
+
 
                 <!-- Customer -->
                 <div class="mb-3">
-                    <label class="form-label">Customer</label>
+
+                    <label class="form-label">
+                        Customer
+                    </label>
+
+
                     <select asp-for="CustomerId"
                             id="CustomerId"
                             class="form-select"
                             required>
-                        <option value="">-- Select Customer --</option>
+
+
+                        <option value="">
+                            -- Search Customer --
+                        </option>
+
+
                         @foreach (var c in ViewBag.Customers)
                         {
                             <option value="@c.Id">
-                                @c.Name 
+
+                                @c.Name
+                                (@c.Phone)
+
                             </option>
                         }
+
+
                     </select>
+
+
                 </div>
+
+
+
+                <!-- Phone -->
                 <div class="mb-3">
 
                     <label class="form-label">
                         Phone Number
                     </label>
 
+
                     <input id="CustomerInfo"
                            class="form-control"
-                            />
+                           readonly />
 
                 </div>
+
+
+
                 <!-- Date -->
                 <div class="mb-3">
-                    <label class="form-label">Scheduled Date</label>
+
+                    <label class="form-label">
+                        Scheduled Date
+                    </label>
+
+
                     <input asp-for="ScheduledDate"
                            type="datetime-local"
                            class="form-control"
                            required />
+
                 </div>
+
+
+
 
                 <!-- Location -->
                 <div class="mb-3">
-                    <label class="form-label">Location</label>
+
+                    <label class="form-label">
+                        Location
+                    </label>
+
+
                     <input asp-for="Location"
                            id="Location"
                            class="form-control"
                            placeholder="Customer address / location"
                            required />
+
                 </div>
+
+
+
 
                 <!-- Notes -->
                 <div class="mb-3">
-                    <label class="form-label">Notes</label>
+
+                    <label class="form-label">
+                        Notes
+                    </label>
+
+
                     <textarea asp-for="Notes"
                               class="form-control"
                               rows="3"
                               placeholder="Optional details"></textarea>
+
+
                 </div>
 
-                <!-- Submit -->
+
+
+
                 <button type="submit"
                         class="btn w-100 text-white"
                         style="background:#2c8c99;">
+
                     Create Appointment
+
                 </button>
+
+
 
             </form>
 
+
         </div>
+
+
     </div>
+
+
 </div>
+
+
+
 @section Scripts
 {
+
+    <script src="~/js/select2.min.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> *@
+
     <script>
 
 
-        $("#CustomerId").change(function(){
-
-
-            var customerId = $(this).val();
-
-
-            if(customerId == "")
-            {
-                $("#Location").val("");
-                $("#CustomerInfo").val("");
-
-                return;
-            }
+        $(document).ready(function () {
 
 
 
-            $.ajax({
+            // Enable Search Dropdown
 
-                url:'/Appointment/GetCustomerInfo',
+            $("#CustomerId").select2({
 
-                type:'GET',
+                placeholder: "-- Search Customer --",
 
-                data:{
-                    id:customerId
-                },
+                allowClear: true,
+
+                width: "100%"
+
+            });
 
 
-                success:function(data)
+
+
+
+            // Customer Change Event
+
+            $("#CustomerId").on("change", function () {
+
+
+                var customerId = $(this).val();
+
+
+
+                if(customerId == "")
                 {
 
-                    if(data)
+                    $("#Location").val("");
+
+                    $("#CustomerInfo").val("");
+
+                    return;
+
+                }
+
+
+
+                $.ajax({
+
+                    url: "/Appointment/GetCustomerInfo",
+
+
+                    type: "GET",
+
+
+                    data: {
+
+                        id: customerId
+
+                    },
+
+
+                    success: function(data)
                     {
 
-                        $("#Location")
-                            .val(data.location);
+
+                        if(data)
+                        {
+
+                            $("#Location")
+                                .val(data.location);
 
 
-                        $("#CustomerInfo")
-                            .val(
-                               
-                                + data.phone
-                            );
+
+                            $("#CustomerInfo")
+                                .val(data.phone);
+
+                        }
+
+
+                    },
+
+
+                    error:function()
+                    {
+
+                        console.log(
+                            "Customer load error"
+                        );
 
                     }
 
-                },
 
+                });
 
-                error:function()
-                {
-                    console.log("Customer load error");
-                }
 
 
             });
@@ -157,4 +277,6 @@
 
 
     </script>
+
+
 }

@@ -1051,15 +1051,13 @@ public class TechnicianServiceController : Controller
 
         if (service.Status == "Completed")
         {
-
             return RedirectToAction(
                 "Create",
                 "Payment",
                 new
                 {
-                    serviceRecordId = record.Id
+                    serviceId = service.ServiceId
                 });
-
         }
 
 
@@ -1075,7 +1073,7 @@ public class TechnicianServiceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult PreviewInvoice(
+    public async Task<IActionResult> PreviewInvoiceAsync(
      CompleteServiceViewModel model)
     {
 
@@ -1094,6 +1092,14 @@ public class TechnicianServiceController : Controller
                 $"POST => {u.BrandName} | Selected:{u.IsSelected} | Qty:{u.ServiceQuantity}"
             );
         }
+        model.BeforePhotoPreviews =
+            await ConvertToBase64(model.BeforePhotos);
+
+        model.AfterPhotoPreviews =
+            await ConvertToBase64(model.AfterPhotos);
+
+        model.ProblemPhotoPreviews =
+            await ConvertToBase64(model.ProblemPhotos);
 
         model.SubTotal =
             partsTotal +
@@ -1106,6 +1112,26 @@ public class TechnicianServiceController : Controller
 
 
         return View("InvoicePreview", model);
+    }
+    private async Task<List<string>> ConvertToBase64(List<IFormFile>? files)
+    {
+        var result = new List<string>();
+
+        if (files == null)
+            return result;
+
+        foreach (var file in files)
+        {
+            using var ms = new MemoryStream();
+
+            await file.CopyToAsync(ms);
+
+            var base64 = Convert.ToBase64String(ms.ToArray());
+
+            result.Add($"data:{file.ContentType};base64,{base64}");
+        }
+
+        return result;
     }
     public async Task<IActionResult> Reminders()
     {

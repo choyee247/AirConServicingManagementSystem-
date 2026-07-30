@@ -22,7 +22,7 @@
         body {
             background: #f2f6fc;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            padding: 20px 16px;
+            /* padding: 20px 16px; */
             color: #1e293b;
             font-size: 17px;
         }
@@ -964,72 +964,7 @@
             </div>
         </div>
 
-        <!-- Recent Tasks Table -->
-       @*  <div class="card-modern" style="margin-bottom:1.8rem;">
-            <div class="flex-between" style="flex-wrap:wrap; gap:0.5rem;">
-                <div class="section-title" style="margin-bottom:0;">
-                    <i class="fas fa-history"></i> Recent Tasks
-                </div>
-                <a href="#" style="color:#2c8c99; font-weight:600; text-decoration:none; font-size:0.9rem;">
-                    <i class="fas fa-arrow-right"></i> View all
-                </a>
-            </div>
-            <div class="table-wrap">
-                <table class="table-custom">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Customer</th>
-                            <th>Location</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if ((Model.RecentTasks?.Count ?? 0) > 0)
-                        {
-                            foreach (var item in Model.RecentTasks)
-                            {
-                                <tr>
-                                    <td><strong>#AC-@item.ServiceId</strong></td>
-                                    <td>@item.Customer?.Name</td>
-                                    <td>@item.Location</td>
-                                    <td>
-                                        <span class="badge-status
-                                        @(item.Status=="Assigned" ? "badge-assigned" :
-                                          item.Status=="Pending" ? "badge-pending" :
-                                          item.Status=="In Progress" ? "badge-accepted" :
-                                          "badge-completed")">
-                                            @item.Status
-                                        </span>
-                                    </td>
-                                    <td>@item.CreatedAt.ToString("dd MMM yyyy")</td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="5" class="text-center text-muted" style="padding:0.8rem;">
-                                    No recent tasks found
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div style="margin-top:0.8rem; font-size:0.8rem; color:#5f7a88; display:flex; gap:1.2rem; flex-wrap:wrap;">
-                <span>Assigned: @(Model.RecentTasks?.Count(x => x.Status == "Assigned") ?? 0)</span>
-                <span>Pending: @(Model.RecentTasks?.Count(x => x.Status == "Pending") ?? 0)</span>
-                <span>Completed: @(Model.RecentTasks?.Count(x => x.Status == "Completed") ?? 0)</span>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div style="margin-top: 2rem; text-align: center; font-size:0.85rem; color:#6f8e9b; border-top:1px solid #dce9ef; padding-top:1.5rem;">
-            <i class="fas fa-circle" style="color:#2c8c99; font-size:0.4rem;"></i> Technician Dashboard
-        </div> *@
-
+ 
     </div>
 
     <script>

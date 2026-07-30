@@ -5,178 +5,211 @@
 }
 
 <style>
+
     :root {
-        --primary-color: #2c8c99;
+        --primary: #2c8c99;
         --primary-dark: #1a6b77;
-        --primary-light: #4ca6b3;
-        --primary-soft: rgba(44, 140, 153, 0.08);
-        --primary-opacity-10: rgba(44, 140, 153, 0.10);
+        --primary-soft: rgba(44,140,153,.10);
+        --text-dark: #1e293b;
+        --text-light: #64748b;
     }
 
-    /* ----- Base ----- */
+    /* =========================
+           Base
+        ========================= */
     body {
-        font-size: 17px;
+        font-size: 16px;
+        background: #f8fafc;
     }
 
     .container {
-        padding: 12px 10px !important;
         max-width: 100% !important;
+        padding: 20px 15px !important;
     }
 
-    /* ----- Page Header ----- */
+    /* =========================
+           Header
+        ========================= */
     .page-header {
-        padding: 1.2rem 1.5rem;
         background: white;
-        border-radius: 20px;
-        border: 1px solid rgba(44, 140, 153, 0.06);
-        box-shadow: 0 4px 20px rgba(44, 140, 153, 0.06);
-        margin-bottom: 1.5rem;
+        border-radius: 18px;
+        padding: 18px 22px;
         display: flex;
-        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        gap: 0.8rem;
+        gap: 15px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(44,140,153,.08);
+        box-shadow: 0 5px 18px rgba(0,0,0,.05);
+        flex-wrap: wrap;
     }
 
         .page-header h2 {
-            font-size: 1.8rem;
+            color: var(--primary);
+            font-size: 28px;
             font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 0.2rem;
+            margin: 0;
         }
 
             .page-header h2 i {
-                margin-right: 0.6rem;
+                margin-right: 10px;
             }
 
         .page-header p {
-            font-size: 0.95rem;
+            margin: 5px 0 0;
             color: #6c757d;
-            margin-bottom: 0;
+            font-size: 14px;
         }
 
-        .page-header .badge-count {
-            background: var(--primary-opacity-10);
-            color: var(--primary-color);
-            padding: 0.3rem 1rem;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
+    .badge-count {
+        background: var(--primary-soft);
+        color: var(--primary);
+        padding: 8px 18px;
+        border-radius: 30px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
 
-    /* ----- Card ----- */
+    /* =========================
+           Main Card
+        ========================= */
     .service-card {
+        border: none !important;
         border-radius: 20px !important;
-        border: 1px solid rgba(44, 140, 153, 0.06) !important;
-        box-shadow: 0 4px 20px rgba(44, 140, 153, 0.06) !important;
         overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,.06) !important;
     }
 
         .service-card .card-header {
-            background: white !important;
-            border-bottom: 1px solid rgba(44, 140, 153, 0.06) !important;
-            padding: 0.8rem 1.2rem !important;
+            background: white;
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(0,0,0,.05);
         }
 
             .service-card .card-header h5 {
-                font-size: 1.1rem;
-                font-weight: 600;
-                color: var(--primary-color);
-                margin-bottom: 0;
+                margin: 0;
+                color: var(--primary);
+                font-size: 18px;
+                font-weight: 700;
             }
 
-    /* ----- Table ----- */
+    /* =========================
+           Table
+        ========================= */
     .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        padding: 0;
     }
 
     .table-custom {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.95rem;
+        background: white;
         min-width: 600px;
-        margin-bottom: 0;
     }
 
         .table-custom thead th {
-            background: var(--primary-opacity-10);
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 0.8rem;
-            padding: 0.8rem 0.8rem;
-            border-bottom: 2px solid rgba(44, 140, 153, 0.08);
+            background: rgba(44,140,153,.08);
+            color: var(--primary);
+            padding: 14px 15px;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: .3px;
             white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .table-custom tbody td {
-            padding: 0.7rem 0.8rem;
+            padding: 14px 15px;
+            border-bottom: 1px solid #eef2f7;
+            color: var(--text-dark);
+            font-size: 14px;
             vertical-align: middle;
-            border-bottom: 1px solid rgba(44, 140, 153, 0.06);
-            font-size: 0.9rem;
         }
 
-        .table-custom tbody tr:hover {
-            background: var(--primary-opacity-10);
-            transition: background 0.2s;
+        .table-custom tbody tr {
+            transition: .2s;
         }
 
-    /* ----- Badges ----- */
+            .table-custom tbody tr:hover {
+                background: rgba(44,140,153,.05);
+            }
+
+    /* Location */
+    .location-text {
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* =========================
+           Status
+        ========================= */
     .badge-status {
-        padding: 0.25rem 0.9rem;
-        border-radius: 40px;
-        font-size: 0.7rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 12px;
         font-weight: 600;
-        display: inline-block;
         white-space: nowrap;
     }
 
     .badge-pending {
-        background: #fef3d7;
-        color: #8a6d0b;
+        background: #fff3cd;
+        color: #856404;
     }
 
     .badge-progress {
-        background: #cce5ff;
-        color: #004085;
+        background: #cfe8ff;
+        color: #075985;
     }
 
     .badge-completed {
-        background: #d4edda;
-        color: #0f6b3a;
+        background: #d1fae5;
+        color: #047857;
     }
 
     .badge-other {
-        background: #e9ecef;
-        color: #495057;
+        background: #e5e7eb;
+        color: #374151;
     }
 
-    /* ----- Buttons ----- */
+    /* =========================
+           Buttons
+        ========================= */
     .btn-group-actions {
         display: flex;
-        gap: 4px;
+        gap: 6px;
         flex-wrap: wrap;
     }
 
     .btn-sm-custom {
-        padding: 0.3rem 0.8rem;
-        font-size: 0.75rem;
-        border-radius: 8px;
         border: none;
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 12px;
         font-weight: 600;
-        transition: 0.2s;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
+        gap: 5px;
+        transition: .2s;
         white-space: nowrap;
+        cursor: pointer;
     }
 
+        .btn-sm-custom:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
     .btn-start-service {
-        background: var(--primary-color);
+        background: var(--primary);
         color: white;
     }
 
@@ -186,355 +219,348 @@
         }
 
     .btn-fill-ac {
-        background: #28a745;
+        background: #22c55e;
         color: white;
     }
 
         .btn-fill-ac:hover {
-            background: #1e7e34;
+            background: #16a34a;
             color: white;
         }
 
     .btn-edit-ac {
-        background: #007bff;
+        background: #3b82f6;
         color: white;
     }
 
         .btn-edit-ac:hover {
-            background: #0069d9;
+            background: #2563eb;
             color: white;
         }
 
     .btn-another-ac {
-        background: #ffc107;
-        color: #1e2a32;
+        background: #facc15;
+        color: #333;
     }
 
         .btn-another-ac:hover {
-            background: #e0a800;
-            color: #1e2a32;
+            background: #eab308;
+            color: #333;
         }
 
     .btn-view-service {
-        background: #6c757d;
+        background: #64748b;
         color: white;
     }
 
         .btn-view-service:hover {
-            background: #5a6268;
+            background: #475569;
             color: white;
         }
 
-    /* ----- Mobile Card View ----- */
-    .mobile-service-card {
-        background: white;
-        border-radius: 16px;
-        padding: 0.8rem 0.7rem;
-        margin-bottom: 0.6rem;
-        border: 1px solid rgba(44, 140, 153, 0.06);
-        box-shadow: 0 2px 8px rgba(44, 140, 153, 0.04);
-        transition: 0.2s;
+    /* Payment buttons */
+    .btn-payment-success {
+        background: #22c55e;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: .2s;
+        white-space: nowrap;
+        cursor: pointer;
     }
 
-        .mobile-service-card:hover {
-            box-shadow: 0 4px 16px rgba(44, 140, 153, 0.08);
-        }
-
-        .mobile-service-card .mobile-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.2rem 0;
-            flex-wrap: wrap;
-            gap: 0.2rem;
-        }
-
-        .mobile-service-card .mobile-label {
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: #5f7a88;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            min-width: 65px;
-        }
-
-        .mobile-service-card .mobile-value {
-            font-size: 0.85rem;
-            color: #1e293b;
-            font-weight: 500;
-            word-break: break-word;
-        }
-
-        .mobile-service-card .mobile-actions {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            margin-top: 0.4rem;
-            padding-top: 0.4rem;
-            border-top: 1px solid rgba(44, 140, 153, 0.06);
-        }
-
-        .mobile-service-card .btn-sm-mobile {
-            padding: 0.2rem 0.6rem;
-            font-size: 0.65rem;
-            border-radius: 6px;
-            border: none;
-            font-weight: 600;
+        .btn-payment-success:hover {
+            background: #16a34a;
+            color: white;
+            transform: translateY(-2px);
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.2rem;
-            white-space: nowrap;
         }
 
-    /* ----- Empty State ----- */
+    .btn-payment {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: .2s;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+        .btn-payment:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+    /* =========================
+           Empty State
+        ========================= */
     .empty-state {
         text-align: center;
-        padding: 3rem 1rem;
+        padding: 50px 20px;
     }
 
         .empty-state i {
-            font-size: 4rem;
-            color: var(--primary-color);
-            opacity: 0.2;
+            font-size: 55px;
+            color: var(--primary);
+            opacity: .25;
         }
 
         .empty-state h4 {
-            font-size: 1.3rem;
+            color: var(--primary);
             font-weight: 700;
-            color: var(--primary-color);
-            margin-top: 1rem;
+            margin-top: 15px;
         }
 
-        .empty-state p {
-            font-size: 0.95rem;
-            color: #6c757d;
-            margin-bottom: 1.5rem;
+    /* =========================
+           Mobile Card View
+        ========================= */
+    .mobile-view {
+        display: none;
+    }
+
+    .mobile-service-card {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 12px;
+        border: 1px solid rgba(44,140,153,.08);
+        box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        transition: .2s;
+    }
+
+        .mobile-service-card:last-child {
+            margin-bottom: 0;
         }
 
-    /* ----- Responsive ----- */
+        .mobile-service-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,.08);
+        }
+
+    .mobile-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+        .mobile-row:last-of-type {
+            border-bottom: none;
+        }
+
+    .mobile-label {
+        font-size: 12px;
+        color: var(--text-light);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .mobile-value {
+        font-size: 14px;
+        color: var(--text-dark);
+        text-align: right;
+        word-break: break-word;
+        max-width: 60%;
+    }
+
+    .mobile-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+        padding-top: 10px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-sm-mobile {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: .2s;
+        cursor: pointer;
+        flex: 1;
+        justify-content: center;
+        min-width: 80px;
+    }
+
+        .btn-sm-mobile:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+    /* =========================
+           Responsive Breakpoints
+        ========================= */
+
+    /* Tablet */
     @@media (max-width: 992px) {
-        .container
-
-    {
-        padding: 10px 8px !important;
-    }
-
-    .page-header h2 {
-        font-size: 1.5rem;
-    }
-
-    .page-header p {
-        font-size: 0.85rem;
-    }
-
-    .table-custom {
-        font-size: 0.85rem;
-        min-width: 550px;
-    }
+        .page-header h2 {
+            font-size: 22px;
+        }
 
         .table-custom thead th {
-            font-size: 0.7rem;
-            padding: 0.6rem 0.6rem;
+            padding: 12px;
+            font-size: 12px;
         }
 
         .table-custom tbody td {
-            padding: 0.5rem 0.6rem;
-            font-size: 0.8rem;
+            padding: 12px;
+            font-size: 13px;
         }
 
-    .btn-sm-custom {
-        font-size: 0.65rem;
-        padding: 0.2rem 0.6rem;
+        .btn-sm-custom {
+            font-size: 11px;
+            padding: 6px 10px;
+        }
     }
 
-    }
-
+    /* Mobile */
     @@media (max-width: 768px) {
-        body
-
-    {
-        font-size: 16px;
-    }
-
-    .container {
-        padding: 8px 4px !important;
-    }
-
-    .page-header {
-        padding: 0.8rem 1rem;
-        border-radius: 16px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-        .page-header h2 {
-            font-size: 1.2rem;
+        .container {
+            padding: 10px 8px !important;
         }
 
-        .page-header p {
-            font-size: 0.75rem;
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 15px;
+            gap: 10px;
         }
 
-        .page-header .badge-count {
-            font-size: 0.75rem;
-            padding: 0.2rem 0.8rem;
-        }
+            .page-header h2 {
+                font-size: 20px;
+            }
 
-    .service-card {
-        border-radius: 16px !important;
-    }
+            .page-header p {
+                font-size: 13px;
+            }
+
+        .badge-count {
+            align-self: flex-start;
+            font-size: 13px;
+        }
 
         .service-card .card-header {
-            padding: 0.6rem 0.8rem !important;
+            padding: 15px;
         }
 
             .service-card .card-header h5 {
-                font-size: 0.95rem;
+                font-size: 16px;
             }
 
-    /* Hide desktop table on mobile */
-    .desktop-table {
-        display: none !important;
+        .desktop-table {
+            display: none !important;
+        }
+
+        .mobile-view {
+            display: block !important;
+            padding: 12px !important;
+        }
+
+        .btn-sm-mobile {
+            font-size: 11px;
+            padding: 7px 10px;
+            flex: 1 1 auto;
+            min-width: 70px;
+        }
     }
 
-    /* Show mobile cards */
-    .mobile-view {
-        display: block !important;
-    }
-
-    }
-
-    @@media (min-width: 769px) {
-        .mobile-view
-
-    {
-        display: none !important;
-    }
-
-    .desktop-table {
-        display: block !important;
-    }
-
-    }
-
+    /* Small Mobile */
     @@media (max-width: 480px) {
-        .container
-
-    {
-        padding: 4px 2px !important;
-    }
-
-    .page-header {
-        padding: 0.5rem 0.6rem;
-        border-radius: 12px;
-    }
-
-        .page-header h2 {
-            font-size: 1rem;
+        .container {
+            padding: 6px 4px !important;
         }
 
-            .page-header h2 i {
-                font-size: 0.9rem;
+        .page-header {
+            padding: 12px;
+            border-radius: 14px;
+        }
+
+            .page-header h2 {
+                font-size: 18px;
             }
 
-        .page-header p {
-            font-size: 0.65rem;
+        .badge-count {
+            font-size: 12px;
+            padding: 6px 14px;
         }
 
-        .page-header .badge-count {
-            font-size: 0.65rem;
-            padding: 0.15rem 0.6rem;
+        .mobile-service-card {
+            padding: 12px;
         }
 
-    .mobile-service-card {
-        padding: 0.5rem 0.4rem;
-        border-radius: 12px;
+        .mobile-row {
+            padding: 5px 0;
+        }
+
+        .mobile-value {
+            font-size: 13px;
+            max-width: 55%;
+        }
+
+        .mobile-actions {
+            gap: 4px;
+        }
+
+        .btn-sm-mobile {
+            font-size: 10px;
+            padding: 6px 8px;
+            min-width: 60px;
+        }
+
+        .badge-status {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
     }
 
-        .mobile-service-card .mobile-label {
-            font-size: 0.55rem;
-            min-width: 55px;
+    /* Touch-friendly improvements */
+    @@media (hover: none) {
+        .btn-sm-custom:hover,
+        .btn-sm-mobile:hover,
+        .btn-payment:hover,
+        .btn-payment-success:hover {
+            transform: none;
         }
 
-        .mobile-service-card .mobile-value {
-            font-size: 0.7rem;
+        .table-custom tbody tr:hover {
+            background: transparent;
         }
 
-        .mobile-service-card .btn-sm-mobile {
-            font-size: 0.55rem;
-            padding: 0.15rem 0.4rem;
+        .btn-sm-custom,
+        .btn-sm-mobile,
+        .btn-payment,
+        .btn-payment-success {
+            min-height: 44px;
         }
-
-    .empty-state i {
-        font-size: 3rem;
     }
-
-    .empty-state h4 {
-        font-size: 1rem;
-    }
-
-    .empty-state p {
-        font-size: 0.8rem;
-    }
-
-    }
-
-    /* ----- Dark Mode ----- */
-    [data-bs-theme="dark"] .page-header {
-        background: #2d2d2d !important;
-        border-color: #495057 !important;
-    }
-
-        [data-bs-theme="dark"] .page-header p {
-            color: #a0a0a0 !important;
-        }
-
-    [data-bs-theme="dark"] .service-card {
-        background: #2d2d2d !important;
-        border-color: #495057 !important;
-    }
-
-        [data-bs-theme="dark"] .service-card .card-header {
-            background: #2d2d2d !important;
-            border-color: #495057 !important;
-        }
-
-    [data-bs-theme="dark"] .table-custom {
-        color: #e0e0e0;
-    }
-
-        [data-bs-theme="dark"] .table-custom thead th {
-            background: rgba(44, 140, 153, 0.08);
-            border-color: #495057;
-            color: rgba(44, 140, 153, 0.9);
-        }
-
-        [data-bs-theme="dark"] .table-custom tbody td {
-            border-color: #495057;
-        }
-
-        [data-bs-theme="dark"] .table-custom tbody tr:hover {
-            background: rgba(44, 140, 153, 0.10);
-        }
-
-    [data-bs-theme="dark"] .mobile-service-card {
-        background: #2d2d2d !important;
-        border-color: #495057 !important;
-    }
-
-        [data-bs-theme="dark"] .mobile-service-card .mobile-value {
-            color: #e0e0e0;
-        }
-
-        [data-bs-theme="dark"] .mobile-service-card .mobile-label {
-            color: #a0a0a0;
-        }
 </style>
 
-<div class="container py-2 py-md-4">
+<div class="container">
 
-    <!-- Page Header -->
     <div class="page-header">
         <div>
             <h2>
@@ -542,16 +568,13 @@
                 My Services
             </h2>
             <p>
-                <i class="fas fa-list me-1"></i>
                 Manage your assigned service requests
             </p>
         </div>
-        <div>
-            <span class="badge-count">
-                <i class="fas fa-clipboard-list me-1"></i>
-                @Model.Count() Services
-            </span>
-        </div>
+        <span class="badge-count">
+            <i class="fas fa-clipboard-list me-1"></i>
+            @Model.Count() Services
+        </span>
     </div>
 
     <!-- Services Table -->
@@ -570,7 +593,7 @@
                 <table class="table-custom">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>Customer</th>
                             <th>Location</th>
                             <th>Status</th>
@@ -580,19 +603,21 @@
                     <tbody>
                         @if (Model.Any())
                         {
+                            int counter = 1;
                             @foreach (var item in Model)
                             {
                                 <tr>
                                     <td>
-                                        <strong>#@item.ServiceRequest.ServiceId</strong>
+                                        <strong>@counter</strong>
                                     </td>
+
                                     <td>
-                                        <i class="fas fa-user me-1" style="color:var(--primary-color);"></i>
+                                        <i class="fas fa-user me-1" style="color:var(--primary);"></i>
                                         @item.ServiceRequest.Customer?.Name
                                     </td>
                                     <td>
-                                        <i class="fas fa-map-marker-alt me-1" style="color:var(--primary-color);"></i>
-                                        @item.ServiceRequest.Location
+                                        <i class="fas fa-map-marker-alt me-1" style="color:var(--primary);"></i>
+                                        <span class="location-text">@item.ServiceRequest.Location</span>
                                     </td>
                                     <td>
                                         @if (item.ServiceRequest.Status == "Pending")
@@ -622,7 +647,6 @@
                                     </td>
                                     <td>
                                         <div class="btn-group-actions">
-
                                             @if (item.ServiceRequest.Status == "Pending")
                                             {
                                                 <a asp-action="Edit"
@@ -635,63 +659,37 @@
 
                                             @if (item.ServiceRequest.Status == "In Progress")
                                             {
-
                                                 var acCount = item.ServiceRequest.AirConUnits?.Count ?? 0;
-
 
                                                 if (acCount == 0)
                                                 {
-                                                    <!-- FIRST TIME ADD AC -->
-
                                                     <a asp-controller="AirConUnit"
                                                        asp-action="Create"
                                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        class="btn-sm-custom btn-fill-ac">
-
                                                         <i class="fas fa-plus-circle"></i>
-
                                                         Fill AC Detail
-
                                                     </a>
-
                                                 }
                                                 else
                                                 {
-
-                                                    <!-- VIEW / EDIT EXISTING AC -->
-
-
                                                     <a asp-controller="AirConUnit"
                                                        asp-action="Index"
                                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        class="btn-sm-custom btn-edit-ac">
-
                                                         <i class="fas fa-edit"></i>
-
                                                         View / Edit AC
-
                                                     </a>
-
-
-
-                                                    <!-- ADD MORE AC -->
 
                                                     <a asp-controller="AirConUnit"
                                                        asp-action="Create"
                                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        asp-route-isAnother="true"
                                                        class="btn-sm-custom btn-another-ac">
-
-
                                                         <i class="fas fa-plus"></i>
-
                                                         Another AC
-
                                                     </a>
-
-
                                                 }
-
                                             }
 
                                             @if (item.ServiceRequest.Status == "Completed")
@@ -703,11 +701,32 @@
                                                     <i class="fas fa-eye"></i>
                                                     View Service
                                                 </a>
-                                            }
 
+                                                if (item.ServiceRequest.PaymentStatus == "Paid")
+                                                {
+                                                    <a asp-controller="Payment"
+                                                       asp-action="Invoice"
+                                                       asp-route-id="@item.ServiceRequest.ServiceRecords?.FirstOrDefault()?.Payments?.FirstOrDefault()?.PaymentId"
+                                                       class="btn-payment-success">
+                                                        <i class="fas fa-file-invoice"></i>
+                                                        Paid
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a asp-controller="Payment"
+                                                       asp-action="Create"
+                                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
+                                                       class="btn-payment">
+                                                        <i class="fas fa-money-bill-wave"></i>
+                                                        Payment
+                                                    </a>
+                                                }
+                                            }
                                         </div>
                                     </td>
                                 </tr>
+                                counter++;
                             }
                         }
                         else
@@ -739,7 +758,7 @@
                         <div class="mobile-row">
                             <div>
                                 <span class="mobile-label">ID</span>
-                                <span class="mobile-value fw-bold" style="color:var(--primary-color);">
+                                <span class="mobile-value fw-bold" style="color:var(--primary);">
                                     #@item.ServiceRequest.ServiceId
                                 </span>
                             </div>
@@ -747,25 +766,25 @@
                                 <span class="mobile-label">Status</span>
                                 @if (item.ServiceRequest.Status == "Pending")
                                 {
-                                    <span class="badge-status badge-pending" style="font-size:0.6rem;">
-                                        Pending
+                                    <span class="badge-status badge-pending" style="font-size:0.65rem;">
+                                        <i class="fas fa-clock me-1"></i>Pending
                                     </span>
                                 }
                                 else if (item.ServiceRequest.Status == "In Progress")
                                 {
-                                    <span class="badge-status badge-progress" style="font-size:0.6rem;">
-                                        In Progress
+                                    <span class="badge-status badge-progress" style="font-size:0.65rem;">
+                                        <i class="fas fa-spinner fa-spin me-1"></i>In Progress
                                     </span>
                                 }
                                 else if (item.ServiceRequest.Status == "Completed")
                                 {
-                                    <span class="badge-status badge-completed" style="font-size:0.6rem;">
-                                        Completed
+                                    <span class="badge-status badge-completed" style="font-size:0.65rem;">
+                                        <i class="fas fa-check-circle me-1"></i>Completed
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge-status badge-other" style="font-size:0.6rem;">
+                                    <span class="badge-status badge-other" style="font-size:0.65rem;">
                                         @item.ServiceRequest.Status
                                     </span>
                                 }
@@ -776,7 +795,7 @@
                         <div class="mobile-row">
                             <span class="mobile-label">Customer</span>
                             <span class="mobile-value">
-                                <i class="fas fa-user me-1" style="color:var(--primary-color);"></i>
+                                <i class="fas fa-user me-1" style="color:var(--primary);"></i>
                                 @item.ServiceRequest.Customer?.Name
                             </span>
                         </div>
@@ -785,14 +804,13 @@
                         <div class="mobile-row">
                             <span class="mobile-label">Location</span>
                             <span class="mobile-value">
-                                <i class="fas fa-map-marker-alt me-1" style="color:var(--primary-color);"></i>
+                                <i class="fas fa-map-marker-alt me-1" style="color:var(--primary);"></i>
                                 @item.ServiceRequest.Location
                             </span>
                         </div>
 
                         <!-- Actions -->
                         <div class="mobile-actions">
-
                             @if (item.ServiceRequest.Status == "Pending")
                             {
                                 <a asp-action="Edit"
@@ -809,7 +827,6 @@
 
                                 if (acCount == 0)
                                 {
-                                    <!-- No AC yet -->
                                     <a asp-controller="AirConUnit"
                                        asp-action="Create"
                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
@@ -820,7 +837,6 @@
                                 }
                                 else
                                 {
-                                    <!-- View / Edit AirCons -->
                                     <a asp-controller="AirConUnit"
                                        asp-action="Index"
                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
@@ -829,7 +845,6 @@
                                         View / Edit AC
                                     </a>
 
-                                    <!-- Add Another AirCon -->
                                     <a asp-controller="AirConUnit"
                                        asp-action="Create"
                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
@@ -850,8 +865,28 @@
                                     <i class="fas fa-eye"></i>
                                     View
                                 </a>
-                            }
 
+                                if (item.ServiceRequest.PaymentStatus == "Paid")
+                                {
+                                    <a asp-controller="Payment"
+                                       asp-action="Invoice"
+                                       asp-route-id="@item.ServiceRequest.ServiceRecords?.FirstOrDefault()?.Payments?.FirstOrDefault()?.PaymentId"
+                                       class="btn-sm-mobile btn-payment-success">
+                                        <i class="fas fa-file-invoice"></i>
+                                        Paid
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Payment"
+                                       asp-action="Create"
+                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
+                                       class="btn-sm-mobile btn-payment">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        Payment
+                                    </a>
+                                }
+                            }
                         </div>
 
                     </div>

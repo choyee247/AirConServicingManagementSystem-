@@ -5,9 +5,15 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews();
 
-builder.Services.AddControllers()
+//builder.Services.AddControllers()
+//.AddJsonOptions(options =>
+//{
+//    options.JsonSerializerOptions.ReferenceHandler =
+//        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+//});
+builder.Services.AddControllersWithViews()
 .AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler =
@@ -20,7 +26,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-builder.Services.AddSession();
+//builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 
 // Register DBContext

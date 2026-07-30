@@ -302,7 +302,7 @@
             }
 
         /* responsive */
-        @@media (max-width: 768px) {
+       
             .invoice-header
 
         {
@@ -330,6 +330,37 @@
         .info-card {
             padding: 0.7rem 0.8rem;
         }
+            /* Invoice Photo Gallery */
+
+            .photo-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: 10px;
+            }
+
+
+            .invoice-photo {
+                width: 140px !important;
+                height: 140px !important;
+                max-width: 140px !important;
+                max-height: 140px !important;
+                object-fit: cover !important;
+                border-radius: 10px;
+                border: 1px solid #ddd;
+                cursor: pointer;
+                transition: .3s;
+            }
+
+
+                .invoice-photo:hover {
+                    transform: scale(1.08);
+                }
+
+            .photo-item {
+                width: 140px;
+                height: 140px;
+            }
 
         .table {
             font-size: 0.75rem;
@@ -644,7 +675,66 @@
                         </table>
                     </div>
                 }
+                @if (Model.BeforePhotoPreviews.Any())
+                {
+                    <h5>Before Service</h5>
 
+                    <div class="photo-grid">
+
+                        @foreach (var photo in Model.BeforePhotoPreviews)
+                        {
+                            <div class="photo-item">
+
+                                <img src="@photo"
+                                     class="invoice-photo"
+                                     alt="Service Photo"
+                                     onclick="openImage('@photo')" />
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                @if (Model.AfterPhotoPreviews.Any())
+                {
+                    <h5>After Service</h5>
+
+                    <div class="photo-grid">
+
+                        @foreach (var photo in Model.AfterPhotoPreviews)
+                        {
+                            <div class="photo-item">
+
+                                <img src="@photo"
+                                     class="invoice-photo"
+                                     alt="Service Photo"
+                                     onclick="openImage('@photo')" />
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                @if (Model.ProblemPhotoPreviews.Any())
+                {
+                    <h5>Problem Photos</h5>
+
+                    <div class="photo-grid">
+
+                        @foreach (var photo in Model.ProblemPhotoPreviews)
+                        {
+                            <div class="photo-item">
+
+                                <img src="@photo"
+                                     class="invoice-photo"
+                                     alt="Service Photo"
+                                     onclick="openImage('@photo')" />
+
+                            </div>
+                        }
+
+                    </div>
+                }
                 <!-- Total -->
                 <div class="total-box">
                     <table>
@@ -720,6 +810,7 @@
                         <input type="hidden" name="Expenses[@i].ExpenseName" value="@Model.Expenses[i].Description" />
                         <input type="hidden" name="Expenses[@i].Amount" value="@Model.Expenses[i].Amount" />
                     }
+                 
 
                     <div class="action-bar">
                         <button type="button" onclick="history.back()" class="btn btn-secondary">
@@ -734,5 +825,59 @@
             </div><!-- /invoice-body -->
         </div><!-- /invoice-card -->
     </div><!-- /invoice-wrapper -->
+    <!-- Image Preview Modal -->
+
+    <div id="imageModal"
+         style="
+     display:none;
+     position:fixed;
+     z-index:9999;
+     left:0;
+     top:0;
+     width:100%;
+     height:100%;
+     background:rgba(0,0,0,.8);
+     justify-content:center;
+     align-items:center;">
+
+
+        <span onclick="closeImage()"
+              style="
+          position:absolute;
+          top:20px;
+          right:40px;
+          font-size:40px;
+          color:white;
+          cursor:pointer;">
+            ×
+        </span>
+
+
+        <img id="modalImage"
+             style="
+         max-width:90%;
+         max-height:90%;
+         border-radius:15px;" />
+
+    </div>
+
+
+    <script>
+
+        function openImage(src)
+        {
+            document.getElementById("imageModal").style.display="flex";
+
+            document.getElementById("modalImage").src = src;
+        }
+
+
+        function closeImage()
+        {
+            document.getElementById("imageModal").style.display="none";
+        }
+
+
+    </script>
 </body>
 </html>
