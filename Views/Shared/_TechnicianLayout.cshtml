@@ -311,7 +311,8 @@
         <ul class="nav-menu">
 
             <li>
-                <a href="/TechnicianService/Dashboard" class="nav-link">
+                <a href="@Url.Action("Dashboard", "TechnicianService")" @* href="/TechnicianService/Dashboard"  *@
+                class="nav-link">
                     <i class="fas fa-home"></i>
                     <span class="nav-text">Dashboard</span>
                 </a>
@@ -366,13 +367,13 @@
                 </ul>
             </li>
             <li>
-                <a href="/Appointment/Index" class="nav-link">
+                <a href="@Url.Action("Index", "Appointment")" @* href="/Appointment/Index" *@ class="nav-link">
                     <i class="fas fa-calendar-check"></i>
                     <span class="nav-text">Appointments</span>
                 </a>
             </li>
             <li>
-                <a href="/TechnicianService/Assigned" class="nav-link">
+                <a href="@Url.Action("Assigned", "TechnicianService")" @* href="/TechnicianService/Assigned" *@ class="nav-link">
                     <i class="fas fa-clipboard-list"></i>
                     <span class="nav-text">Assigned Jobs</span>
                 </a>
@@ -457,10 +458,15 @@
                 </a>
             </li> *@
             <li>
-                <a href="/Technicians/Profile" class="nav-link">
+                <a href="@Url.Action("Profile", "Technicians")" class="nav-link">
                     <i class="fa-solid fa-user-gear"></i>
                     <span class="nav-text">My Profile</span>
                 </a>
+
+                @* <a href="/Technicians/Profile" class="nav-link">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span class="nav-text">My Profile</span>
+                </a> *@
             </li>
            
         </ul>
