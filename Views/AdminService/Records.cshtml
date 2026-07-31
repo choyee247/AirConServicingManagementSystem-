@@ -4,133 +4,177 @@
     ViewData["Title"] = "Service Records";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
+
 <style>
+
     :root {
         --theme: #2c8c99;
+        --theme-dark: #24737d;
+        --bg: #f5f8fb;
+        --card-radius: 18px;
     }
 
     body {
-        background: #f5f8fb;
+        background: var(--bg);
+    }
+
+    .page-title {
+        color: var(--theme);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+        color: #6c757d;
+        font-size: .95rem;
+    }
+
+    .modern-card {
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 .25rem 1rem rgba(0,0,0,.08);
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 18px;
+        background: #fff;
+        transition: .3s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(44,140,153,.12);
+        color: var(--theme);
+        font-size: 24px;
+    }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--theme);
+    }
+
+    .search-card {
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 .2rem .8rem rgba(0,0,0,.08);
     }
 
     .modern-input {
         border-radius: 12px;
-        padding: 12px;
-        border: 1px solid #ddd;
+        height: 50px;
+        border: 1px solid #d9d9d9;
+        transition: .25s;
     }
 
         .modern-input:focus {
             border-color: var(--theme);
-            box-shadow: 0 0 0 .15rem rgba(44,140,153,.2);
+            box-shadow: 0 0 0 .15rem rgba(44,140,153,.18);
         }
 
     .btn-theme {
         background: var(--theme);
         color: white;
+        height: 50px;
         border-radius: 12px;
-        padding: 10px;
-    }
-
-        .btn-theme:hover {
-            background: #257681;
-            color: white;
-        }
-
-    .modern-table thead {
-        background: #f8f9fa;
-    }
-
-    .modern-table th {
-        font-weight: 700;
-        padding: 18px;
-    }
-
-    .modern-table td {
-        padding: 18px;
-        vertical-align: middle;
-    }
-
-    .modern-table tbody tr {
+        font-weight: 600;
         transition: .25s;
     }
 
-        .modern-table tbody tr:hover {
-            background: #eef9fa;
-            transform: scale(1.002);
+        .btn-theme:hover {
+            background: var(--theme-dark);
+            color: #fff;
         }
 
-    .badge-status-success {
-        background: #d4edda;
-        color: #198754;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-weight: 600;
-    }
-
-    .badge-status-warning {
-        background: #fff3cd;
-        color: #856404;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-weight: 600;
-    }
-
-    .btn-detail {
-        background: #2c8c99;
-        color: white;
-        border-radius: 10px;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-delete {
-        background: #dc3545;
-        color: white;
-        border-radius: 10px;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .card {
+    .table-card {
+        border: none;
         border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 .25rem 1rem rgba(0,0,0,.08);
     }
+
+    .table-header {
+        background: var(--theme);
+        color: white;
+        padding: 18px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    @@media(max-width:991px) {
+
+        .page-title {
+            font-size: 26px;
+        }
+
+        .stat-card {
+            margin-top: 20px;
+        }
+    }
+
 </style>
+
 <div class="container-fluid py-4">
 
-    <div class="row mb-4">
+    <!-- HEADER -->
 
-        <div class="col-md-8">
+    <div class="row align-items-center mb-4">
 
-            <h2 class="fw-bold mb-1" style="color:#2c8c99;">
+        <div class="col-lg-8">
+
+            <h2 class="page-title">
+
                 <i class="fas fa-history me-2"></i>
+
                 Service Records
+
             </h2>
 
-            <p class="text-muted mb-0">
-                View completed maintenance history and service reports
-            </p>
+            <div class="page-subtitle">
+
+                View completed maintenance history and service reports.
+
+            </div>
 
         </div>
 
-        <div class="col-md-4">
+        <div class="col-lg-4">
 
-            <div class="card border-0 shadow-sm rounded-4">
+            <div class="card stat-card">
 
-                <div class="card-body text-center">
+                <div class="card-body d-flex align-items-center">
 
-                    <h3 class="fw-bold mb-0 text-success">
-                        @Model.Count()
-                    </h3>
+                    <div class="stat-icon">
 
-                    <small class="text-muted">
-                        Total Records
-                    </small>
+                        <i class="fas fa-tools"></i>
+
+                    </div>
+
+                    <div class="ms-3">
+
+                        <div class="stat-number">
+
+                            @Model.Count()
+
+                        </div>
+
+                        <div class="text-muted">
+
+                            Total Records
+
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -140,26 +184,29 @@
 
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+    <!-- SEARCH -->
+
+    <div class="card search-card mb-4">
 
         <div class="card-body">
 
-            <form method="get" asp-action="Records">
+            <form method="get"
+                  asp-action="Records">
 
-                <div class="row g-3">
+                <div class="row g-3 align-items-center">
 
-                    <div class="col-md-8">
+                    <div class="col-lg-9 col-md-8 col-12">
 
                         <input type="text"
                                name="search"
                                value="@Context.Request.Query["search"]"
                                class="form-control modern-input"
-                               placeholder="Search Customer, Phone, Address, State, Township..." />
+                               placeholder="Search Customer, Phone, Technician, State, Township..." />
 
                     </div>
 
-
-                    <div class="col-md-4">
+                    <div class="col-lg-3 col-md-4 col-12">
 
                         <button class="btn btn-theme w-100">
 
@@ -171,7 +218,6 @@
 
                     </div>
 
-
                 </div>
 
             </form>
@@ -180,42 +226,55 @@
 
     </div>
 
-    <div class="card border-0 shadow rounded-4 overflow-hidden">
 
-        <div class="card-header border-0 text-white"
-             style="background:#2c8c99;">
+    <!-- TABLE CARD -->
 
-            <h5 class="mb-0">
+    <div class="card table-card">
 
-                <i class="fas fa-tools me-2"></i>
+        <div class="table-header">
 
-                Completed Services
+            <i class="fas fa-clipboard-check me-2"></i>
 
-            </h5>
+            Completed Service Records
 
         </div>
+        <!-- DESKTOP TABLE -->
 
-        <div class="table-responsive">
+        <div class="table-responsive d-none d-lg-block">
 
-            <table class="table modern-table align-middle mb-0">
+            <table class="table align-middle mb-0">
 
-                <thead>
+                <thead class="table-light">
 
                     <tr>
 
-                        <th>Customer</th>
+                        <th width="60">
+                            #
+                        </th>
 
-                        <th>Technician</th>
+                        <th>
+                            Customer
+                        </th>
 
-                        <th>Air Conditioner</th>
+                        <th>
+                            Technician
+                        </th>
 
-                        <th>Service Date</th>
+                        <th>
+                            Air Conditioner
+                        </th>
 
-                        <th>Status</th>
+                        <th>
+                            Service Date
+                        </th>
 
-                        <th>Service Type</th>
+                        <th>
+                            Status
+                        </th>
 
-                        <th>Next Service</th>
+                        <th>
+                            Next Service
+                        </th>
 
                         <th class="text-center">
                             Action
@@ -225,84 +284,142 @@
 
                 </thead>
 
+
                 <tbody>
+
+
+                    @{
+                        int index = 1;
+                    }
+
 
                     @foreach (var item in Model)
                     {
 
                         <tr>
 
+
+                            <!-- NUMBER -->
+
+                            <td class="fw-bold">
+
+                                @index
+
+                            </td>
+
+
+
+                            <!-- CUSTOMER -->
+
                             <td>
 
                                 <div>
 
                                     <div class="fw-bold">
-                                        @item.ServiceRecord.Customer?.Name
+
+                                        @item.ServiceRecord?.Customer?.Name
+
                                     </div>
 
 
                                     <small class="text-muted">
-                                        @item.ServiceRecord.Customer?.Phone
+
+                                        <i class="fas fa-phone me-1"></i>
+
+                                        @item.ServiceRecord?.Customer?.Phone
+
                                     </small>
 
 
-                                    <br />
-
-
-                                    @if (item.ServiceRecord.Customer?.CustomerLocations != null)
+                                    @if (item.ServiceRecord?.Customer?.CustomerLocations != null)
                                     {
+
                                         foreach (var loc in item.ServiceRecord.Customer.CustomerLocations)
                                         {
 
-                                            <small class="text-secondary">
+                                            <div class="mt-1">
 
-                                                <i class="fas fa-map-marker-alt"></i>
+                                                <small class="text-secondary">
 
-                                                @loc.StateDivisionPk?.StateDivisionEn,
+                                                    <i class="fas fa-map-marker-alt me-1"></i>
 
-                                                @loc.TownshipPk?.TownshipEn
+                                                    @loc.StateDivisionPk?.StateDivisionEn
 
-                                            </small>
+                                                    ,
+
+                                                    @loc.TownshipPk?.TownshipEn
+
+                                                </small>
+
+                                            </div>
 
                                         }
+
                                     }
 
                                 </div>
 
                             </td>
 
+
+
+
+
+                            <!-- TECHNICIAN -->
+
                             <td>
 
-                                <span class="fw-semibold">
 
-                                    @item.ServiceRecord.Technician?.Name
+                                <div class="fw-semibold">
 
-                                </span>
+                                    <i class="fas fa-user-cog me-1"
+                                       style="color:#2c8c99;"></i>
+
+
+                                    @item.ServiceRecord?.Technician?.Name
+
+                                </div>
+
+
+                                <small class="text-muted">
+
+                                    @item.ServiceRecord?.Technician?.PhoneNumber
+
+                                </small>
+
 
                             </td>
 
+
+
+
+
+                            <!-- AIRCON -->
+
                             <td>
+
 
                                 @if (item.AirConUnit != null)
                                 {
 
-                                    <div>
+                                    <div class="fw-semibold">
 
-                                        <strong>
 
-                                            @item.AirConUnit.Brand.BrandName
+                                        <i class="fas fa-snowflake me-1"
+                                           style="color:#2c8c99;"></i>
 
-                                        </strong>
 
-                                        <br>
+                                        @item.AirConUnit.Brand?.BrandName
 
-                                        <small class="text-muted">
-
-                                            @item.AirConUnit.Model.ModelName
-
-                                        </small>
 
                                     </div>
+
+
+                                    <small class="text-muted">
+
+                                        @item.AirConUnit.Model?.ModelName
+
+                                    </small>
 
                                 }
                                 else
@@ -316,20 +433,42 @@
 
                                 }
 
-                            </td>
-
-                            <td>
-
-                                @item.CreatedAt?.ToString("dd MMM yyyy")
 
                             </td>
 
+
+
+
+
+                            <!-- DATE -->
+
                             <td>
 
-                                @if (item.ServiceRecord.Status == "Completed")
+
+                                <span>
+
+                                    @item.CreatedAt?.ToString("dd MMM yyyy")
+
+                                </span>
+
+
+                            </td>
+
+
+
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+
+                                @if (item.ServiceRecord?.Status == "Completed")
                                 {
 
-                                    <span class="badge-status-success">
+                                    <span class="badge rounded-pill bg-success px-3 py-2">
+
+                                        <i class="fas fa-check-circle me-1"></i>
 
                                         Completed
 
@@ -339,7 +478,9 @@
                                 else
                                 {
 
-                                    <span class="badge-status-warning">
+                                    <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+
+                                        <i class="fas fa-spinner me-1"></i>
 
                                         In Progress
 
@@ -347,104 +488,496 @@
 
                                 }
 
-                            </td>
-
-                            <td>
-
-                                @item.ServiceRecord.ServiceType
 
                             </td>
 
+
+
+
+
+                            <!-- NEXT SERVICE -->
+
                             <td>
 
-                                @(item.NextServiceDue?.ToString("dd MMM yyyy") ?? "-")
+
+                                @if (item.NextServiceDue.HasValue)
+                                {
+
+                                    <span>
+
+                                        <i class="fas fa-calendar-alt me-1"
+                                           style="color:#2c8c99;"></i>
+
+
+                                        @item.NextServiceDue.Value.ToString("dd MMM yyyy")
+
+                                    </span>
+
+                                }
+                                else
+                                {
+
+                                    <span class="text-muted">
+
+                                        -
+
+                                    </span>
+
+                                }
+
 
                             </td>
 
+
+
+
+
+                            <!-- ACTION -->
+
                             <td>
+
 
                                 <div class="d-flex justify-content-center gap-2">
 
+
                                     <a asp-controller="ServiceRequest"
                                        asp-action="Details"
-                                       asp-route-appointmentId="@item.ServiceRecord.ServiceRequest.Appointment.AppointmentId"
-                                       class="btn btn-sm btn-detail">
+                                       asp-route-appointmentId="@item.ServiceRecord?.ServiceRequest?.Appointment?.AppointmentId"
+                                       class="btn btn-sm rounded-circle text-white"
+                                       style="background:#2c8c99;width:40px;height:40px;"
+                                       title="View Details">
+
 
                                         <i class="fas fa-eye"></i>
 
+
                                     </a>
-                                    @if (item.ServiceRecord.Status == "Completed")
+
+
+
+
+                                    @if (item.ServiceRecord?.Status == "Completed")
                                     {
+
+
                                         <a asp-controller="ReAppointment"
                                            asp-action="Create"
                                            asp-route-serviceRecordId="@item.Id"
-                                           class="btn btn-sm text-white"
-                                           style="background:#2c8c99;"
-                                           title="ReAppointment">
+                                           class="btn btn-sm rounded-circle text-white"
+                                           style="background:#198754;width:40px;height:40px;"
+                                           title="Re Appointment">
+
 
                                             <i class="fas fa-calendar-plus"></i>
 
+
                                         </a>
+
+
                                     }
+
+
+
+
 
                                     <form asp-action="Delete"
                                           method="post">
 
+
                                         @Html.AntiForgeryToken()
+
 
                                         <input type="hidden"
                                                name="id"
-                                               value="@item.ServiceRecord.ServiceRequestId" />
+                                               value="@item.ServiceRecord?.ServiceRequestId" />
 
-                                        <button class="btn btn-sm btn-delete">
+
+
+                                        <button type="submit"
+                                                class="btn btn-sm rounded-circle text-white"
+                                                style="background:#dc3545;width:40px;height:40px;"
+                                                title="Delete">
+
 
                                             <i class="fas fa-trash"></i>
 
+
                                         </button>
+
 
                                     </form>
 
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    }
-
-                    @if (!Model.Any())
-                    {
-
-                        <tr>
-
-                            <td colspan="8">
-
-                                <div class="text-center py-5">
-
-                                    <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
-
-                                    <h5>No Service Records</h5>
-
-                                    <p class="text-muted">
-
-                                        No completed services available.
-
-                                    </p>
 
                                 </div>
 
+
                             </td>
+
+
 
                         </tr>
 
+
+                        index++;
+
                     }
+
+
 
                 </tbody>
 
+
             </table>
+
+
+        </div>
+        <!-- MOBILE CARD VIEW -->
+
+        <div class="d-block d-lg-none p-3">
+
+
+            @if (Model.Any())
+            {
+
+                @foreach (var item in Model)
+                {
+
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+
+
+                        <div class="card-body">
+
+
+                            <!-- Customer -->
+
+                            <div class="d-flex align-items-center mb-3">
+
+
+                                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                     style="
+                                 width:45px;
+                                 height:45px;
+                                 background:rgba(44,140,153,.15);
+                                 color:#2c8c99;">
+
+
+                                    <i class="fas fa-user"></i>
+
+
+                                </div>
+
+
+                                <div class="ms-3">
+
+
+                                    <h6 class="fw-bold mb-1">
+
+                                        @item.ServiceRecord?.Customer?.Name
+
+                                    </h6>
+
+
+                                    <small class="text-muted">
+
+                                        <i class="fas fa-phone me-1"></i>
+
+                                        @item.ServiceRecord?.Customer?.Phone
+
+                                    </small>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <hr />
+
+
+
+                            <!-- Location -->
+                            @if (item.ServiceRecord?.Customer?.CustomerLocations != null)
+                            {
+
+                                foreach (var loc in item.ServiceRecord.Customer.CustomerLocations)
+                                {
+
+                                    <div class="small text-secondary mb-2">
+
+                                        <i class="fas fa-map-marker-alt me-1"
+                                           style="color:#2c8c99;"></i>
+
+
+                                        @loc.StateDivisionPk?.StateDivisionEn,
+
+                                        @loc.TownshipPk?.TownshipEn
+
+
+                                    </div>
+
+                                }
+
+                            }
+
+
+
+
+                            <!-- Technician -->
+
+                            <div class="mb-3">
+
+
+                                <label class="text-muted small">
+                                    Technician
+                                </label>
+
+
+                                <div class="fw-semibold">
+
+                                    <i class="fas fa-user-cog me-1"
+                                       style="color:#2c8c99;"></i>
+
+
+                                    @item.ServiceRecord?.Technician?.Name
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+
+
+                            <!-- AirCon -->
+
+                            <div class="mb-3">
+
+
+                                <label class="text-muted small">
+                                    Air Conditioner
+                                </label>
+
+
+                                <div class="fw-semibold">
+
+
+                                    <i class="fas fa-snowflake me-1"
+                                       style="color:#2c8c99;"></i>
+
+
+
+                                    @item.AirConUnit?.Brand?.BrandName
+
+
+                                </div>
+
+
+                                <small class="text-muted">
+
+                                    @item.AirConUnit?.Model?.ModelName
+
+                                </small>
+
+
+                            </div>
+
+
+
+
+
+                            <!-- Date -->
+
+                            <div class="row mb-3">
+
+
+                                <div class="col-6">
+
+
+                                    <small class="text-muted">
+                                        Service Date
+                                    </small>
+
+
+                                    <div class="fw-semibold">
+
+                                        @item.CreatedAt?.ToString("dd MMM yyyy")
+
+                                    </div>
+
+
+                                </div>
+
+
+
+                                <div class="col-6">
+
+
+                                    <small class="text-muted">
+                                        Next Service
+                                    </small>
+
+
+                                    <div class="fw-semibold">
+
+
+                                        @(item.NextServiceDue?.ToString("dd MMM yyyy") ?? "-")
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+
+
+                            <!-- Status -->
+
+
+                            <div class="mb-3">
+
+
+                                @if (item.ServiceRecord?.Status == "Completed")
+                                {
+
+                                    <span class="badge bg-success rounded-pill px-3 py-2">
+
+
+                                        <i class="fas fa-check me-1"></i>
+
+                                        Completed
+
+
+                                    </span>
+
+                                }
+                                else
+                                {
+
+                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+
+
+                                        <i class="fas fa-spinner me-1"></i>
+
+                                        In Progress
+
+
+                                    </span>
+
+                                }
+
+
+                            </div>
+
+
+
+
+
+                            <!-- Buttons -->
+
+                            <div class="d-flex gap-2">
+
+
+                                <a asp-controller="ServiceRequest"
+                                   asp-action="Details"
+                                   asp-route-appointmentId="@item.ServiceRecord?.ServiceRequest?.Appointment?.AppointmentId"
+                                   class="btn flex-fill text-white"
+                                   style="background:#2c8c99;">
+
+
+                                    <i class="fas fa-eye me-1"></i>
+
+                                    View
+
+
+                                </a>
+
+
+
+
+
+                                @if (item.ServiceRecord?.Status == "Completed")
+                                {
+
+                                    <a asp-controller="ReAppointment"
+                                       asp-action="Create"
+                                       asp-route-serviceRecordId="@item.Id"
+                                       class="btn flex-fill text-white"
+                                       style="background:#198754;">
+
+
+                                        <i class="fas fa-calendar-plus me-1"></i>
+
+                                        Again
+
+
+                                    </a>
+
+
+                                }
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+                    </div>
+
+
+                }
+
+
+            }
+            else
+            {
+
+
+                <div class="text-center py-5">
+
+
+                    <div class="mb-3">
+
+                        <i class="fas fa-folder-open fa-4x text-muted"></i>
+
+                    </div>
+
+
+                    <h5 class="fw-bold">
+
+                        No Service Records
+
+                    </h5>
+
+
+                    <p class="text-muted">
+
+                        No completed services available.
+
+                    </p>
+
+
+                </div>
+
+
+            }
+
 
         </div>
 
-    </div>
 
+
+
+
+    </div>
 </div>

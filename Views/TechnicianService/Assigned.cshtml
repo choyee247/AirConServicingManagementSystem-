@@ -211,7 +211,7 @@
 
                         <div>
                             <div class="service-title">
-                                @s.Customer.Name
+                                @s.Customer.Name (@s.Customer.Phone)
                             </div>
 
                             <div class="service-sub">
@@ -225,7 +225,7 @@
 
                     </div>
 
-                    <div class="service-row">
+                   @*  <div class="service-row">
                         <b>Warranty:</b>
 
                         @if (s.IsWarrantyApplied)
@@ -236,9 +236,9 @@
                         {
                             <span class="badge-custom badge-nowarranty">No</span>
                         }
-                    </div>
+                    </div> *@
 
-                    <div class="service-row">
+                   @*  <div class="service-row">
                         <b>Payment:</b>
 
                         @if (s.IsFreeService)
@@ -255,7 +255,7 @@
                         {
                             <span class="badge-custom badge-normal">Normal</span>
                         }
-                    </div>
+                    </div> *@
 
                     @if (s.Status != "Completed")
                     {
@@ -284,14 +284,15 @@
                 <thead>
                     <tr>
                         <th>Customer</th>
-                        <th>AirCon</th>
-                        <th>Type</th>
-                        <th>Capacity</th>
-                        <th>Installation Type</th>
+                        <th>Phone Number</th>
+                        @* <th>AirCon</th> *@
+                        @* <th>Type</th> *@
+                        @* <th>Capacity</th> *@
+                        @* <th>Installation Type</th> *@
                         @* <th>Next Service</th> *@
                         <th>Location</th>
                         <th>Status</th>
-                        <th width="120">Action</th>
+                        <th width="80">Action</th>
                     </tr>
                 </thead>
 
@@ -304,7 +305,7 @@
                             <td class="fw-bold">
                                 @s.Customer?.Name
                             </td>
-
+                           <td class="fw-bold">@s.Customer?.Phone</td>
                           @*   <td>
 
                                 @if (s.AirCon != null)
@@ -361,40 +362,7 @@
 
                             </td> *@
 
-                           @*  <td>
-
-                                @if (s.AirCon != null)
-                                {
-                                    if (s.AirCon.InstallationDate.HasValue &&
-                                    s.AirCon.NextServiceOption.HasValue)
-                                    {
-                                        var next =
-                                        s.AirCon.InstallationDate.Value.AddMonths(
-                                        s.AirCon.NextServiceOption.Value);
-
-                                        if (next >= DateTime.Now)
-                                        {
-                                            <span class="badge bg-success">
-                                                @next.ToString("dd-MM-yyyy")
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger">
-                                                Due :
-                                                @next.ToString("dd-MM-yyyy")
-                                            </span>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">
-                                            Schedule After Service
-                                        </span>
-                                    }
-                                }
-
-                            </td> *@
+                           
 
                             <td>
                                 @s.Location

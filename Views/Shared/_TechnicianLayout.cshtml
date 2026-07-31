@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>@ViewData["Title"] - Technician Panel</title>
-    <link rel="icon" type="image/png" href="~/images/AC.png" />
+    <link rel="icon" type="image/png" href="~/images/AirCon.png" />
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/fontawesome/css/all.min640.css" />
@@ -187,9 +187,9 @@
                 font-weight: 700;
             }
         /* CONTENT */
-        .content {
+/*         .content {
             padding: 20px;
-        }
+        } */
 
         .card-box {
             background: #fff;
@@ -314,7 +314,7 @@
                 <a href="@Url.Action("Dashboard", "TechnicianService")" @* href="/TechnicianService/Dashboard"  *@
                 class="nav-link">
                     <i class="fas fa-home"></i>
-                    <span class="nav-text">Dashboard</span>
+                    <span class="link-text">Dashboard</span>
                 </a>
             </li>
 
@@ -369,13 +369,13 @@
             <li>
                 <a href="@Url.Action("Index", "Appointment")" @* href="/Appointment/Index" *@ class="nav-link">
                     <i class="fas fa-calendar-check"></i>
-                    <span class="nav-text">Appointments</span>
+                    <span class="link-text">My Appointments</span>
                 </a>
             </li>
             <li>
                 <a href="@Url.Action("Assigned", "TechnicianService")" @* href="/TechnicianService/Assigned" *@ class="nav-link">
                     <i class="fas fa-clipboard-list"></i>
-                    <span class="nav-text">Assigned Jobs</span>
+                    <span class="link-text">Assigned Jobs</span>
                 </a>
             </li>
 
@@ -460,7 +460,7 @@
             <li>
                 <a href="@Url.Action("Profile", "Technicians")" class="nav-link">
                     <i class="fa-solid fa-user-gear"></i>
-                    <span class="nav-text">My Profile</span>
+                    <span class="link-text">My Profile</span>
                 </a>
 
                 @* <a href="/Technicians/Profile" class="nav-link">

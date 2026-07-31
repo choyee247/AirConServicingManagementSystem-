@@ -206,39 +206,40 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             if (!technicianId.HasValue)
                 return RedirectToAction("Login", "TechnicianAuth");
 
-            var records = _context.ServiceRecords
-                .Include(x => x.Customer)
-                    .ThenInclude(c => c.CustomerLocations)
-                        .ThenInclude(l => l.StateDivisionPk)
-                .Include(x => x.Customer)
-                    .ThenInclude(c => c.CustomerLocations)
-                        .ThenInclude(l => l.TownshipPk)
-                .Include(r => r.Technician)
-                .Include(r => r.ServiceRequest)
+            var records = _context.ServiceRecordUnits
+                .Include(x => x.ServiceRecord)
+                    .ThenInclude(x => x.Customer)
+                        .ThenInclude(c => c.CustomerLocations)
+                            .ThenInclude(l => l.StateDivisionPk)
+                .Include(x => x.ServiceRecord)
+                    .ThenInclude(x => x.Customer)
+                        .ThenInclude(c => c.CustomerLocations)
+                            .ThenInclude(l => l.TownshipPk)
+                .Include(x => x.ServiceRecord)
+                    .ThenInclude(r => r.Technician)
+                .Include(x => x.ServiceRecord)
+                    .ThenInclude(r => r.ServiceRequest)
                     .ThenInclude(a => a.Appointment)
-                .Include(r => r.ServiceRecordUnits)
-                    .ThenInclude(x => x.AirConUnit)
+                .Include(x => x.AirConUnit)
                         .ThenInclude(x => x.Brand)
-
-                .Include(r => r.ServiceRecordUnits)
-                    .ThenInclude(x => x.AirConUnit)
+                .Include(x => x.AirConUnit)
                         .ThenInclude(x => x.Model)
-                .Where(r => r.IsDeleted != true
-                         && r.TechnicianId == technicianId.Value);
+                .Where(r => r.ServiceRecord.IsDeleted != true
+                         && r.ServiceRecord.TechnicianId == technicianId.Value);
 
             if (!string.IsNullOrEmpty(search))
             {
                 records = records.Where(r =>
-                    (r.Customer != null && r.Customer.Name.Contains(search)) ||
-                     (r.Customer.Phone.Contains(search)) ||
-                    (r.Customer.Address.Contains(search)) ||
+                    (r.ServiceRecord.Customer != null && r.ServiceRecord.Customer.Name.Contains(search)) ||
+                     (r.ServiceRecord.Customer.Phone.Contains(search)) ||
+                    (r.ServiceRecord.Customer.Address.Contains(search)) ||
 
-                    (r.Customer.CustomerLocations.Any(l =>
+                    (r.ServiceRecord.Customer.CustomerLocations.Any(l =>
                         l.StateDivisionPk.StateDivisionEn.Contains(search) ||
                         l.TownshipPk.TownshipEn.Contains(search))||
 
-                    (r.Technician != null && r.Technician.Name.Contains(search)) ||
-                    (r.ServiceType != null && r.ServiceType.Contains(search))
+                    (r.ServiceRecord.Technician != null && r.ServiceRecord.Technician.Name.Contains(search)) ||
+                    (r.ServiceRecord.ServiceType != null && r.ServiceRecord.ServiceType.Contains(search))
                     )
                 );
             }
