@@ -39,6 +39,8 @@ public partial class DBContext : DbContext
 
     public virtual DbSet<MonthlyServiceReport> MonthlyServiceReports { get; set; }
 
+    public virtual DbSet<Notification> Notifications { get; set; }
+
     public virtual DbSet<Payment> Payments { get; set; }
 
     public virtual DbSet<ServiceCharge> ServiceCharges { get; set; }
@@ -235,6 +237,14 @@ public partial class DBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__MonthlyS__3214EC0717C3BD42");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+        });
+
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Notifica__3214EC07013A8663");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.IsRead).HasDefaultValue(false);
         });
 
         modelBuilder.Entity<Payment>(entity =>

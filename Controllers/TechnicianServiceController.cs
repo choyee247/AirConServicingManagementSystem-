@@ -773,7 +773,9 @@ public class TechnicianServiceController : Controller
                             "Next",
 
 
-                        SentStatus = true,
+                        SentStatus = false,
+
+                        IsDeleted = false,
 
                         CreatedAt =
                             DateTime.Now

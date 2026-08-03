@@ -35,6 +35,12 @@ builder.Services.AddDbContext<DBContext>(options =>
 
 builder.Services.AddScoped<QrService>();
 
+builder.Services.AddHostedService<ReminderBackgroundService>();
+
+builder.Services.AddScoped<NotificationService>();
+
+builder.Services.AddScoped<SmsService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

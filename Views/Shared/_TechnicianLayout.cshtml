@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>@ViewData["Title"] - Technician Panel</title>
-    <link rel="icon" type="image/png" href="~/images/AirCon.png" />
+    <link rel="icon" type="image/png" href="~/images/NewAClogo.png" />
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/fontawesome/css/all.min640.css" />
@@ -213,6 +213,21 @@
             bottom: 0;
         }
 
+        .dropdown-menu {
+            width: 350px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+
+        .dropdown-item {
+            white-space: normal;
+        }
+
+
+            .dropdown-item:hover {
+                background: #f1f8f9;
+            }
 
         /* ================= USER FOOTER ================= */
 
@@ -283,6 +298,22 @@
                 display: block;
             }
         }
+
+        .notification-dropdown {
+            width: 350px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+
+            .notification-dropdown .dropdown-item {
+                white-space: normal;
+            }
+
+
+                .notification-dropdown .dropdown-item:hover {
+                    background: #f0f8fa;
+                }
 
     </style>
     @RenderSection("Styles", required: false)
@@ -504,8 +535,68 @@
             <div class="header-right">
 
                 <!-- DATE -->
-                <div class="text-muted small d-none d-md-block">
+               @*  <div class="text-muted small d-none d-md-block">
                     @DateTime.Now.ToString("dd MMM yyyy hh:mm tt")
+                </div> *@
+
+                <!-- NOTIFICATION -->
+                <!-- NOTIFICATION -->
+
+                <div class="dropdown me-3">
+
+
+                    <button type="button"
+                            class="btn position-relative"
+                            data-bs-toggle="dropdown">
+
+                        <i class="fas fa-bell fa-lg"></i>
+
+                        <span id="notificationCount"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            0
+                        </span>
+
+                    </button>
+
+
+
+
+                    <ul class="dropdown-menu dropdown-menu-end notification-dropdown"
+                        id="notificationList">
+
+
+                        <!-- Javascript Load -->
+
+                        <li>
+                            <span class="dropdown-item text-muted">
+                                Loading...
+                            </span>
+                        </li>
+
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+
+                        <li>
+
+                            <a class="dropdown-item text-center text-primary"
+                               asp-controller="Notification"
+                               asp-action="Index">
+
+                                <i class="fas fa-list me-2"></i>
+
+                                View All Notifications
+
+                            </a>
+
+                        </li>
+
+
+                    </ul>
+
+
                 </div>
 
                 <!-- USER -->
@@ -588,9 +679,201 @@
             backdrop.classList.remove("show");
         };
 
+        // ===============================
+        // Notification Count
+        // ===============================
+
+        function loadNotificationCount()
+        {
+
+            fetch('/Notification/Count')
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                document.getElementById(
+                    "notificationCount"
+                ).innerHTML = data;
+
+
+                if(data == 0)
+                {
+                    document.getElementById(
+                    "notificationCount"
+                    ).style.display="none";
+                }
+                else
+                {
+                    document.getElementById(
+                    "notificationCount"
+                    ).style.display="block";
+                }
+
+
+            });
+
+
+        }
+
+
+
+
+
+        // ===============================
+        // Notification List
+        // ===============================
+
+        function loadNotificationList()
+        {
+
+
+        fetch('/Notification/Latest')
+
+        .then(response => response.json())
+
+        .then(data => {
+
+
+            let html = "";
+
+
+
+            if(data.length == 0)
+            {
+
+                html = `
+
+                <li>
+                    <span class="dropdown-item text-muted">
+                        No Notification
+                    </span>
+                </li>
+
+                `;
+
+            }
+            else
+            {
+
+
+                data.forEach(x=>{
+
+
+                          html += `
+
+
+        <li>
+
+        <a class="dropdown-item
+        ${x.isRead ? '' : 'fw-bold'}"
+
+        href="/Notification/Read?id=${x.id}">
+
+
+        <div>
+
+        <i class="fas fa-bell text-primary me-2"></i>
+
+        ${x.title}
+
+        </div>
+
+
+        <small class="text-muted">
+
+        ${x.message}
+
+        <br>
+
+        ${x.created}
+
+        </small>
+
+
+        </a>
+
+        </li>
+
+
+        <hr class="dropdown-divider">
+
+
+        `;
+
+
+
+                });
+
+
+            }
+
+
+
+               document.getElementById(
+        "notificationList"
+        ).innerHTML =
+        html +
+
+        `
+        <li>
+        <hr class="dropdown-divider">
+        </li>
+
+        <li>
+
+        <a class="dropdown-item text-center text-primary"
+        href="/Notification/Index">
+
+        <i class="fas fa-list me-2"></i>
+
+        View All Notifications
+
+        </a>
+
+        </li>
+
+        `;
+
+
+
+        });
+
+
+
+        }
+
+
+
+
+        // Load
+
+        loadNotificationCount();
+
+        loadNotificationList();
+
+
+
+
+        // Refresh every 10 seconds
+
+        setInterval(
+        loadNotificationCount,
+        10000
+        );
+
+
+        setInterval(
+        loadNotificationList,
+        10000
+        );
+
+
     </script>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -1,0 +1,231 @@
+﻿@model IEnumerable<AirConServicingManagementSystem.Models.Notification>
+
+@{
+    ViewData["Title"] = "Notifications";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+
+}
+
+
+<style>
+
+    .notification-card {
+        border-radius: 15px;
+        transition: 0.3s;
+    }
+
+
+        .notification-card:hover {
+            transform: translateY(-3px);
+        }
+
+
+    .unread {
+        background: #eef8ff;
+        border-left: 5px solid #2c8c99;
+    }
+
+
+    .read {
+        background: white;
+    }
+
+
+    .notification-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #2c8c99;
+        color: white;
+    }
+
+</style>
+
+
+
+
+
+<div class="container-fluid">
+
+
+    <div class="card shadow-sm">
+
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+
+            <h5 class="mb-0">
+
+                <i class="fas fa-bell me-2"></i>
+
+                Notifications
+
+            </h5>
+
+
+
+            <span class="badge bg-danger">
+
+                @Model.Count(x => x.IsRead == false)
+
+                Unread
+
+            </span>
+
+
+        </div>
+
+
+
+
+
+
+
+        <div class="card-body">
+
+
+            @if (!Model.Any())
+            {
+
+                <div class="text-center text-muted p-5">
+
+
+                    <i class="fas fa-bell-slash fa-3x mb-3"></i>
+
+
+                    <h5>
+                        No Notification
+                    </h5>
+
+
+                </div>
+
+            }
+
+            else
+            {
+
+
+                foreach (var item in Model)
+                {
+
+
+                    <div class="card mb-3 notification-card
+        @(item.IsRead == true ? "read" : "unread")">
+
+
+                        <div class="card-body">
+
+
+                            <div class="d-flex align-items-start">
+
+
+                                <div class="notification-icon me-3">
+
+
+                                    <i class="fas fa-bell"></i>
+
+
+                                </div>
+
+
+
+
+                                <div class="flex-grow-1">
+
+
+                                    <h6 class="mb-1">
+
+                                        @item.Title
+
+                                        @if (item.IsRead == false)
+                                        {
+
+                                            <span class="badge bg-danger ms-2">
+                                                New
+                                            </span>
+
+                                        }
+
+                            </h6>
+
+
+
+
+                            <p class="mb-1">
+
+                                @item.Message
+
+                            </p>
+
+
+
+                            <small class="text-muted">
+
+
+                                <i class="far fa-clock"></i>
+
+                                @(item.CreatedAt?
+                                                                .ToString("dd MMM yyyy hh:mm tt"))
+
+
+                            </small>
+
+
+                                </div>
+
+
+
+
+
+                        @if (item.IsRead == false)
+                                {
+
+                                    <div>
+
+
+                                        <a asp-action="Read"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-primary">
+
+
+                                            Mark Read
+
+
+                                        </a>
+
+
+                                    </div>
+
+                                }
+
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                }
+
+
+
+            }
+
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

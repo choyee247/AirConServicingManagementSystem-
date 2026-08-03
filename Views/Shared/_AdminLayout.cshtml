@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>@ViewData["Title"] - AirCon Admin</title>
-    <link rel="icon" type="image/png" href="~/images/AirCon.png" />
+    <link rel="icon" type="image/png" href="~/images/NewAClogo.png" />
     <link rel="stylesheet" href="~/bootstrap/bootstrap.min532.css" />
     <link rel="stylesheet" href="~/fontawesome/css/all.min651.css" />
 
@@ -158,17 +158,15 @@
 
         /* ================= HEADER ================= */
         .header {
-            /* height: var(--header-height); */
-            background: #fff;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 12px 18px;
+            background: #fff;
             border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
+            flex-wrap: wrap;
             z-index: 999;
-           /*  flex-wrap: wrap; */
+            position: sticky;
             gap: 10px;
         }
 
@@ -243,6 +241,16 @@
         }
 
         }
+
+        .notification-dropdown {
+            width: 360px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+            .notification-dropdown .dropdown-item {
+                white-space: normal;
+            }
     </style>
 
     @RenderSection("Styles", required: false)
@@ -419,41 +427,125 @@
         <!-- ================= HEADER ================= -->
         <div class="header">
 
-            <!-- MOBILE TOGGLE (Technician Style) -->
+            <!-- MOBILE TOGGLE -->
             <button class="mobile-toggle" id="mobileToggle">
                 <i class="fas fa-bars"></i>
             </button>
 
+
             <h5 class="mb-0">@ViewData["Title"]</h5>
+
+
 
             <div class="header-right">
 
+
                 <!-- DATE -->
-                @* <div>
-                    @DateTime.Now.ToString("dd MMM yyyy")
-                </div> *@
-                <div class="text-muted small d-none d-md-block">
+
+               @*  <div class="text-muted small d-none d-md-block">
+
                     @DateTime.Now.ToString("dd MMM yyyy hh:mm tt")
+
+                </div> *@
+
+
+
+
+                <!-- NOTIFICATION -->
+                <!-- NOTIFICATION -->
+                <div class="dropdown me-3">
+
+                    <button class="btn position-relative"
+                            type="button"
+                            id="adminNotificationBell"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                        <i class="fas fa-bell fa-lg"></i>
+
+                        <span id="adminNotificationCount"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              style="display:none;">
+
+                            0
+
+                        </span>
+
+                    </button>
+
+
+                    <ul class="dropdown-menu dropdown-menu-end notification-dropdown"
+                        aria-labelledby="adminNotificationBell"
+                        id="adminNotificationList">
+
+                        <li>
+                            <span class="dropdown-item text-muted">
+                                Loading...
+                            </span>
+                        </li>
+
+                    </ul>
+
                 </div>
+
+
+
+
+
+
                 <!-- AVATAR -->
+
                 <div class="avatar">
+
                     @(adminName?.Substring(0, 1).ToUpper())
+
                 </div>
+
+
+
+
 
                 <!-- USER INFO -->
+
                 <div>
-                    <div><b>@adminName</b></div>
-                    <small>@adminRole</small>
+
+                    <div>
+
+                        <b>@adminName</b>
+
+                    </div>
+
+
+                    <small>
+
+                        @adminRole
+
+                    </small>
+
+
                 </div>
 
+
+
+
+
+
                 <!-- LOGOUT -->
+
                 <a asp-controller="AdminLogin"
                    asp-action="Logout"
                    class="btn btn-sm btn-outline-danger">
+
+
                     Logout
+
+
                 </a>
 
+
+
             </div>
+
 
         </div>
 
@@ -564,6 +656,131 @@
 
         });
 
+
+        // ===============================
+        // Admin Notification Count
+        // ===============================
+
+        function loadAdminNotificationCount() {
+
+            fetch('/Notification/Count')
+                .then(response => response.json())
+                .then(data => {
+
+                    const badge = document.getElementById("adminNotificationCount");
+
+                    badge.innerHTML = data;
+
+                    if (data > 0) {
+                        badge.style.display = "block";
+                    } else {
+                        badge.style.display = "none";
+                    }
+
+                })
+                .catch(err => console.error(err));
+
+        }
+
+
+
+        // ===============================
+        // Admin Notification List
+        // ===============================
+
+        function loadAdminNotificationList() {
+
+            fetch('/Notification/Latest')
+                .then(response => response.json())
+                .then(data => {
+
+                    let html = "";
+
+                    if (data.length === 0) {
+
+                        html = `
+                            <li>
+                                <span class="dropdown-item text-muted">
+                                    No Notification
+                                </span>
+                            </li>
+                        `;
+
+                    }
+                    else {
+
+                        data.forEach(x => {
+
+                            html += `
+
+        <li>
+
+        <a class="dropdown-item ${x.isRead ? "" : "fw-bold"}"
+           href="/Notification/Read?id=${x.id}">
+
+            <div>
+                <i class="fas fa-bell text-primary me-2"></i>
+                ${x.title}
+            </div>
+
+            <small class="text-muted">
+                ${x.message}
+                <br>
+                ${x.created}
+            </small>
+
+        </a>
+
+        </li>
+
+        <li><hr class="dropdown-divider"></li>
+
+        `;
+
+                        });
+
+                    }
+
+
+                    // View All Button
+                    html += `
+
+        <li>
+
+        <a class="dropdown-item text-center text-primary"
+           href="/Notification/Index">
+
+            <i class="fas fa-list me-2"></i>
+
+            View All Notifications
+
+        </a>
+
+        </li>
+
+        `;
+
+                    document.getElementById("adminNotificationList").innerHTML = html;
+
+                })
+                .catch(err => console.error(err));
+
+        }
+
+
+
+        // Load
+        loadAdminNotificationCount();
+        loadAdminNotificationList();
+
+
+        // Auto Refresh
+        setInterval(loadAdminNotificationCount, 10000);
+        setInterval(loadAdminNotificationList, 10000);
     </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
