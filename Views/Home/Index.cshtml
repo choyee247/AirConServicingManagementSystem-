@@ -3,108 +3,425 @@
     Layout = "_Layout";
 }
 
+<!-- Font Awesome & Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
 <style>
     :root {
-        --primary-color: #2c8c99; /* Teal Blue - Air Conditioning Theme */
-        --secondary-color: #4a6572; /* Slate Gray */
-        --accent-color: #ff7e5f; /* Coral Accent */
-        --light-color: #f0f7f9; /* Ice Blue Light */
-        --dark-color: #1a535c; /* Deep Teal */
-        --success-color: #28a745; /* Green */
-        --warning-color: #ffc107; /* Yellow */
-        --info-color: #17a2b8; /* Cyan */
-        --purple: #6f42c1; /* Purple */
+        --primary-color: #2c8c99;
+        --secondary-color: #4a6572;
+        --accent-color: #ff7e5f;
+        --light-color: #f0f7f9;
+        --dark-color: #1a535c;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --info-color: #17a2b8;
+        --purple: #6f42c1;
+        --text-dark: #1a2a3a;
+        --text-muted: #6c7a8a;
     }
 
+    /* ===== GLOBAL ===== */
+    body {
+        overflow-x: hidden;
+    }
+    .text-warning{
+        color: #07eaff;
+    }
     .bg-gradient-primary {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-color) 100%);
+        position: relative;
+        overflow: hidden;
     }
 
-    /* Primary Color Overrides */
-    .text-primary {
-        color: var(--primary-color) !important;
+        /* Animated background shapes */
+        .bg-gradient-primary::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+            animation: floatShape 12s ease-in-out infinite alternate;
+        }
+
+        .bg-gradient-primary::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            animation: floatShape 14s ease-in-out infinite alternate-reverse;
+        }
+
+    @@keyframes floatShape {
+        0%
+
+    {
+        transform: translate(0, 0) scale(1);
     }
 
-    .bg-primary {
-        background-color: var(--primary-color) !important;
+    100% {
+        transform: translate(40px, -30px) scale(1.1);
     }
 
+    }
+
+    .min-vh-80 {
+        min-height: 80vh;
+    }
+
+    /* ===== HERO IMAGE ===== */
+    .hero-image-wrapper {
+        perspective: 1000px;
+    }
+
+        .hero-image-wrapper img {
+            transition: transform 0.6s ease, box-shadow 0.6s ease;
+            transform: rotateY(-2deg) rotateX(2deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+            .hero-image-wrapper img:hover {
+                transform: rotateY(0deg) rotateX(0deg) scale(1.01);
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.30);
+            }
+
+    /* Floating badge */
+    .floating-badge {
+        animation: floatBadge 3s ease-in-out infinite;
+        border-radius: 12px 0 12px 12px;
+        backdrop-filter: blur(4px);
+        background: rgba(44, 140, 153, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    @@keyframes floatBadge {
+        0%, 100%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    }
+
+    /* ===== BUTTONS ===== */
     .btn-primary {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
         color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
 
         .btn-primary:hover {
             background-color: var(--dark-color);
             border-color: var(--dark-color);
-        }
-
-    .btn-outline-primary {
-        color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(44, 140, 153, 0.35);
             color: white;
         }
 
-    /* Light Background */
-    .bg-light {
-        background-color: var(--light-color) !important;
+    .btn-outline-light {
+        transition: all 0.3s ease;
     }
 
-    /* Card hover effect with primary color border */
-    .hover-shadow:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(44, 140, 153, 0.1) !important;
-        border-top: 3px solid var(--primary-color);
+        .btn-outline-light:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+    /* ===== STATS CARDS ===== */
+    .stat-card {
+        border: none;
+        border-radius: 20px;
+        background: white;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        cursor: default;
     }
 
-    /* Stats cards background with primary tint */
-    .bg-primary-opacity-10 {
-        background-color: rgba(44, 140, 153, 0.1) !important;
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+            transform-origin: left;
+        }
+
+        .stat-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(44, 140, 153, 0.12) !important;
+        }
+
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        transition: all 0.4s ease;
     }
 
-    /* Custom accent colors */
-    .text-accent {
-        color: var(--accent-color) !important;
+    .stat-card:hover .stat-icon {
+        transform: scale(1.08) rotate(2deg);
+        box-shadow: 0 8px 20px rgba(44, 140, 153, 0.15);
     }
 
-    .bg-accent {
-        background-color: var(--accent-color) !important;
+    .stat-number {
+        font-size: 2.4rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-weight: 500;
+        font-size: 0.9rem;
+        letter-spacing: 0.3px;
+    }
+
+    /* ===== FEATURES ===== */
+    .features-section {
+        padding: 50px 0 40px;
+        background: linear-gradient(180deg, #f8fbfc 0%, #eef5f7 100%);
+        position: relative;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        letter-spacing: -0.5px;
+    }
+
+    .divider {
+        width: 56px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 4px;
+        margin: 12px auto 0;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 20px;
+        padding: 28px 16px;
+        text-align: center;
+        border: 1px solid rgba(44, 140, 153, 0.06);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 100%;
+        box-shadow: 0 4px 16px rgba(44, 140, 153, 0.04);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(44, 140, 153, 0.04), rgba(255, 126, 95, 0.02));
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 16px 40px rgba(44, 140, 153, 0.10);
+            border-color: rgba(44, 140, 153, 0.12);
+        }
+
+    .feature-icon {
+        font-size: 2.6rem;
+        color: var(--primary-color);
+        display: block;
+        margin-bottom: 12px;
+        transition: all 0.4s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.12) rotate(-4deg);
+        color: var(--accent-color);
+    }
+
+    .feature-card h5 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 2px;
+        letter-spacing: -0.2px;
+    }
+
+    .feature-card p {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-bottom: 0;
+        font-weight: 400;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @@media (max-width: 768px) {
+        .min-vh-80 {
+            min-height: auto;
+            padding: 40px 0;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+        }
+
+        .feature-card {
+            padding: 20px 12px;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+        }
+
+        .floating-badge {
+            display: none;
+        }
+    }
+
+    /* ===== SCROLL ANIMATIONS (AOS style) ===== */
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    /* staggered delay */
+    .delay-1 {
+        transition-delay: 0.05s;
+    }
+
+    .delay-2 {
+        transition-delay: 0.10s;
+    }
+
+    .delay-3 {
+        transition-delay: 0.15s;
+    }
+
+    .delay-4 {
+        transition-delay: 0.20s;
+    }
+
+    .delay-5 {
+        transition-delay: 0.25s;
+    }
+
+    .delay-6 {
+        transition-delay: 0.30s;
+    }
+
+    .delay-7 {
+        transition-delay: 0.35s;
+    }
+
+    .delay-8 {
+        transition-delay: 0.40s;
+    }
+
+    /* ===== CTA BUTTON GLOW ===== */
+    .btn-glow {
+        animation: glowPulse 2.5s ease-in-out infinite;
+    }
+
+    @@keyframes glowPulse {
+        0%,
+        100% {
+            box-shadow: 0 0 0 0 rgba(44, 140, 153, 0.3);
+        }
+
+        50% {
+            box-shadow: 0 0 30px 6px rgba(44, 140, 153, 0.15);
+        }
+    }
+
+    .text-white-75 {
+        color: rgba(255, 255, 255, 0.75);
     }
 </style>
 
-<!-- Hero Section -->
+<!-- ===== HERO ===== -->
 <section class="hero-section bg-gradient-primary">
-    <div class="container">
+    <div class="container position-relative" style="z-index:2;">
         <div class="row align-items-center min-vh-80">
+            <!-- Left -->
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold text-white mb-4">Professional Air Conditioning Servicing Management</h1>
-                <p class="lead text-white mb-4">Streamline your DIS service operations with our comprehensive management system. Track appointments, manage technicians, and improve customer satisfaction.</p>
-                <div class="d-flex gap-3">
-                    <a href="#features" class="btn btn-light btn-lg px-4 py-3">
-                        <i class="fas fa-play-circle me-2"></i>Learn More
-                    </a>
-                    <a href="/Contact" class="btn btn-outline-light btn-lg px-4 py-3">
-                        <i class="fas fa-phone me-2"></i>Contact Us
-                    </a>
+                <div class="animate__animated animate__fadeInUp" style="animation-duration: 0.8s;">
+                    <span class="badge bg-opacity-15 text-white px-3 py-2 rounded-pill mb-3">
+                        <i class="fas fa-snowflake me-2"></i> DIS Service Management
+                    </span>
+                    <h1 class="display-4 fw-bold text-white mb-4">
+                        Professional Air Conditioning <br><span class="text-info">Servicing</span> Management
+                    </h1>
+                    <p class="lead text-white-75 mb-4">
+                        Streamline your DIS service operations with our comprehensive management system.
+                        Track appointments, manage technicians, and improve customer satisfaction.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="/Contact" class="btn btn-primary btn-lg px-5 py-3 btn-glow">
+                            <i class="fas fa-phone me-2"></i>Contact Us
+                        </a>
+                        <a href="#services" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="fas fa-arrow-down me-2"></i>Explore
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="position-relative">
+
+            <!-- Right -->
+            <div class="col-lg-6 mt-4 mt-lg-0">
+                <div class="hero-image-wrapper position-relative animate__animated animate__fadeInRight" style="animation-duration: 1s; animation-delay: 0.2s;">
                     <img src="~/images/aircon.jpg"
-                         class="img-fluid rounded shadow-lg"
-                         alt="Air Conditioning System">
-                    <div class="position-absolute bottom-0 start-0 bg-primary text-white p-3 rounded-end shadow">
+                         class="img-fluid rounded-4 shadow-lg w-100"
+                         alt="Air Conditioning System"
+                         style="object-fit:cover; max-height:420px;">
+
+                    <!-- Floating Badge -->
+                    <div class="floating-badge position-absolute bottom-0 start-0 text-white p-3 shadow-lg m-3">
                         <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle fa-2x me-3"></i>
+                            <i class="fas fa-check-circle fa-2x me-3 text-info"></i>
                             <div>
-                                <h5 class="mb-0">Trusted Service</h5>
-                                <small class="opacity-75">Since 2026</small>
+                                <h5 class="mb-0 fw-bold">Trusted Service</h5>
+                                <small class="opacity-75"><i class="far fa-calendar-alt me-1"></i> Since 2026</small>
                             </div>
                         </div>
                     </div>
@@ -114,51 +431,55 @@
     </div>
 </section>
 
-<!-- Stats Section -->
-<section class="py-5">
+<!-- ===== STATS ===== -->
+<section class="py-5 bg-white">
     <div class="container">
         <div class="row g-4">
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-primary-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+            <!-- Stat 1 -->
+            <div class="col-md-3 col-6 animate-on-scroll delay-1">
+                <div class="card stat-card shadow-sm h-100 p-3 text-center">
+                    <div class="card-body">
+                        <div class="stat-icon bg-primary-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; background:rgba(44,140,153,0.08);">
                             <i class="fas fa-calendar-check fa-2x text-primary"></i>
                         </div>
-                        <h3 class="display-6 fw-bold">1,250+</h3>
-                        <p class="text-muted">Monthly Services</p>
+                        <div class="stat-number">1,250+</div>
+                        <p class="stat-label">Monthly Services</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+            <!-- Stat 2 -->
+            <div class="col-md-3 col-6 animate-on-scroll delay-2">
+                <div class="card stat-card shadow-sm h-100 p-3 text-center">
+                    <div class="card-body">
+                        <div class="stat-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; background:rgba(40,167,69,0.08);">
                             <i class="fas fa-user-tie fa-2x text-success"></i>
                         </div>
-                        <h3 class="display-6 fw-bold">45+</h3>
-                        <p class="text-muted">Certified Technicians</p>
+                        <div class="stat-number">45+</div>
+                        <p class="stat-label">Certified Technicians</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+            <!-- Stat 3 -->
+            <div class="col-md-3 col-6 animate-on-scroll delay-3">
+                <div class="card stat-card shadow-sm h-100 p-3 text-center">
+                    <div class="card-body">
+                        <div class="stat-icon bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; background:rgba(255,193,7,0.08);">
                             <i class="fas fa-users fa-2x text-warning"></i>
                         </div>
-                        <h3 class="display-6 fw-bold">850+</h3>
-                        <p class="text-muted">Satisfied Clients</p>
+                        <div class="stat-number">850+</div>
+                        <p class="stat-label">Satisfied Clients</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+            <!-- Stat 4 -->
+            <div class="col-md-3 col-6 animate-on-scroll delay-4">
+                <div class="card stat-card shadow-sm h-100 p-3 text-center">
+                    <div class="card-body">
+                        <div class="stat-icon bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; background:rgba(23,162,184,0.08);">
                             <i class="fas fa-map-marker-alt fa-2x text-info"></i>
                         </div>
-                        <h3 class="display-6 fw-bold">6</h3>
-                        <p class="text-muted">Service Areas</p>
+                        <div class="stat-number">6</div>
+                        <p class="stat-label">Service Areas</p>
                     </div>
                 </div>
             </div>
@@ -166,141 +487,78 @@
     </div>
 </section>
 
-<!-- Features Section -->
-<section id="features" class="py-5 bg-light">
+<!-- ===== FEATURES ===== -->
+<section class="features-section" id="services">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="display-5 fw-bold mb-3 text-primary">Key Features</h2>
-                <p class="lead text-muted">Our system provides everything you need to manage your air conditioning servicing business efficiently.</p>
-            </div>
+        <div class="section-header animate-on-scroll delay-1">
+            <h2>Our Services</h2>
+            <div class="divider"></div>
+            <p class="text-muted mt-2">Comprehensive air conditioning solutions for your DIS operations</p>
         </div>
 
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-primary-opacity-10 p-3 rounded me-4">
-                                <i class="fas fa-tasks fa-2x text-primary"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold text-primary">Job Management</h4>
-                                <p class="text-muted">Schedule, assign, and track service jobs from start to completion with real-time updates.</p>
-                                <a href="#" class="text-primary text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Feature 1 -->
+            <div class="col-md-3 col-6 animate-on-scroll delay-2">
+                <div class="feature-card">
+                    <span class="feature-icon"><i class="fas fa-wrench"></i></span>
+                    <h5>Repair</h5>
+                    <p>Fast &amp; reliable AC repair</p>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-success bg-opacity-10 p-3 rounded me-4">
-                                <i class="fas fa-user-clock fa-2x text-success"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold text-success">Technician Tracking</h4>
-                                <p class="text-muted">Monitor technician locations, assign jobs based on proximity, and optimize routes.</p>
-                                <a href="#" class="text-success text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Feature 2 -->
+            <div class="col-md-3 col-6 animate-on-scroll delay-3">
+                <div class="feature-card">
+                    <span class="feature-icon"><i class="fas fa-tools"></i></span>
+                    <h5>Maintenance</h5>
+                    <p>Preventive &amp; routine care</p>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-warning bg-opacity-10 p-3 rounded me-4">
-                                <i class="fas fa-file-invoice-dollar fa-2x text-warning"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold text-warning">Billing & Invoicing</h4>
-                                <p class="text-muted">Generate professional invoices, track payments, and manage customer billing history.</p>
-                                <a href="#" class="text-warning text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Feature 3 -->
+            <div class="col-md-3 col-6 animate-on-scroll delay-4">
+                <div class="feature-card">
+                    <span class="feature-icon"><i class="fas fa-boxes"></i></span>
+                    <h5>Installation</h5>
+                    <p>New system setup</p>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-info bg-opacity-10 p-3 rounded me-4">
-                                <i class="fas fa-clipboard-check fa-2x text-info"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold text-info">Inventory Management</h4>
-                                <p class="text-muted">Track spare parts, manage stock levels, and automate reordering for essential components.</p>
-                                <a href="#" class="text-info text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-accent bg-opacity-10 p-3 rounded me-4">
-                                <i class="fas fa-chart-line fa-2x text-accent"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold text-accent">Analytics & Reports</h4>
-                                <p class="text-muted">Gain insights with detailed reports on service performance, revenue, and customer satisfaction.</p>
-                                <a href="#" class="text-accent text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 hover-shadow">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-purple bg-opacity-10 p-3 rounded me-4">
-                                <i class="fas fa-mobile-alt fa-2x text-purple"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold text-purple">Mobile App</h4>
-                                <p class="text-muted">Technicians can update job status, access customer details, and submit reports on the go.</p>
-                                <a href="#" class="text-purple text-decoration-none fw-medium">Learn more <i class="fas fa-arrow-right ms-1"></i></a>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Feature 4 -->
+            <div class="col-md-3 col-6 animate-on-scroll delay-5">
+                <div class="feature-card">
+                    <span class="feature-icon"><i class="fas fa-microchip"></i></span>
+                    <h5>Diagnostics</h5>
+                    <p>Smart system analysis</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h2 class="display-5 fw-bold mb-4 text-primary">Ready to Transform Your Servicing Business?</h2>
-                <p class="lead text-muted mb-5">Join hundreds of DIS companies using our system to improve efficiency and customer satisfaction.</p>
-                <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
-                    <a href="/Account/Register" class="btn btn-primary btn-lg px-5 py-3">
-                        <i class="fas fa-rocket me-2"></i>Start Free Trial
-                    </a>
-                    <a href="/Contact" class="btn btn-outline-primary btn-lg px-5 py-3">
-                        <i class="fas fa-phone me-2"></i>Schedule a Demo
-                    </a>
-                </div>
-                <p class="text-muted mt-4">
-                    <small><i class="fas fa-check-circle text-success me-1"></i> No credit card required • 30-day free trial • Cancel anytime</small>
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- ===== SCROLL ANIMATION SCRIPT ===== -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const elements = document.querySelectorAll('.animate-on-scroll');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        elements.forEach(el => observer.observe(el));
+
+        // Also trigger visible for any already visible on load
+        setTimeout(() => {
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight) {
+                    el.classList.add('visible');
+                }
+            });
+        }, 100);
+    });
+</script>

@@ -7,193 +7,434 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="~/bootstrap/bootstrap.min530.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="~/images/NewAClogo.png" />
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="~/fontawesome/css/all.min640.css">
 
+    <!-- Google Fonts (Optional but nice) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <!-- Custom CSS -->
     <style>
+        /* ===== ROOT ===== */
         :root {
             --primary-color: #2c8c99;
+            --primary-dark: #1a6b78;
+            --primary-light: #e8f4f6;
             --secondary-color: #6c757d;
             --success-color: #198754;
             --purple: #6f42c1;
+            --accent-color: #ff7e5f;
+            --shadow-sm: 0 2px 8px rgba(44, 140, 153, 0.08);
+            --shadow-md: 0 8px 30px rgba(44, 140, 153, 0.12);
+            --shadow-lg: 0 20px 60px rgba(44, 140, 153, 0.15);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        * {
+            box-sizing: border-box;
         }
 
-        .min-vh-80 {
-            min-height: 80vh;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1a2a3a;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        .hover-shadow {
-            transition: transform 0.3s, box-shadow 0.3s;
+        /* ===== NAVBAR ===== */
+        .navbar {
+            padding: 12px 0;
+            background: rgba(255, 255, 255, 0.92) !important;
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid rgba(44, 140, 153, 0.06);
+            transition: var(--transition);
+            min-height: 72px;
         }
-
-            .hover-shadow:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-            }
 
         .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: var(--primary-color) !important;
         }
 
             .navbar-brand i {
                 color: var(--primary-color);
+                font-size: 1.3rem;
             }
 
-        .btn-purple {
-            background-color: var(--purple);
-            color: white;
-        }
-
-            .btn-purple:hover {
-                background-color: #5a32a3;
-                color: white;
+            .navbar-brand span {
+                color: var(--primary-dark);
             }
 
-        .footer {
-            background-color: #f8f9fa;
-            border-top: 1px solid #e9ecef;
+        .nav-link {
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 8px 16px !important;
+            border-radius: 10px;
+            transition: var(--transition);
+            color: #4a5a6a !important;
         }
 
+            .nav-link:hover,
+            .nav-link.active {
+                color: var(--primary-color) !important;
+                background: rgba(44, 140, 153, 0.06);
+            }
+
+            .nav-link.active {
+                font-weight: 600;
+            }
+
+        /* Navbar buttons */
+        .navbar .btn {
+            border-radius: 10px;
+            padding: 8px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+            .btn-outline-primary:hover {
+                background: var(--primary-color);
+                border-color: var(--primary-color);
+                color: #fff;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(44, 140, 153, 0.25);
+            }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+
+            .btn-primary:hover {
+                background: var(--primary-dark);
+                border-color: var(--primary-dark);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(44, 140, 153, 0.3);
+            }
+
+        /* Theme toggle */
         .theme-switch {
-            cursor: pointer;
-            padding: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: 50%;
-            transition: background-color 0.3s;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(44, 140, 153, 0.06);
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            border: none;
         }
 
             .theme-switch:hover {
-                background-color: rgba(0,0,0,0.05);
+                background: rgba(44, 140, 153, 0.12);
+                transform: rotate(20deg);
             }
 
-        /* Dark Mode Styles */
-        [data-bs-theme="dark"] {
-            background-color: #121212;
-            color: #e0e0e0;
+        /* Mobile menu improvements */
+        .navbar-toggler {
+            border: none;
+            padding: 8px 10px;
+            border-radius: 10px;
         }
 
-            [data-bs-theme="dark"] .hero-section {
-                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            .navbar-toggler:focus {
+                box-shadow: 0 0 0 3px rgba(44, 140, 153, 0.2);
             }
 
-            [data-bs-theme="dark"] .footer {
-                background-color: #212529;
-                border-top: 1px solid #495057;
-                color: #e0e0e0;
+        .navbar-toggler-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #fff;
+            border-top: 1px solid rgba(44, 140, 153, 0.06);
+            padding: 50px 0 30px;
+            margin-top: 60px;
+        }
+
+            .footer h4,
+            .footer h5 {
+                font-weight: 700;
+                color: var(--primary-dark);
             }
 
-            [data-bs-theme="dark"] .bg-light {
-                background-color: #2d2d2d !important;
-                color: #e0e0e0;
+            .footer a {
+                color: #6c7a8a;
+                text-decoration: none;
+                transition: var(--transition);
             }
 
-            [data-bs-theme="dark"] .text-muted {
-                color: #adb5bd !important;
+                .footer a:hover {
+                    color: var(--primary-color);
+                }
+
+            .footer .social-link {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: rgba(44, 140, 153, 0.06);
+                color: var(--primary-color);
+                transition: var(--transition);
             }
 
-            [data-bs-theme="dark"] .card {
-                background-color: #2d2d2d;
-                border-color: #495057;
-                color: #e0e0e0;
+                .footer .social-link:hover {
+                    background: var(--primary-color);
+                    color: #fff;
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 20px rgba(44, 140, 153, 0.25);
+                }
+
+        /* ===== DARK MODE ===== */
+        [data-bs-theme="dark"] {
+            color-scheme: dark;
+        }
+
+            [data-bs-theme="dark"] body {
+                background-color: #0f1419;
+                color: #e8edf2;
             }
 
-            /* Navigation fixes for dark mode */
             [data-bs-theme="dark"] .navbar {
-                background-color: #212529 !important;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                background: rgba(18, 24, 30, 0.92) !important;
+                backdrop-filter: blur(16px) saturate(180%);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             }
 
-            [data-bs-theme="dark"] .navbar-light .navbar-nav .nav-link {
-                color: rgba(255, 255, 255, 0.85) !important;
+            [data-bs-theme="dark"] .navbar-brand {
+                color: #fff !important;
             }
 
-                [data-bs-theme="dark"] .navbar-light .navbar-nav .nav-link:hover,
-                [data-bs-theme="dark"] .navbar-light .navbar-nav .nav-link:focus {
-                    color: rgba(255, 255, 255, 1) !important;
-                }
+            [data-bs-theme="dark"] .nav-link {
+                color: rgba(255, 255, 255, 0.75) !important;
+            }
 
-                [data-bs-theme="dark"] .navbar-light .navbar-nav .nav-link.active {
+                [data-bs-theme="dark"] .nav-link:hover,
+                [data-bs-theme="dark"] .nav-link.active {
                     color: var(--primary-color) !important;
-                    font-weight: 600;
+                    background: rgba(44, 140, 153, 0.12);
                 }
 
-            [data-bs-theme="dark"] .navbar-light .navbar-toggler {
-                border-color: rgba(255, 255, 255, 0.1);
-                color: rgba(255, 255, 255, 0.85);
-            }
-
-            [data-bs-theme="dark"] .navbar-light .navbar-toggler-icon {
-                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-            }
-
-            /* Button fixes for dark mode */
-            [data-bs-theme="dark"] .btn-outline-primary {
-                color: #2c8c99;
-                border-color: #2c8c99;
-            }
-
-                [data-bs-theme="dark"] .btn-outline-primary:hover {
-                    background-color: var(--primary-color);
-                    border-color: var(--primary-color);
-                    color: white;
-                }
-
-            [data-bs-theme="dark"] .btn-primary {
-                background-color: var(--primary-color);
+            [data-bs-theme="dark"] .navbar .btn-outline-primary {
+                color: var(--primary-color);
                 border-color: var(--primary-color);
             }
 
-            /* Footer text color in dark mode */
-            [data-bs-theme="dark"] .footer .text-muted,
-            [data-bs-theme="dark"] .footer a.text-decoration-none.text-muted {
-                color: #adb5bd !important;
-            }
-
-                [data-bs-theme="dark"] .footer a.text-decoration-none.text-muted:hover {
-                    color: #dee2e6 !important;
+                [data-bs-theme="dark"] .navbar .btn-outline-primary:hover {
+                    background: var(--primary-color);
+                    color: #fff;
                 }
 
-            /* Social icons in dark mode */
-            [data-bs-theme="dark"] .footer .text-secondary {
-                color: #adb5bd !important;
+            [data-bs-theme="dark"] .footer {
+                background: #121a20;
+                border-top: 1px solid rgba(255, 255, 255, 0.04);
             }
 
-                [data-bs-theme="dark"] .footer .text-secondary:hover {
-                    color: #dee2e6 !important;
+                [data-bs-theme="dark"] .footer h4,
+                [data-bs-theme="dark"] .footer h5 {
+                    color: #e8edf2;
                 }
 
-            /* Form control colors in dark mode */
-            [data-bs-theme="dark"] .form-control {
-                background-color: #2d2d2d;
-                border-color: #495057;
-                color: #e0e0e0;
+                [data-bs-theme="dark"] .footer a {
+                    color: #8a9aa8;
+                }
+
+                    [data-bs-theme="dark"] .footer a:hover {
+                        color: var(--primary-color);
+                    }
+
+                [data-bs-theme="dark"] .footer .social-link {
+                    background: rgba(255, 255, 255, 0.06);
+                    color: #8a9aa8;
+                }
+
+                    [data-bs-theme="dark"] .footer .social-link:hover {
+                        background: var(--primary-color);
+                        color: #fff;
+                    }
+
+            [data-bs-theme="dark"] .text-muted {
+                color: #8a9aa8 !important;
             }
 
-                [data-bs-theme="dark"] .form-control:focus {
-                    background-color: #2d2d2d;
-                    border-color: #86b7fe;
-                    color: #e0e0e0;
-                    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            [data-bs-theme="dark"] hr {
+                border-color: rgba(255, 255, 255, 0.06);
+            }
+
+            [data-bs-theme="dark"] .theme-switch {
+                background: rgba(255, 255, 255, 0.06);
+                color: #8a9aa8;
+            }
+
+                [data-bs-theme="dark"] .theme-switch:hover {
+                    background: rgba(255, 255, 255, 0.12);
                 }
+
+        /* ===== RESPONSIVE ===== */
+        @@media (max-width: 991.98px) {
+            .navbar-collapse {
+                padding-top: 16px;
+                padding-bottom: 8px;
+            }
+
+            .navbar .btn {
+                width: 100%;
+                justify-content: center;
+                margin: 4px 0;
+            }
+
+            .navbar .d-flex.align-items-center {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .navbar .theme-switch {
+                margin-right: 0 !important;
+            }
+
+            .nav-link {
+                padding: 10px 14px !important;
+                border-radius: 8px;
+            }
+
+            .footer {
+                padding: 30px 0 20px;
+                margin-top: 30px;
+            }
+
+                .footer .col-lg-4:first-child {
+                    text-align: center;
+                }
+
+                .footer .d-flex.gap-3 {
+                    justify-content: center;
+                }
+        }
+
+        @@media (max-width: 575.98px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+                .navbar-brand i {
+                    font-size: 1.1rem;
+                }
+
+            .navbar .btn {
+                font-size: 0.8rem;
+                padding: 6px 14px;
+            }
+
+            .footer h5 {
+                font-size: 1rem;
+                margin-bottom: 12px !important;
+            }
+
+            .footer .list-unstyled li {
+                font-size: 0.85rem;
+            }
+
+            .footer .col-md-6.text-md-end {
+                text-align: left !important;
+                margin-top: 10px;
+            }
+
+            .footer .row.align-items-center {
+                flex-direction: column;
+                text-align: center;
+            }
+
+                .footer .row.align-items-center .col-md-6 {
+                    width: 100%;
+                }
+
+                    .footer .row.align-items-center .col-md-6.text-md-end {
+                        text-align: center !important;
+                    }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(44, 140, 153, 0.04);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 20px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--primary-dark);
+            }
+
+        /* ===== UTILITY ENHANCEMENTS ===== */
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .bg-primary-opacity-10 {
+            background: rgba(44, 140, 153, 0.08);
+        }
+
+        .rounded-4 {
+            border-radius: 20px;
+        }
+
+        .shadow-soft {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .shadow-hover {
+            transition: var(--transition);
+        }
+
+            .shadow-hover:hover {
+                box-shadow: var(--shadow-md);
+                transform: translateY(-4px);
+            }
     </style>
 
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-wind me-2"></i>AirCon<span class="text-primary">Serv</span>
+                <i class="fas fa-wind me-2"></i>AirCon<span>Serv</span>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -216,72 +457,87 @@
                     </li>
                 </ul>
 
-                <div class="d-flex align-items-center">
-                    <div class="theme-switch me-3" id="themeToggle">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <button class="theme-switch" id="themeToggle" aria-label="Toggle theme">
                         <i class="fas fa-moon" id="themeIcon"></i>
-                    </div>
+                    </button>
 
-                    <a asp-controller="CustomerLogin" asp-action="Login" class="btn btn-outline-primary me-2">
+                    <a asp-controller="AdminLogin" asp-action="Login" class="btn btn-outline-primary">
                         <i class="fas fa-sign-in-alt me-1"></i>Login
-                    </a>
-
-                    <a asp-controller="CustomerLogin" asp-action="Register" class="btn btn-primary">
-                        <i class="fas fa-user-plus me-1"></i>Register
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- ===== MAIN CONTENT ===== -->
     <main role="main">
         @RenderBody()
     </main>
 
-    <!-- Footer -->
-    <footer class="footer py-5 mt-5">
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
+            <div class="row g-4">
+                <!-- Brand -->
+                <div class="col-lg-4">
                     <h4 class="fw-bold mb-3">
                         <i class="fas fa-wind me-2"></i>AirCon<span class="text-primary">Serv</span>
                     </h4>
-                    <p class="text-muted">Professional air conditioning servicing management system designed to streamline operations and improve customer satisfaction.</p>
-                    <div class="d-flex gap-3 mt-4">
-                        <a href="#" class="text-secondary"><i class="fab fa-facebook-f fa-lg"></i></a>
-                        <a href="#" class="text-secondary"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-secondary"><i class="fab fa-linkedin-in fa-lg"></i></a>
-                        <a href="#" class="text-secondary"><i class="fab fa-instagram fa-lg"></i></a>
+                    <p class="text-muted">
+                        Professional air conditioning servicing management system designed to streamline
+                        operations and improve customer satisfaction.
+                    </p>
+                    <div class="d-flex gap-2 mt-4">
+                        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
 
-                <div class="col-lg-2 col-md-6 mb-4">
+                <!-- Product -->
+                <div class="col-6 col-lg-2">
                     <h5 class="fw-bold mb-3">Product</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/Features" class="text-decoration-none text-muted">Features</a></li>
-                        <li class="mb-2"><a href="/Pricing" class="text-decoration-none text-muted">Pricing</a></li>
-                        <li class="mb-2"><a href="/Updates" class="text-decoration-none text-muted">Updates</a></li>
-                        <li class="mb-2"><a href="/FAQ" class="text-decoration-none text-muted">FAQ</a></li>
+                        <li class="mb-2"><a href="/Features">Features</a></li>
+                        <li class="mb-2"><a href="/Pricing">Pricing</a></li>
+                        <li class="mb-2"><a href="/Updates">Updates</a></li>
+                        <li class="mb-2"><a href="/FAQ">FAQ</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-2 col-md-6 mb-4">
+                <!-- Company -->
+                <div class="col-6 col-lg-2">
                     <h5 class="fw-bold mb-3">Company</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/About" class="text-decoration-none text-muted">About</a></li>
-                        <li class="mb-2"><a href="/Careers" class="text-decoration-none text-muted">Careers</a></li>
-                        <li class="mb-2"><a href="/Blog" class="text-decoration-none text-muted">Blog</a></li>
-                        <li class="mb-2"><a href="/Press" class="text-decoration-none text-muted">Press</a></li>
+                        <li class="mb-2"><a href="/About">About</a></li>
+                        <li class="mb-2"><a href="/Careers">Careers</a></li>
+                        <li class="mb-2"><a href="/Blog">Blog</a></li>
+                        <li class="mb-2"><a href="/Press">Press</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-4 mb-4">
+                <!-- Contact -->
+                <div class="col-lg-4">
                     <h5 class="fw-bold mb-3">Contact Us</h5>
                     <ul class="list-unstyled text-muted">
-                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>123 Service Street, Ygn City, AC 12345</li>
-                        <li class="mb-2"><i class="fas fa-phone me-2"></i>(+95) 9 123 456 789</li>
-                        <li class="mb-2"><i class="fas fa-envelope me-2"></i>support@airconserv.com</li>
-                        <li class="mb-2"><i class="fas fa-clock me-2"></i>Mon-Fri 9:00AM - 6:00PM</li>
+                        <li class="mb-2">
+                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                            123 Service Street, Ygn City, AC 12345
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-phone me-2 text-primary"></i>
+                            (+95) 9 123 456 789
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-envelope me-2 text-primary"></i>
+                            support@airconserv.com
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-clock me-2 text-primary"></i>
+                            Mon-Fri 9:00AM - 6:00PM
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -290,54 +546,67 @@
 
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="text-muted mb-0">&copy; @DateTime.Now.Year AirConServ. All rights reserved.</p>
+                    <p class="text-muted mb-0">
+                        &copy; @DateTime.Now.Year AirConServ. All rights reserved.
+                    </p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <a href="/Privacy" class="text-decoration-none text-muted me-3">Privacy Policy</a>
-                    <a href="/Terms" class="text-decoration-none text-muted">Terms of Service</a>
+                    <a href="/Privacy" class="text-muted me-3">Privacy Policy</a>
+                    <a href="/Terms" class="text-muted">Terms of Service</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap & JavaScript -->
+    <!-- ===== SCRIPTS ===== -->
     <script src="~/bootstrap/bootstrap.bundle.min.js"></script>
 
-    <!-- Theme Toggle Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            // ----- Theme Toggle -----
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
-            const htmlElement = document.documentElement;
+            const html = document.documentElement;
 
-            // Check for saved theme or prefer-color-scheme
             const savedTheme = localStorage.getItem('theme') || 'light';
-            htmlElement.setAttribute('data-bs-theme', savedTheme);
-            updateThemeIcon(savedTheme);
+            html.setAttribute('data-bs-theme', savedTheme);
+            updateIcon(savedTheme);
 
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = htmlElement.getAttribute('data-bs-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-
-                htmlElement.setAttribute('data-bs-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateThemeIcon(newTheme);
+            themeToggle.addEventListener('click', function () {
+                const current = html.getAttribute('data-bs-theme');
+                const next = current === 'light' ? 'dark' : 'light';
+                html.setAttribute('data-bs-theme', next);
+                localStorage.setItem('theme', next);
+                updateIcon(next);
             });
 
-            function updateThemeIcon(theme) {
-                if (theme === 'dark') {
-                    themeIcon.classList.remove('fa-moon');
-                    themeIcon.classList.add('fa-sun');
-                } else {
-                    themeIcon.classList.remove('fa-sun');
-                    themeIcon.classList.add('fa-moon');
-                }
+            function updateIcon(theme) {
+                themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
             }
 
-            // Initialize Bootstrap components if needed
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+            // ----- Close mobile menu on link click -----
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            const collapse = document.getElementById('navbarNav');
+            const bsCollapse = bootstrap.Collapse.getInstance(collapse);
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    if (window.innerWidth < 992 && bsCollapse) {
+                        bsCollapse.hide();
+                    }
+                });
+            });
+
+            // ----- Auto-close when clicking outside -----
+            document.addEventListener('click', function (e) {
+                const nav = document.querySelector('.navbar');
+                const toggler = document.querySelector('.navbar-toggler');
+                if (window.innerWidth < 992 &&
+                    bsCollapse &&
+                    bsCollapse._isShown() &&
+                    !nav.contains(e.target)) {
+                    bsCollapse.hide();
+                }
             });
         });
     </script>

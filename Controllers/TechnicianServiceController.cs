@@ -573,7 +573,7 @@ public class TechnicianServiceController : Controller
 
 
                 Status =
-                    "In Progress",
+                    "Completed",
 
 
                 CreatedAt =
