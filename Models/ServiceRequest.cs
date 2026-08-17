@@ -71,6 +71,9 @@ public partial class ServiceRequest
     public virtual ICollection<CustomerFeedback> CustomerFeedbacks { get; set; } = new List<CustomerFeedback>();
 
     [InverseProperty("ServiceRequest")]
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    [InverseProperty("ServiceRequest")]
     public virtual ICollection<ServiceRecord> ServiceRecords { get; set; } = new List<ServiceRecord>();
 
     [InverseProperty("ServiceRequest")]

@@ -1,232 +1,406 @@
 ﻿@model IEnumerable<User>
+
 @{
-    ViewData["Title"] = "Technician Account";
+    ViewData["Title"] = "Technician Accounts";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <style>
     :root {
-        --primary-color: #2c8c99;
-        --primary-dark: #1a6b77;
+        --primary: #2c8c99;
+        --primary-dark: #216f79;
         --primary-light: #4ca6b3;
         --primary-soft: rgba(44, 140, 153, 0.08);
-        --primary-opacity-10: rgba(44, 140, 153, 0.10);
+        --primary-soft-2: rgba(44, 140, 153, 0.12);
+        --primary-border: rgba(44, 140, 153, 0.18);
+        --text: #24323d;
+        --muted: #71808d;
+        --success-bg: rgba(44, 140, 153, 0.10);
+        --success-text: #216f79;
+        --disabled-bg: #f1f4f5;
+        --disabled-text: #6c757d;
+        --card-radius: 18px;
         --font-base: 17px;
     }
 
-    /* ----- Base ----- */
+    /* =====================================================
+           BASE
+           ===================================================== */
+
     body {
         font-size: var(--font-base);
     }
 
     .container {
-        padding: 16px 14px !important;
         max-width: 100% !important;
+        padding: 18px 16px !important;
     }
 
-    /* ----- Page Header ----- */
+
+    /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
     .page-header {
         display: flex;
-        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
         gap: 1rem;
+        margin-bottom: 1.4rem;
     }
 
-        .page-header .header-left h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 0.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
+    .header-left h3 {
+        margin: 0 0 4px;
+        color: var(--primary);
+        font-size: 1.7rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .header-left h3 i {
+            font-size: 1.45rem;
         }
 
-            .page-header .header-left h3 i {
-                font-size: 1.6rem;
-            }
+    .header-left p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+    }
 
-        .page-header .header-left p {
-            font-size: 0.95rem;
-            color: #6c757d;
-            margin-bottom: 0;
-        }
 
-        .page-header .header-badge {
-            background: var(--primary-opacity-10);
-            color: var(--primary-color);
-            padding: 0.3rem 1.2rem;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    /* =====================================================
+           HEADER RIGHT
+           ===================================================== */
 
-    .btn-primary-custom {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 0.6rem 1.6rem;
-        border-radius: 60px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        transition: 0.2s;
-        text-decoration: none;
+    .header-right {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .header-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 7px;
+        padding: 7px 14px;
+        color: var(--primary);
+        background: var(--primary-soft);
+        border: 1px solid var(--primary-border);
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+           CREATE BUTTON
+           ===================================================== */
+
+    .btn-primary-custom {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 16px;
+        color: #fff;
+        background: var(--primary);
+        border: 1px solid var(--primary);
+        border-radius: 9px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
         cursor: pointer;
+        transition: all 0.2s ease;
     }
 
         .btn-primary-custom:hover {
+            color: #fff;
             background: var(--primary-dark);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(44, 140, 153, 0.3);
+            border-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(44, 140, 153, 0.20);
         }
 
-    /* ----- Card ----- */
+        .btn-primary-custom:active {
+            transform: translateY(0);
+        }
+
+
+    /* =====================================================
+           TABLE CARD
+           ===================================================== */
+
     .table-card {
-        border-radius: 24px !important;
-        border: 1px solid rgba(44, 140, 153, 0.06) !important;
-        box-shadow: 0 4px 24px rgba(44, 140, 153, 0.06) !important;
         overflow: hidden;
+        border: 1px solid rgba(44, 140, 153, 0.10) !important;
+        border-radius: var(--card-radius) !important;
+        background: #fff;
+        box-shadow: 0 5px 22px rgba(44, 140, 153, 0.07) !important;
     }
 
         .table-card .card-header {
-            background: white !important;
-            border-bottom: 1px solid rgba(44, 140, 153, 0.06) !important;
-            padding: 1rem 1.5rem !important;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
             align-items: center;
-            gap: 0.8rem;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 13px 18px !important;
+            background: #fff !important;
+            border-bottom: 1px solid rgba(44, 140, 153, 0.08) !important;
         }
 
             .table-card .card-header h5 {
-                font-size: 1.1rem;
-                font-weight: 600;
-                color: var(--primary-color);
-                margin-bottom: 0;
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
+                gap: 7px;
+                margin: 0;
+                color: var(--primary);
+                font-size: 0.95rem;
+                font-weight: 700;
             }
 
-    /* ----- Table ----- */
+    .status-guide {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        white-space: nowrap;
+    }
+
+        .status-guide i {
+            font-size: 0.42rem;
+            color: var(--primary);
+        }
+
+        .status-guide .disabled-dot {
+            color: #8c979c;
+        }
+
+
+    /* =====================================================
+           TABLE
+           ===================================================== */
+
     .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        padding: 0;
     }
 
     .table-custom {
         width: 100%;
+        min-width: 650px;
+        margin: 0;
         border-collapse: collapse;
-        font-size: 0.95rem;
-        min-width: 600px;
-        margin-bottom: 0;
+        font-size: 0.87rem;
     }
 
         .table-custom thead th {
-            background: var(--primary-opacity-10);
-            color: var(--primary-color);
+            padding: 11px 14px;
+            color: var(--primary);
+            background: var(--primary-soft);
+            border-bottom: 1px solid rgba(44, 140, 153, 0.12);
+            font-size: 0.72rem;
             font-weight: 700;
-            font-size: 0.85rem;
-            padding: 0.9rem 1rem;
-            border-bottom: 2px solid rgba(44, 140, 153, 0.08);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.45px;
             white-space: nowrap;
         }
 
         .table-custom tbody td {
-            padding: 0.8rem 1rem;
-            vertical-align: middle;
+            padding: 12px 14px;
+            color: var(--text);
             border-bottom: 1px solid rgba(44, 140, 153, 0.06);
-            font-size: 0.92rem;
+            vertical-align: middle;
+            font-size: 0.84rem;
         }
 
-        .table-custom tbody tr:hover {
-            background: var(--primary-opacity-10);
-            transition: background 0.2s;
+        .table-custom tbody tr {
+            transition: background 0.18s ease;
         }
 
-        .table-custom tbody tr:last-child td {
-            border-bottom: none;
-        }
+            .table-custom tbody tr:hover {
+                background: rgba(44, 140, 153, 0.035);
+            }
 
-        .table-custom .username-cell {
-            font-weight: 600;
-            color: var(--primary-dark);
-            font-size: 0.95rem;
-        }
+            .table-custom tbody tr:last-child td {
+                border-bottom: none;
+            }
 
-        .table-custom .technician-cell {
-            font-weight: 500;
-        }
 
-        .table-custom .role-cell {
-            font-weight: 500;
-            color: #6c757d;
-        }
+    /* =====================================================
+           USERNAME
+           ===================================================== */
 
-    /* ----- Badges ----- */
-    .badge-status {
-        padding: 0.3rem 1rem;
-        border-radius: 40px;
-        font-size: 0.75rem;
-        font-weight: 700;
+    .username-cell {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 5px;
+        color: var(--primary-dark);
+        font-size: 0.86rem;
+        font-weight: 700;
+    }
+
+        .username-cell i {
+            color: var(--primary);
+        }
+
+
+    /* =====================================================
+           TECHNICIAN
+           ===================================================== */
+
+    .technician-cell {
+        font-weight: 500;
+    }
+
+    .technician-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--text);
+        font-weight: 600;
+    }
+
+        .technician-name i {
+            color: var(--primary);
+        }
+
+    .not-assigned {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--muted);
+        font-size: 0.78rem;
+    }
+
+
+    /* =====================================================
+           ROLE
+           ===================================================== */
+
+    .role-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+        .role-cell i {
+            color: var(--primary);
+        }
+
+
+    /* =====================================================
+           STATUS
+           ===================================================== */
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border-radius: 50px;
+        font-size: 0.68rem;
+        font-weight: 700;
         white-space: nowrap;
     }
 
     .badge-active {
-        background: #d4edda;
-        color: #0f6b3a;
+        color: var(--success-text);
+        background: var(--success-bg);
+        border: 1px solid rgba(44, 140, 153, 0.15);
     }
 
         .badge-active i {
-            color: #28a745;
+            color: var(--primary);
         }
 
     .badge-disabled {
-        background: #f8d7da;
-        color: #721c24;
+        color: var(--disabled-text);
+        background: var(--disabled-bg);
+        border: 1px solid #e2e7e9;
     }
 
         .badge-disabled i {
-            color: #e74c3c;
+            color: #8b969c;
         }
 
-    /* ----- Delete Button ----- */
-    .btn-delete {
-        background: #dc3545;
-        color: white;
-        border: none;
-        padding: 0.3rem 0.9rem;
-        border-radius: 8px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        transition: 0.2s;
-        cursor: pointer;
+
+    /* =====================================================
+           ACTION BUTTONS
+           ===================================================== */
+
+    .btn-action {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        white-space: nowrap;
+        justify-content: center;
+        gap: 6px;
+        min-width: 105px;
+        height: 32px;
+        padding: 0 12px;
+        border-radius: 7px;
+        font-size: 0.70rem;
+        font-weight: 600;
+        line-height: 1;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .btn-action i {
+            font-size: 0.72rem;
+        }
+
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+
+    /* =====================================================
+           VIEW PROFILE
+           ===================================================== */
+
+    .btn-view {
+        color: var(--primary);
+        background: var(--primary-soft);
+        border: 1px solid var(--primary-border);
+    }
+
+        .btn-view:hover {
+            color: #fff;
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(44, 140, 153, 0.18);
+            text-decoration: none;
+        }
+
+
+    /* =====================================================
+           DISABLE
+           ===================================================== */
+
+    .btn-delete {
+        color: var(--primary-dark);
+        background: rgba(44, 140, 153, 0.06);
+        border: 1px solid rgba(44, 140, 153, 0.20);
+        cursor: pointer;
     }
 
         .btn-delete:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            color: #fff;
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(44, 140, 153, 0.18);
         }
 
         .btn-delete:disabled {
@@ -235,654 +409,1451 @@
             transform: none !important;
         }
 
-    /* ----- Mobile Card View ----- */
+
+        /* =====================================================
+           SPINNER
+           ===================================================== */
+
+        .btn-delete .spinner {
+            display: none;
+            width: 11px;
+            height: 11px;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        .btn-delete.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-delete.loading .btn-text {
+            opacity: 0.75;
+        }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+
+    /* =====================================================
+           MOBILE VIEW
+           ===================================================== */
+
+    .mobile-view {
+        display: none !important;
+    }
+
+    .desktop-table {
+        display: block !important;
+    }
+
     .mobile-account-card {
-        background: white;
-        border-radius: 16px;
-        padding: 0.9rem 0.8rem;
-        margin-bottom: 0.7rem;
-        border: 1px solid rgba(44, 140, 153, 0.06);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        transition: 0.2s;
+        padding: 13px 12px;
+        margin-bottom: 9px;
+        background: #fff;
+        border: 1px solid rgba(44, 140, 153, 0.08);
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(44, 140, 153, 0.05);
+        transition: all 0.2s ease;
     }
 
         .mobile-account-card:hover {
-            box-shadow: 0 4px 20px rgba(44, 140, 153, 0.08);
+            border-color: rgba(44, 140, 153, 0.16);
+            box-shadow: 0 4px 16px rgba(44, 140, 153, 0.08);
         }
 
-        .mobile-account-card .mobile-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.25rem 0;
-            flex-wrap: wrap;
-            gap: 0.2rem;
-        }
+    .mobile-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 0;
+    }
 
-        .mobile-account-card .mobile-label {
-            font-size: 0.7rem;
+    .mobile-label {
+        min-width: 75px;
+        color: #81909b;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .mobile-value {
+        color: var(--text);
+        font-size: 0.78rem;
+        font-weight: 500;
+        text-align: right;
+        word-break: break-word;
+    }
+
+        .mobile-value .username {
+            color: var(--primary-dark);
             font-weight: 700;
-            color: #6c7e97;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            min-width: 70px;
         }
 
-        .mobile-account-card .mobile-value {
-            font-size: 0.9rem;
-            color: #1e293b;
-            font-weight: 500;
-            word-break: break-word;
+    .mobile-technician {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--text);
+        font-weight: 600;
+    }
+
+        .mobile-technician i {
+            color: var(--primary);
         }
 
-            .mobile-account-card .mobile-value .username {
-                font-weight: 700;
-                color: var(--primary-dark);
-            }
+    .mobile-not-assigned {
+        color: var(--muted);
+        font-size: 0.72rem;
+    }
 
-        .mobile-account-card .mobile-actions {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid rgba(44, 140, 153, 0.06);
+
+    /* =====================================================
+           MOBILE ACTIONS
+           ===================================================== */
+
+    .mobile-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 8px;
+        padding-top: 9px;
+        border-top: 1px solid rgba(44, 140, 153, 0.07);
+    }
+
+        .mobile-actions .btn-action {
+            min-width: 100px;
+            height: 30px;
         }
 
-    /* ----- Empty State ----- */
+
+    /* =====================================================
+           EMPTY STATE
+           ===================================================== */
+
     .empty-state {
+        padding: 42px 20px;
         text-align: center;
-        padding: 3rem 1rem;
     }
 
         .empty-state i {
-            font-size: 4rem;
-            color: var(--primary-color);
-            opacity: 0.2;
+            color: var(--primary);
+            opacity: 0.18;
+            font-size: 3.5rem;
         }
 
         .empty-state h4 {
-            font-size: 1.3rem;
+            margin-top: 12px;
+            color: var(--primary);
+            font-size: 1.15rem;
             font-weight: 700;
-            color: var(--primary-color);
-            margin-top: 1rem;
         }
 
         .empty-state p {
-            font-size: 0.95rem;
-            color: #6c757d;
-            margin-bottom: 1.5rem;
-        }
-
-    /* ----- Responsive ----- */
-    @@media (max-width: 992px) {
-        .container
-
-    {
-        padding: 12px 10px !important;
-    }
-
-    .page-header .header-left h3 {
-        font-size: 1.5rem;
-    }
-
-    .page-header .header-left p {
-        font-size: 0.85rem;
-    }
-
-    .btn-primary-custom {
-        font-size: 0.85rem;
-        padding: 0.5rem 1.2rem;
-    }
-
-    .table-custom {
-        font-size: 0.85rem;
-        min-width: 550px;
-    }
-
-        .table-custom thead th {
-            font-size: 0.75rem;
-            padding: 0.7rem 0.8rem;
-        }
-
-        .table-custom tbody td {
-            padding: 0.6rem 0.8rem;
+            margin-bottom: 18px;
+            color: var(--muted);
             font-size: 0.82rem;
         }
 
-    .btn-delete {
-        font-size: 0.65rem;
-        padding: 0.25rem 0.7rem;
-    }
 
-    }
+    /* =====================================================
+           DARK MODE
+           ===================================================== */
 
-    @@media (max-width: 768px) {
-        body
-
-    {
-        font-size: 16px;
-    }
-
-    .container {
-        padding: 10px 6px !important;
-    }
-
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-        .page-header .header-left h3 {
-            font-size: 1.2rem;
-        }
-
-            .page-header .header-left h3 i {
-                font-size: 1.2rem;
-            }
-
-        .page-header .header-left p {
-            font-size: 0.8rem;
-        }
-
-        .page-header .header-badge {
-            font-size: 0.75rem;
-            padding: 0.2rem 1rem;
-        }
-
-    .btn-primary-custom {
-        font-size: 0.8rem;
-        padding: 0.4rem 1rem;
-        align-self: flex-start;
-    }
-
-    .table-card {
-        border-radius: 18px !important;
-    }
-
-        .table-card .card-header {
-            padding: 0.7rem 0.8rem !important;
-        }
-
-            .table-card .card-header h5 {
-                font-size: 0.95rem;
-            }
-
-    /* Hide desktop table on mobile */
-    .desktop-table {
-        display: none !important;
-    }
-
-    /* Show mobile cards */
-    .mobile-view {
-        display: block !important;
-    }
-
-    }
-
-    @@media (min-width: 769px) {
-        .mobile-view
-
-    {
-        display: none !important;
-    }
-
-    .desktop-table {
-        display: block !important;
-    }
-
-    }
-
-    @@media (max-width: 480px) {
-        body
-
-    {
-        font-size: 15px;
-    }
-
-    .container {
-        padding: 6px 3px !important;
-    }
-
-    .page-header .header-left h3 {
-        font-size: 1rem;
-    }
-
-        .page-header .header-left h3 i {
-            font-size: 1rem;
-        }
-
-    .page-header .header-left p {
-        font-size: 0.7rem;
-    }
-
-    .page-header .header-badge {
-        font-size: 0.65rem;
-        padding: 0.15rem 0.8rem;
-    }
-
-    .btn-primary-custom {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.8rem;
-    }
-
-    .table-card {
-        border-radius: 14px !important;
-    }
-
-        .table-card .card-header {
-            padding: 0.5rem 0.6rem !important;
-        }
-
-            .table-card .card-header h5 {
-                font-size: 0.8rem;
-            }
-
-    .mobile-account-card {
-        padding: 0.5rem 0.4rem;
-        border-radius: 12px;
-    }
-
-        .mobile-account-card .mobile-label {
-            font-size: 0.55rem;
-            min-width: 55px;
-        }
-
-        .mobile-account-card .mobile-value {
-            font-size: 0.75rem;
-        }
-
-        .mobile-account-card .btn-sm-mobile {
-            font-size: 0.55rem;
-            padding: 0.15rem 0.5rem;
-        }
-
-    .badge-status {
-        font-size: 0.6rem;
-        padding: 0.15rem 0.6rem;
-    }
-
-    .empty-state i {
-        font-size: 3rem;
-    }
-
-    .empty-state h4 {
-        font-size: 1rem;
-    }
-
-    .empty-state p {
-        font-size: 0.8rem;
-    }
-
-    }
-
-    /* ----- Dark Mode ----- */
     [data-bs-theme="dark"] .table-card {
-        background: #2d2d2d !important;
-        border-color: #495057 !important;
+        background: #202b31 !important;
+        border-color: rgba(76,166,179,0.18) !important;
     }
 
         [data-bs-theme="dark"] .table-card .card-header {
-            background: #2d2d2d !important;
-            border-color: #495057 !important;
+            background: #202b31 !important;
+            border-color: rgba(76,166,179,0.12) !important;
         }
 
     [data-bs-theme="dark"] .table-custom {
-        color: #e0e0e0;
+        color: #e5eef1;
     }
 
         [data-bs-theme="dark"] .table-custom thead th {
-            background: rgba(44, 140, 153, 0.08);
-            border-color: #495057;
-            color: rgba(44, 140, 153, 0.9);
+            color: #72c1cb;
+            background: rgba(44, 140, 153, 0.12);
+            border-color: rgba(76,166,179,0.15);
         }
 
         [data-bs-theme="dark"] .table-custom tbody td {
-            border-color: #495057;
+            color: #e0e8eb;
+            border-color: rgba(255,255,255,0.06);
         }
 
         [data-bs-theme="dark"] .table-custom tbody tr:hover {
-            background: rgba(44, 140, 153, 0.10);
+            background: rgba(44, 140, 153, 0.08);
         }
 
     [data-bs-theme="dark"] .mobile-account-card {
-        background: #2d2d2d !important;
-        border-color: #495057 !important;
+        background: #202b31 !important;
+        border-color: rgba(76,166,179,0.14);
     }
 
-        [data-bs-theme="dark"] .mobile-account-card .mobile-value {
-            color: #e0e0e0 !important;
+    [data-bs-theme="dark"] .mobile-value {
+        color: #e0e8eb;
+    }
+
+    [data-bs-theme="dark"] .mobile-label {
+        color: #8fa1aa;
+    }
+
+    [data-bs-theme="dark"] .badge-disabled {
+        color: #b7c0c5;
+        background: #303a40;
+        border-color: #424c52;
+    }
+
+    /* ==============================
+       Search Section
+       ============================== */
+
+    .search-card {
+        background: #ffffff;
+        border: 1px solid rgba(44, 140, 153, 0.08);
+        border-radius: 18px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 3px 18px rgba(44, 140, 153, 0.05);
+    }
+
+    .search-title {
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+    }
+
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        flex: 1;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+        font-size: 0.85rem;
+        pointer-events: none;
+    }
+
+    .search-input {
+        width: 100%;
+        height: 42px;
+        border: 1.5px solid #d7e5e8;
+        border-radius: 10px;
+        padding: 0 42px 0 40px;
+        font-size: 0.88rem;
+        color: #1e293b;
+        background: #f9fcfd;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+        .search-input::placeholder {
+            color: #94a3b8;
         }
 
-        [data-bs-theme="dark"] .mobile-account-card .mobile-label {
-            color: #a0a0a0 !important;
+        .search-input:focus {
+            border-color: var(--primary-color);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(44, 140, 153, 0.10);
         }
 
-    [data-bs-theme="dark"] .page-header .header-left p {
-        color: #a0a0a0 !important;
-    }
-
-    [data-bs-theme="dark"] .page-header .header-badge {
-        background: rgba(44, 140, 153, 0.15) !important;
-    }
-
-    [data-bs-theme="dark"] .btn-delete {
-        background: #c82333;
-    }
-
-        [data-bs-theme="dark"] .btn-delete:hover {
-            background: #a71d2a;
-        }
-
-    /* ----- Spinner on Delete ----- */
-    .btn-delete .spinner {
-        display: none;
-        width: 12px;
-        height: 12px;
-        border: 2px solid rgba(255,255,255,0.3);
-        border-top-color: white;
+    .clear-search {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 26px;
+        height: 26px;
+        border: none;
         border-radius: 50%;
-        animation: spin 0.6s linear infinite;
+        background: rgba(44, 140, 153, 0.08);
+        color: var(--primary-color);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.2s;
     }
 
-    .btn-delete.loading .spinner {
-        display: inline-block;
+        .clear-search:hover {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+    .search-result {
+        min-width: 85px;
+        text-align: center;
+        padding: 0.45rem 0.8rem;
+        border-radius: 30px;
+        background: rgba(44, 140, 153, 0.08);
+        color: var(--primary-color);
+        font-size: 0.75rem;
+        font-weight: 700;
+        white-space: nowrap;
     }
 
-    .btn-delete.loading .btn-text {
-        opacity: 0.7;
+
+
+    /* =====================================================
+           TABLET
+           ===================================================== */
+
+    @@media (max-width: 992px) {
+
+        .container {
+            padding: 14px 10px !important;
+        }
+
+        .header-left h3 {
+            font-size: 1.45rem;
+        }
+
+        .header-left p {
+            font-size: 0.8rem;
+        }
+
+        .table-custom {
+            min-width: 620px;
+        }
+
+            .table-custom thead th {
+                padding: 9px 10px;
+                font-size: 0.68rem;
+            }
+
+            .table-custom tbody td {
+                padding: 9px 10px;
+                font-size: 0.78rem;
+            }
     }
 
-    @@keyframes spin {
-        to
 
-    {
-        transform: rotate(360deg);
+    /* =====================================================
+           MOBILE
+           ===================================================== */
+
+    @@media (max-width: 768px) {
+
+        body {
+            font-size: 16px;
+        }
+
+        .container {
+            padding: 10px 7px !important;
+        }
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .header-left h3 {
+            font-size: 1.2rem;
+        }
+
+            .header-left h3 i {
+                font-size: 1.1rem;
+            }
+
+        .header-left p {
+            font-size: 0.72rem;
+        }
+
+        .header-right {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .header-badge {
+            font-size: 0.68rem;
+            padding: 6px 10px;
+        }
+
+        .btn-primary-custom {
+            padding: 7px 11px;
+            font-size: 0.72rem;
+        }
+
+        .table-card {
+            border-radius: 15px !important;
+        }
+
+            .table-card .card-header {
+                padding: 10px 12px !important;
+            }
+
+                .table-card .card-header h5 {
+                    font-size: 0.82rem;
+                }
+
+        .status-guide {
+            font-size: 0.62rem;
+        }
+
+        .desktop-table {
+            display: none !important;
+        }
+
+        .mobile-view {
+            display: block !important;
+        }
     }
 
+    @@media (max-width: 576px) {
+
+        .search-card {
+            padding: 0.75rem;
+            border-radius: 14px;
+        }
+
+        .search-title {
+            font-size: 0.8rem;
+        }
+
+        .search-wrapper {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+        }
+
+        .search-input {
+            height: 38px;
+            font-size: 0.78rem;
+        }
+
+        .search-result {
+            align-self: flex-start;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.65rem;
+        }
+
+        .btn-action,
+        .btn-delete {
+            height: 29px;
+            min-width: auto;
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+        }
     }
+
+    /* =====================================================
+           SMALL MOBILE
+           ===================================================== */
+
+    @@media (max-width: 480px) {
+
+        .container {
+            padding: 7px 4px !important;
+        }
+
+        .header-left h3 {
+            font-size: 1rem;
+        }
+
+        .header-left p {
+            font-size: 0.65rem;
+        }
+
+        .header-badge {
+            font-size: 0.6rem;
+        }
+
+        .btn-primary-custom {
+            font-size: 0.65rem;
+            padding: 6px 9px;
+        }
+
+        .table-card .card-header {
+            padding: 8px 9px !important;
+        }
+
+            .table-card .card-header h5 {
+                font-size: 0.72rem;
+            }
+
+        .mobile-account-card {
+            padding: 10px 9px;
+            border-radius: 12px;
+        }
+
+        .mobile-label {
+            min-width: 65px;
+            font-size: 0.56rem;
+        }
+
+        .mobile-value {
+            font-size: 0.7rem;
+        }
+
+        .badge-status {
+            padding: 4px 8px;
+            font-size: 0.58rem;
+        }
+
+        .mobile-actions .btn-action {
+            min-width: 92px;
+            height: 28px;
+            padding: 0 9px;
+            font-size: 0.62rem;
+        }
+
+            .mobile-actions .btn-action i {
+                font-size: 0.65rem;
+            }
+
+        .empty-state {
+            padding: 30px 12px;
+        }
+
+            .empty-state i {
+                font-size: 2.8rem;
+            }
+
+            .empty-state h4 {
+                font-size: 0.95rem;
+            }
+
+            .empty-state p {
+                font-size: 0.7rem;
+            }
+    }
+
+    /* ==============================
+       Disable Confirmation Modal
+       ============================== */
+
+    .disable-modal {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 15px 50px rgba(44, 140, 153, 0.20);
+    }
+
+        .disable-modal .modal-header {
+            background: rgba(44, 140, 153, 0.08);
+            border-bottom: 1px solid rgba(44, 140, 153, 0.08);
+            color: var(--primary-color);
+            padding: 0.9rem 1.1rem;
+        }
+
+        .disable-modal .modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .disable-modal .modal-body {
+            padding: 1.5rem 1.2rem;
+        }
+
+    .disable-icon {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(44, 140, 153, 0.10);
+        color: var(--primary-color);
+        font-size: 1.5rem;
+    }
+
+    .disable-username {
+        color: var(--primary-color);
+        font-size: 1rem;
+    }
+
+    .btn-modal-cancel,
+    .btn-modal-disable {
+        border: none;
+        border-radius: 8px;
+        padding: 0.45rem 1rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-modal-cancel {
+        background: #eef3f4;
+        color: #52636a;
+    }
+
+        .btn-modal-cancel:hover {
+            background: #dfe9eb;
+        }
+
+    .btn-modal-disable {
+        background: var(--primary-color);
+        color: red;
+    }
+
+        .btn-modal-disable:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 140, 153, 0.25);
+        }
+
+        .btn-modal-disable:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
 </style>
+
 
 <div class="container py-2 py-md-4">
 
-    <!-- Page Header -->
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
     <div class="page-header">
+
         <div class="header-left">
+
             <h3>
                 <i class="fas fa-users-cog"></i>
                 Technician Accounts
             </h3>
+
             <p>
                 <i class="fas fa-list me-1"></i>
                 Manage all technician user accounts
             </p>
+
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:0.8rem;align-items:center;">
+
+
+        <div class="header-right">
+
             <span class="header-badge">
-                <i class="fas fa-user-circle me-1"></i>
+                <i class="fas fa-user-circle"></i>
                 @Model.Count() Accounts
             </span>
-            <a asp-action="Create" class="btn-primary-custom">
+
+            <a asp-action="Create"
+               class="btn-primary-custom">
+
                 <i class="fas fa-plus-circle"></i>
                 Create Account
+
             </a>
+
         </div>
+
     </div>
 
-    <!-- Table Card -->
-    <div class="table-card card shadow-sm">
+    <!-- Search Section -->
+    <div class="search-card">
 
-        <div class="card-header">
-            <h5>
-                <i class="fas fa-list-ul me-2"></i>
-                Account List
-            </h5>
-            <span style="font-size:0.8rem;color:#6c757d;">
-                <i class="fas fa-circle me-1" style="color:#28a745;font-size:0.5rem;"></i>
-                Active ·
-                <i class="fas fa-circle me-1" style="color:#dc3545;font-size:0.5rem;"></i>
-                Disabled
+        <div class="search-title">
+            <i class="fas fa-search"></i>
+            Search Accounts
+        </div>
+
+        <div class="search-wrapper">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+
+                <input type="text"
+                       id="accountSearch"
+                       class="search-input"
+                       placeholder="Search username, technician name or role..."
+                       autocomplete="off" />
+
+                <button type="button"
+                        id="clearSearch"
+                        class="clear-search"
+                        title="Clear search">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <span id="searchResult"
+                  class="search-result">
+                @Model.Count() accounts
             </span>
         </div>
 
-        <!-- DESKTOP TABLE VIEW -->
+    </div>
+
+    <!-- =====================================================
+         ACCOUNT LIST CARD
+         ===================================================== -->
+
+    <div class="table-card card shadow-sm">
+
+
+        <!-- Card Header -->
+
+        <div class="card-header">
+
+            <h5>
+                <i class="fas fa-list-ul"></i>
+                Account List
+            </h5>
+
+            <span class="status-guide">
+
+                <i class="fas fa-circle"></i>
+                Active
+
+                <span style="margin-left:4px;">·</span>
+
+                <i class="fas fa-circle disabled-dot"></i>
+                Disabled
+
+            </span>
+
+        </div>
+
+
+        <!-- =================================================
+             DESKTOP TABLE
+             ================================================= -->
+
         <div class="card-body p-0 desktop-table">
+
             <div class="table-responsive">
+
                 <table class="table-custom">
+
                     <thead>
+
                         <tr>
-                            <th>Username</th>
-                            <th>Technician</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th class="text-center">Action</th>
+                            <th>
+                                #
+                            </th>
+                            <th>
+                                Username
+                            </th>
+
+                            <th>
+                                Technician
+                            </th>
+
+                            <th>
+                                Role
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th class="text-center">
+                                Action
+                            </th>
+
                         </tr>
+
                     </thead>
+
+
                     <tbody>
+
                         @if (Model.Any())
                         {
-                            @foreach (var item in Model)
+                            int i = 1;
+
+                            foreach (var item in Model)
                             {
                                 <tr>
+                                    <td>@i</td>
+                                    <!-- Username -->
+
                                     <td>
+
                                         <span class="username-cell">
-                                            <i class="fas fa-user me-1" style="color:var(--primary-color);"></i>
+
+                                            <i class="fas fa-user"></i>
+
                                             @item.Username
+
                                         </span>
+
                                     </td>
+
+
+                                    <!-- Technician -->
+
                                     <td>
+
                                         <span class="technician-cell">
+
                                             @if (item.Technician?.Name != null)
                                             {
-                                                <i class="fas fa-user-tie me-1" style="color:#28a745;"></i>
-                                                @item.Technician.Name
+
+                                                <span class="technician-name">
+
+                                                    <i class="fas fa-user-tie"></i>
+
+                                                    @item.Technician.Name
+
+                                                </span>
+
                                             }
                                             else
                                             {
-                                                <span style="color:#6c757d;">
-                                                    <i class="fas fa-user-slash me-1"></i>
+
+                                                <span class="not-assigned">
+
+                                                    <i class="fas fa-user-slash"></i>
+
                                                     Not Assigned
+
                                                 </span>
+
                                             }
+
                                         </span>
+
                                     </td>
+
+
+                                    <!-- Role -->
+
                                     <td>
+
                                         <span class="role-cell">
-                                            <i class="fas fa-user-shield me-1" style="color:var(--primary-color);"></i>
+
+                                            <i class="fas fa-user-shield"></i>
+
                                             @item.Role
+
                                         </span>
+
                                     </td>
+
+
+                                    <!-- Status -->
+
                                     <td>
+
                                         @if (item.IsActive == true)
                                         {
+
                                             <span class="badge-status badge-active">
-                                                <i class="fas fa-circle" style="font-size:0.4rem;"></i>
+
+                                                <i class="fas fa-circle"
+                                                   style="font-size:0.38rem;"></i>
+
                                                 Active
+
                                             </span>
+
                                         }
                                         else
                                         {
+
                                             <span class="badge-status badge-disabled">
-                                                <i class="fas fa-circle" style="font-size:0.4rem;"></i>
+
+                                                <i class="fas fa-circle"
+                                                   style="font-size:0.38rem;"></i>
+
                                                 Disabled
+
                                             </span>
+
                                         }
+
                                     </td>
+
+
+                                    <!-- Action -->
+
                                     <td class="text-center">
-                                        <form asp-action="Delete" method="post" class="delete-form" style="display:inline;">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="btn-delete" data-username="@item.Username">
-                                                <i class="fas fa-trash-alt"></i>
-                                                <span class="btn-text">Disable</span>
-                                                <span class="spinner"></span>
-                                            </button>
-                                        </form>
+
+                                        @if (item.Role?.Trim() == "Admin")
+                                        {
+
+                                            <!-- ADMIN -->
+
+                                            <a asp-action="Details"
+                                               asp-route-id="@item.Id"
+                                               class="btn-action btn-view">
+
+                                                <i class="fas fa-user-circle"></i>
+
+                                                <span>
+                                                    View Profile
+                                                </span>
+
+                                            </a>
+
+                                        }
+                                        else
+                                        {
+
+                                            <!-- SENIOR / JUNIOR -->
+                                            <form asp-action="Delete"
+                                                  method="post"
+                                                  class="delete-form">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@item.Id" />
+
+                                                <button type="submit"
+                                                        class="btn-action btn-delete"
+                                                        data-username="@item.Username">
+
+                                                    <i class="fas fa-ban"></i>
+
+                                                    <span class="btn-text">
+                                                        Disable
+                                                    </span>
+
+                                                    <span class="spinner"></span>
+
+                                                </button>
+
+                                            </form>
+
+                                        }
+
                                     </td>
+
                                 </tr>
+                                i++;
                             }
+
                         }
                         else
                         {
+
+                            <!-- Empty -->
+
                             <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <div class="empty-state py-2">
+
+                                <td colspan="5">
+
+                                    <div class="empty-state">
+
                                         <i class="fas fa-users-slash"></i>
-                                        <h4>No Accounts Found</h4>
-                                        <p>Start by creating your first technician account</p>
-                                        <a asp-action="Create" class="btn-primary-custom" style="display:inline-flex;">
+
+                                        <h4>
+                                            No Accounts Found
+                                        </h4>
+
+                                        <p>
+                                            Start by creating your first technician account.
+                                        </p>
+
+                                        <a asp-action="Create"
+                                           class="btn-primary-custom">
+
                                             <i class="fas fa-plus-circle"></i>
+
                                             Create Account
+
                                         </a>
+
                                     </div>
+
                                 </td>
+
                             </tr>
+
                         }
+
                     </tbody>
+
                 </table>
+
             </div>
+
         </div>
 
-        <!-- MOBILE CARD VIEW -->
+
+        <!-- =================================================
+             MOBILE CARD VIEW
+             ================================================= -->
+
         <div class="card-body p-2 mobile-view">
+
             @if (Model.Any())
             {
-                @foreach (var item in Model)
+                int i = 1;
+
+                foreach (var item in Model)
                 {
                     <div class="mobile-account-card">
 
+                        <div>@i</div>
                         <!-- Username -->
+
                         <div class="mobile-row">
-                            <span class="mobile-label">Username</span>
-                            <span class="mobile-value">
-                                <span class="username">
-                                    <i class="fas fa-user me-1" style="color:var(--primary-color);"></i>
-                                    @item.Username
-                                </span>
+
+                            <span class="mobile-label">
+                                Username
                             </span>
+
+                            <span class="mobile-value">
+
+                                <span class="username">
+
+                                    <i class="fas fa-user me-1"></i>
+
+                                    @item.Username
+
+                                </span>
+
+                            </span>
+
                         </div>
+
 
                         <!-- Technician -->
+
                         <div class="mobile-row">
-                            <span class="mobile-label">Technician</span>
+
+                            <span class="mobile-label">
+                                Technician
+                            </span>
+
                             <span class="mobile-value">
+
                                 @if (item.Technician?.Name != null)
                                 {
-                                    <span style="color:#28a745;font-weight:500;">
-                                        <i class="fas fa-user-tie me-1"></i>
+
+                                    <span class="mobile-technician">
+
+                                        <i class="fas fa-user-tie"></i>
+
                                         @item.Technician.Name
+
                                     </span>
+
                                 }
                                 else
                                 {
-                                    <span style="color:#6c757d;">
+
+                                    <span class="mobile-not-assigned">
+
                                         <i class="fas fa-user-slash me-1"></i>
+
                                         Not Assigned
+
                                     </span>
+
                                 }
+
                             </span>
+
                         </div>
+
 
                         <!-- Role -->
+
                         <div class="mobile-row">
-                            <span class="mobile-label">Role</span>
-                            <span class="mobile-value">
-                                <i class="fas fa-user-shield me-1" style="color:var(--primary-color);"></i>
-                                @item.Role
+
+                            <span class="mobile-label">
+                                Role
                             </span>
+
+                            <span class="mobile-value">
+
+                                <i class="fas fa-user-shield me-1"
+                                   style="color:var(--primary);"></i>
+
+                                @item.Role
+
+                            </span>
+
                         </div>
 
+
                         <!-- Status -->
+
                         <div class="mobile-row">
-                            <span class="mobile-label">Status</span>
+
+                            <span class="mobile-label">
+                                Status
+                            </span>
+
                             <span class="mobile-value">
+
                                 @if (item.IsActive == true)
                                 {
-                                    <span class="badge-status badge-active" style="font-size:0.65rem;padding:0.15rem 0.7rem;">
-                                        <i class="fas fa-circle" style="font-size:0.3rem;"></i>
+
+                                    <span class="badge-status badge-active">
+
+                                        <i class="fas fa-circle"
+                                           style="font-size:0.3rem;"></i>
+
                                         Active
+
                                     </span>
+
                                 }
                                 else
                                 {
-                                    <span class="badge-status badge-disabled" style="font-size:0.65rem;padding:0.15rem 0.7rem;">
-                                        <i class="fas fa-circle" style="font-size:0.3rem;"></i>
+
+                                    <span class="badge-status badge-disabled">
+
+                                        <i class="fas fa-circle"
+                                           style="font-size:0.3rem;"></i>
+
                                         Disabled
+
                                     </span>
+
                                 }
+
                             </span>
+
                         </div>
 
-                        <!-- Actions -->
+
+                        <!-- Action -->
+
                         <div class="mobile-actions">
-                            <form asp-action="Delete" method="post" class="delete-form" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <button type="submit" class="btn-delete" style="font-size:0.7rem;padding:0.2rem 0.7rem;" data-username="@item.Username">
-                                    <i class="fas fa-trash-alt"></i>
-                                    <span class="btn-text">Disable</span>
-                                    <span class="spinner"></span>
-                                </button>
-                            </form>
+
+                            @if (item.Role?.Trim() == "Admin")
+                            {
+
+                                <!-- ADMIN -->
+
+                                <a asp-action="Details"
+                                   asp-route-id="@item.Id"
+                                   class="btn-action btn-view">
+
+                                    <i class="fas fa-user-circle"></i>
+
+                                    <span>
+                                        View Profile
+                                    </span>
+
+                                </a>
+
+                            }
+                            else
+                            {
+
+                                <!-- SENIOR / JUNIOR -->
+
+                                <form asp-action="Delete"
+                                      method="post"
+                                      class="delete-form">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@item.Id" />
+
+                                    <button type="submit"
+                                            class="btn-action btn-delete"
+                                            data-username="@item.Username">
+
+                                        <i class="fas fa-ban"></i>
+
+                                        <span class="btn-text">
+                                            Disable
+                                        </span>
+
+                                        <span class="spinner"></span>
+
+                                    </button>
+
+                                </form>
+
+                            }
+
                         </div>
 
                     </div>
+                    i++;
                 }
+
             }
             else
             {
-                <div class="empty-state py-4">
+
+                <!-- Mobile Empty -->
+
+                <div class="empty-state">
+
                     <i class="fas fa-users-slash"></i>
-                    <h4>No Accounts Found</h4>
-                    <p>Start by creating your first technician account</p>
-                    <a asp-action="Create" class="btn-primary-custom" style="display:inline-flex;">
+
+                    <h4>
+                        No Accounts Found
+                    </h4>
+
+                    <p>
+                        Start by creating your first technician account.
+                    </p>
+
+                    <a asp-action="Create"
+                       class="btn-primary-custom">
+
                         <i class="fas fa-plus-circle"></i>
+
                         Create Account
+
                     </a>
+
                 </div>
+
             }
+
         </div>
 
     </div>
 
 </div>
+<!-- Disable Confirmation Modal -->
+<div class="modal fade"
+     id="disableModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content disable-modal">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-ban me-2"></i>
+                    Disable Account
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                <div class="disable-icon">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+
+                <h5 class="mt-3 mb-2">
+                    Disable this account?
+                </h5>
+
+                <p class="text-muted mb-2">
+                    Are you sure you want to disable
+                </p>
+
+                <strong id="disableUsername"
+                        class="disable-username">
+                </strong>
+
+                <p class="small text-muted mt-3 mb-0">
+                    This account will no longer be able to log in.
+                </p>
+
+            </div>
+
+            <div class="modal-footer justify-content-center">
+
+                <button type="button"
+                        class="btn-modal-cancel"
+                        data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>
+                    Cancel
+                </button>
+
+                <button type="button"
+                        id="confirmDisable"
+                        class="btn-modal-disable">
+                    <i class="fas fa-ban me-1"></i>
+                    Disable Account
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
 <script>
 
-    document.addEventListener('DOMContentLoaded', function() {
+     document.addEventListener("DOMContentLoaded", function () {
+
+        let selectedForm = null;
+
+        const disableModalElement =
+            document.getElementById("disableModal");
+
+        const disableModal =
+            new bootstrap.Modal(disableModalElement);
+
+        const disableUsername =
+            document.getElementById("disableUsername");
+
+        const confirmDisable =
+            document.getElementById("confirmDisable");
+
 
         // ============================================
-        // CONFIRM DELETE WITH LOADING SPINNER
+        // DISABLE BUTTON
         // ============================================
-        document.querySelectorAll('.delete-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                const button = this.querySelector('.btn-delete');
-                const username = button.getAttribute('data-username') || 'this account';
 
-                // Confirm deletion
-                if (!confirm(`Are you sure you want to disable "${username}"?`)) {
-                    e.preventDefault();
-                    return false;
-                }
+        document.querySelectorAll(".delete-form").forEach(form => {
 
-                // Show loading spinner
-                button.classList.add('loading');
-                button.disabled = true;
+            form.addEventListener("submit", function (e) {
 
-                // Change button text
-                const btnText = button.querySelector('.btn-text');
-                if (btnText) {
-                    btnText.textContent = 'Disabling...';
-                }
+                // Stop form from submitting immediately
+                e.preventDefault();
+
+                selectedForm = this;
+
+                const button =
+                    this.querySelector(".btn-delete");
+
+                const username =
+                    button.getAttribute("data-username");
+
+                // Show username in modal
+                disableUsername.textContent =
+                    '"' + username + '"';
+
+                // Reset confirm button
+                confirmDisable.disabled = false;
+
+                confirmDisable.innerHTML =
+                    '<i class="fas fa-ban me-1"></i> Disable Account';
+
+                // Show modal
+                disableModal.show();
             });
+
         });
 
+
         // ============================================
-        // TOOLTIP FOR STATUS INDICATORS
+        // CONFIRM DISABLE
         // ============================================
-        document.querySelectorAll('.badge-status').forEach(badge => {
-            badge.setAttribute('title', badge.textContent.trim());
+
+        confirmDisable.addEventListener("click", function () {
+
+            if (!selectedForm) {
+                return;
+            }
+
+            // Disable button
+            this.disabled = true;
+
+            this.innerHTML =
+                '<i class="fas fa-spinner fa-spin me-1"></i> Disabling...';
+
+            // Submit the original form
+            selectedForm.submit();
+
         });
 
     });
+
+
+
+
+       const totalAccounts = @Model.Count();
+
+    const searchInput = document.getElementById("accountSearch");
+    const clearSearch = document.getElementById("clearSearch");
+    const searchResult = document.getElementById("searchResult");
+
+    if (searchInput) {
+
+        searchInput.addEventListener("input", function () {
+
+            const keyword = this.value.trim().toLowerCase();
+
+            let visibleCount = 0;
+
+            // Desktop table rows
+            document.querySelectorAll(".desktop-table tbody tr").forEach(row => {
+
+                // Ignore empty state
+                if (row.querySelector(".empty-state")) {
+                    return;
+                }
+
+                const text = row.textContent.toLowerCase();
+
+                if (text.includes(keyword)) {
+                    row.style.display = "";
+                    visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+
+            // Mobile cards
+            document.querySelectorAll(".mobile-account-card").forEach(card => {
+
+                const text = card.textContent.toLowerCase();
+
+                if (text.includes(keyword)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+
+            // Show / hide clear button
+            if (keyword.length > 0) {
+                clearSearch.style.display = "flex";
+                searchResult.textContent = visibleCount + " found";
+            }
+            else {
+                clearSearch.style.display = "none";
+                searchResult.textContent = totalAccounts + " accounts";
+            }
+
+        });
+    }
+
+
+    // Clear search
+    if (clearSearch) {
+
+        clearSearch.addEventListener("click", function () {
+
+            searchInput.value = "";
+
+            searchInput.dispatchEvent(
+                new Event("input")
+            );
+
+            searchInput.focus();
+        });
+    }
 </script>

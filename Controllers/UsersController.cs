@@ -30,66 +30,77 @@ public class UsersController : Controller
 
 
 
-    // ==========================
-    // CREATE GET
-    // ==========================
-   
 
-
-
-    // GET: Users/Create
     public IActionResult Create()
     {
         return View();
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-    string username,
-    string password,
-    string role)
+      string username,
+      string password,
+      string role)
     {
+        username = username?.Trim() ?? string.Empty;
 
-        // Username Check
-
-        bool exists = await _context.Users
-            .AnyAsync(x => x.Username == username);
-
-
-        if (exists)
+        if (string.IsNullOrWhiteSpace(username))
         {
-            ViewBag.Error = "Username already exists";
+            ModelState.AddModelError(
+                "username",
+                "Username is required."
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            ModelState.AddModelError(
+                "password",
+                "Password is required."
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(role))
+        {
+            ModelState.AddModelError(
+                "role",
+                "Please select a technician role."
+            );
+        }
+
+        if (!ModelState.IsValid)
+        {
             return View();
         }
 
+        bool exists = await _context.Users
+            .AnyAsync(x => x.Username.ToLower() == username.ToLower());
 
+        if (exists)
+        {
+            ModelState.AddModelError(
+                "username",
+                $"Username '{username}' already exists. Please choose another username."
+            );
+
+            return View();
+        }
 
         var user = new User
         {
             Username = username,
-
-            // Later replace with Password Hash
             PasswordHash = ComputeSha256Hash(password),
-
             Role = role,
-
             TechnicianId = null,
-
             IsActive = true,
-
             IsDeleted = false,
-
             CreatedAt = DateTime.Now
         };
 
-
-
         _context.Users.Add(user);
 
-
         await _context.SaveChangesAsync();
-
-
 
         return RedirectToAction(nameof(Index));
     }
@@ -131,5 +142,20 @@ public class UsersController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        var admin = await _context.Users
+            .FirstOrDefaultAsync(x =>
+                x.Id == id &&
+                x.Role == "Admin" &&
+                x.IsDeleted != true);
 
+        if (admin == null)
+        {
+            return NotFound();
+        }
+
+        return View(admin);
+    }
 }

@@ -1,1132 +1,729 @@
 ﻿@model IEnumerable<AirConServicingManagementSystem.Models.TechnicianSchedulePlan>
 
 @{
-    ViewData["Title"] = "Calendar";
+    ViewData["Title"] = "Technician Schedule";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-}
 
-<!-- Modern Icons & FullCalendar -->
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
-@* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" /> *@
-@* <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script> *@
+    var plans = Model?.ToList() ?? new List<AirConServicingManagementSystem.Models.TechnicianSchedulePlan>();
+
+    var totalPlans = plans.Count;
+    var pendingPlans = plans.Count(x => x.Status == "Pending");
+    var progressPlans = plans.Count(x => x.Status == "In Progress");
+    var completedPlans = plans.Count(x => x.Status == "Completed");
+}
 
 <link rel="stylesheet" href="~/fontawesome/css/all.min650.css" />
 <script src="~/fontawesome/css/fullcalendar6115.js"></script>
 
-<!-- Google Font (Inter) for modern look -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
-
 <style>
+
     :root {
-        --primary-color: #2c8c99;
-        --primary-dark: #1a6b77;
-        --primary-light: #4ca6b3;
-        --primary-soft: rgba(44, 140, 153, 0.08);
-        --primary-opacity-10: rgba(44, 140, 153, 0.10);
-        --font-base: 17px;
+        --primary: #2c8c99;
+        --primary-dark: #1f707a;
+        --soft: #eef8fa;
+        --text: #234b52;
+        --muted: #71858a;
     }
 
-    /* ----- Base ----- */
     body {
-        font-size: var(--font-base);
-        font-family: 'Inter', sans-serif;
-        background: #eef5f8;
+        background: #f4f8f9;
     }
 
-    .container-fluid {
-        padding: 12px 10px !important;
-        max-width: 100% !important;
-        min-height: 100vh;
-        background: #f0f6f9;
-        font-family: 'Inter', sans-serif;
+    .schedule-page {
+        padding: 20px;
     }
 
-    /* ----- Glass Header ----- */
-    .glass-header {
-        background: rgba(255, 255, 255, 0.70);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 8px 32px rgba(44, 140, 153, 0.10);
-        border-radius: 20px;
-        padding: 1rem 1.2rem;
-        margin-bottom: 1.2rem;
+    /* HEADER */
+
+    .page-header {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 18px 22px;
+        margin-bottom: 18px;
+        border: 1px solid #e5eef0;
+        box-shadow: 0 5px 20px rgba(44, 140, 153, .07);
+    }
+
+    .page-title {
         display: flex;
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        color: var(--text);
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--soft);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .page-subtitle {
+        margin: 5px 0 0 54px;
+        color: var(--muted);
+        font-size: .85rem;
+    }
+
+    /* STAT CARDS */
+
+    .stat-card {
+        background: #fff;
+        border: 1px solid #e5eef0;
+        border-radius: 14px;
+        padding: 15px;
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(44, 140, 153, .05);
+    }
+
+    .stat-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--soft);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        float: left;
+        margin-right: 12px;
+    }
+
+    .stat-title {
+        color: var(--muted);
+        font-size: .75rem;
+        margin-bottom: 2px;
+    }
+
+    .stat-number {
+        color: var(--text);
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+    /* CARDS */
+
+    .content-card {
+        background: #fff;
+        border: 1px solid #e5eef0;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(44, 140, 153, .06);
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        padding: 15px 18px;
+        border-bottom: 1px solid #edf2f3;
+        display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 0.8rem;
     }
 
-        .glass-header .header-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #1d5e66;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            margin-bottom: 0.2rem;
-        }
-
-            .glass-header .header-title .icon-circle {
-                width: 38px;
-                height: 38px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #2c8c99, #1d6b75);
-                color: white;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.2rem;
-                box-shadow: 0 4px 12px rgba(44, 140, 153, 0.3);
-                flex-shrink: 0;
-            }
-
-        .glass-header .header-sub {
-            font-size: 0.85rem;
-            color: #6c757d;
-            letter-spacing: 0.3px;
-            margin-bottom: 0;
-        }
-
-            .glass-header .header-sub i {
-                color: #2c8c99;
-                font-size: 6px;
-                vertical-align: middle;
-            }
-
-    .btn-create-plan {
-        background: linear-gradient(145deg, #2c8c99, #1e6f7a);
-        color: white;
-        border: none;
-        padding: 0.5rem 1.4rem;
-        border-radius: 60px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        box-shadow: 0 6px 20px rgba(44, 140, 153, 0.35);
-        transition: all 0.2s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        letter-spacing: 0.3px;
-        white-space: nowrap;
+    .card-title-custom {
+        color: var(--text);
+        font-size: .95rem;
+        font-weight: 700;
+        margin: 0;
     }
 
-        .btn-create-plan:hover {
-            transform: scale(1.02) translateY(-2px);
-            box-shadow: 0 12px 28px rgba(44, 140, 153, 0.4);
-            background: linear-gradient(145deg, #1e6f7a, #155a63);
-            color: white;
-        }
-
-    /* ----- Alert ----- */
-    .alert-glass {
-        border-radius: 16px;
-        border: none;
-        box-shadow: 0 4px 16px rgba(44, 140, 153, 0.06);
-        background: rgba(44, 140, 153, 0.08);
-        backdrop-filter: blur(4px);
-        border-left: 5px solid #2c8c99;
-        color: #1a5f66;
-        padding: 0.8rem 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        margin-bottom: 1.2rem;
-        font-size: 0.95rem;
-    }
-
-        .alert-glass i {
-            font-size: 1.3rem;
-            color: #2c8c99;
-            flex-shrink: 0;
-        }
-
-        .alert-glass .btn-close {
-            margin-left: auto;
-        }
-
-    /* ----- Calendar Card ----- */
-    .calendar-card {
-        background: rgba(255, 255, 255, 0.65);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.7);
+    .count-badge {
+        background: var(--soft);
+        color: var(--primary-dark);
+        padding: 5px 10px;
         border-radius: 20px;
-        box-shadow: 0 12px 40px rgba(44, 140, 153, 0.08);
-        overflow: hidden;
-        margin-bottom: 1.2rem;
+        font-size: .72rem;
+        font-weight: 600;
     }
 
-        .calendar-card .card-body {
-            padding: 1rem !important;
-        }
+    .calendar-body {
+        padding: 15px;
+    }
 
     #calendar {
-        min-height: 400px;
-    }
-
-    /* ----- Schedule List Card ----- */
-    .list-card {
-        background: rgba(255, 255, 255, 0.60);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 20px;
-        box-shadow: 0 12px 40px rgba(44, 140, 153, 0.06);
-        overflow: hidden;
-    }
-
-        .list-card .card-header {
-            background: transparent;
-            border-bottom: 1px solid rgba(44, 140, 153, 0.10);
-            padding: 0.8rem 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-            .list-card .card-header h5 {
-                font-size: 1.05rem;
-                font-weight: 700;
-                color: #1d5e66;
-                margin-bottom: 0;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-
-                .list-card .card-header h5 i {
-                    color: #2c8c99;
-                }
-
-            .list-card .card-header .plan-badge {
-                background: rgba(44, 140, 153, 0.12);
-                color: #1d5e66;
-                border: 1px solid rgba(44, 140, 153, 0.15);
-                border-radius: 60px;
-                padding: 0.2rem 1rem;
-                font-weight: 600;
-                font-size: 0.8rem;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.3rem;
-            }
-
-        .list-card .card-body {
-            padding: 0 !important;
-        }
-
-    /* ----- Table ----- */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding: 0.5rem;
-    }
-
-    .table-custom {
         width: 100%;
-        border-collapse: collapse;
-        font-size: 0.92rem;
-        min-width: 620px;
-        margin-bottom: 0;
     }
 
-        .table-custom thead {
-            background: rgba(44, 140, 153, 0.04);
-            border-bottom: 2px solid rgba(44, 140, 153, 0.10);
+    /* TABLE */
+
+    .table-wrap {
+        overflow-x: auto;
+    }
+
+    .schedule-table {
+        width: 100%;
+        min-width: 750px;
+        border-collapse: collapse;
+    }
+
+        .schedule-table th {
+            background: #f8fbfc;
+            color: #527178;
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 11px 14px;
+            border-bottom: 1px solid #e5eef0;
+            white-space: nowrap;
         }
 
-            .table-custom thead th {
-                padding: 0.7rem 0.8rem;
-                font-weight: 600;
-                font-size: 0.8rem;
-                color: #1d5e66;
-                text-transform: uppercase;
-                letter-spacing: 0.3px;
-                white-space: nowrap;
+        .schedule-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #edf2f3;
+            font-size: .84rem;
+            vertical-align: middle;
+        }
+
+        .schedule-table tbody tr:hover {
+            background: #fbfeff;
+        }
+
+    .tech-name {
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .customer-name {
+        font-weight: 500;
+        color: #344f55;
+    }
+
+    .location-text {
+        color: #687e83;
+        max-width: 180px;
+    }
+
+    .date-text {
+        white-space: nowrap;
+        color: #415e64;
+        font-size: .78rem;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: .7rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #fff4d8;
+        color: #9a6a00;
+    }
+
+    .status-progress {
+        background: #e7f4f7;
+        color: #247785;
+    }
+
+    .status-completed {
+        background: #e7f7ee;
+        color: #26804b;
+    }
+
+    .note-text {
+        max-width: 180px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #71858a;
+    }
+
+    /* FULLCALENDAR */
+
+    .fc {
+        font-size: .85rem;
+    }
+
+        .fc .fc-toolbar-title {
+            color: var(--text);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .fc .fc-button-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            border-radius: 8px;
+            font-size: .75rem;
+        }
+
+            .fc .fc-button-primary:hover {
+                background: var(--primary-dark);
+                border-color: var(--primary-dark);
             }
 
-                .table-custom thead th i {
-                    color: #2c8c99;
-                    margin-right: 0.4rem;
-                }
-
-        .table-custom tbody td {
-            padding: 0.6rem 0.8rem;
-            vertical-align: middle;
-            border-bottom: 1px solid rgba(44, 140, 153, 0.05);
-            font-size: 0.88rem;
+        .fc .fc-daygrid-day-number {
+            color: var(--text);
+            font-size: .78rem;
         }
 
-        .table-custom tbody tr:hover {
-            background: rgba(44, 140, 153, 0.03);
+        .fc .fc-event {
+            border: none;
+            border-radius: 6px;
+            padding: 2px 5px;
+            font-size: .7rem;
         }
 
-        .table-custom .tech-name {
-            font-weight: 600;
-            color: #1d5e66;
+        .fc .fc-daygrid-day.fc-day-today {
+            background: rgba(44, 140, 153, .06);
         }
 
-        .table-custom .date-badge {
-            background: white;
-            border: 1px solid rgba(44, 140, 153, 0.15);
-            border-radius: 60px;
-            padding: 0.2rem 0.8rem;
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: #1e293b;
-            display: inline-block;
-            white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        }
+    /* EMPTY */
 
-        .table-custom .status-badge {
-            border-radius: 60px;
-            padding: 0.2rem 0.9rem;
-            font-weight: 600;
-            font-size: 0.7rem;
-            color: white;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .table-custom .status-completed {
-            background: #27ae60;
-        }
-
-        .table-custom .status-progress {
-            background: #f39c12;
-        }
-
-        .table-custom .status-pending {
-            background: #2c8c99;
-        }
-
-        .table-custom .note-text {
-            max-width: 140px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: #3d6b73;
-            font-size: 0.82rem;
-        }
-
-    /* ----- Empty State ----- */
     .empty-state {
         text-align: center;
-        padding: 2.5rem 1rem;
+        padding: 45px 20px;
+        color: var(--muted);
     }
 
         .empty-state i {
-            font-size: 3.5rem;
+            font-size: 38px;
             color: #b8d9de;
-            display: block;
-            margin-bottom: 0.8rem;
+            margin-bottom: 12px;
         }
 
-        .empty-state span {
-            font-weight: 500;
-            color: #3d6b73;
-            font-size: 0.95rem;
-        }
-
-    /* ----- FullCalendar Overrides ----- */
-    .fc .fc-button-primary {
-        background: #2c8c99 !important;
-        border: none !important;
-        box-shadow: 0 2px 8px rgba(44, 140, 153, 0.15);
-        border-radius: 30px !important;
-        padding: 0.3rem 0.9rem !important;
-        font-weight: 500;
-        font-size: 0.8rem !important;
-        transition: 0.15s;
-    }
-
-        .fc .fc-button-primary:hover {
-            background: #1d6b75 !important;
-            box-shadow: 0 4px 16px rgba(44, 140, 153, 0.25);
-            transform: scale(0.97);
-        }
-
-        .fc .fc-button-primary:disabled {
-            background: #9ac8cf !important;
-            opacity: 0.7;
-        }
-
-    .fc .fc-toolbar-title {
-        font-weight: 700;
-        color: #1a5f66;
-        font-size: 1.2rem !important;
-        letter-spacing: -0.3px;
-    }
-
-    .fc .fc-col-header-cell-cushion {
-        color: #1d5e66;
-        font-weight: 600;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        opacity: 0.8;
-    }
-
-    .fc .fc-daygrid-day-number {
-        color: #1d5e66;
-        font-weight: 500;
-        font-size: 0.85rem;
-    }
-
-    .fc .fc-daygrid-day.fc-day-today {
-        background: rgba(44, 140, 153, 0.06) !important;
-        border-radius: 8px;
-    }
-
-    .fc .fc-daygrid-day {
-        border-radius: 6px;
-        transition: background 0.1s;
-    }
-
-        .fc .fc-daygrid-day:hover {
-            background: rgba(44, 140, 153, 0.02);
-        }
-
-    .fc .fc-event {
-        border-radius: 40px !important;
-        border: none !important;
-        padding: 2px 10px !important;
-        font-weight: 500;
-        font-size: 0.72rem !important;
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(44, 140, 153, 0.15);
-        transition: 0.1s;
-    }
-
-        .fc .fc-event:hover {
-            opacity: 0.9;
-            box-shadow: 0 4px 16px rgba(44, 140, 153, 0.25);
-            transform: scale(0.98);
-        }
-
-    /* ----- Responsive ----- */
-    @@media (max-width: 992px) {
-        .container-fluid
-
-    {
-        padding: 10px 8px !important;
-    }
-
-    .glass-header {
-        padding: 0.8rem 1rem;
-        border-radius: 16px;
-    }
-
-        .glass-header .header-title {
-            font-size: 1.2rem;
-        }
-
-            .glass-header .header-title .icon-circle {
-                width: 32px;
-                height: 32px;
-                font-size: 1rem;
-            }
-
-        .glass-header .header-sub {
-            font-size: 0.78rem;
-        }
-
-    .btn-create-plan {
-        font-size: 0.8rem;
-        padding: 0.4rem 1.2rem;
-    }
-
-    #calendar {
-        min-height: 350px;
-    }
-
-    .table-custom {
-        font-size: 0.85rem;
-        min-width: 550px;
-    }
-
-        .table-custom thead th {
-            font-size: 0.7rem;
-            padding: 0.5rem 0.6rem;
-        }
-
-        .table-custom tbody td {
-            padding: 0.4rem 0.6rem;
-            font-size: 0.8rem;
-        }
-
-    .fc .fc-toolbar-title {
-        font-size: 1rem !important;
-    }
-
-    .fc .fc-button {
-        font-size: 0.7rem !important;
-        padding: 0.2rem 0.7rem !important;
-    }
-
-    }
+    /* MOBILE */
 
     @@media (max-width: 768px) {
-        body
 
-    {
-        font-size: 16px;
-    }
-
-    .container-fluid {
-        padding: 8px 4px !important;
-    }
-
-    .glass-header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 0.7rem 0.8rem;
-        border-radius: 14px;
-        gap: 0.5rem;
-    }
-
-        .glass-header .header-title {
-            font-size: 1.05rem;
+        .schedule-page {
+            padding: 10px;
         }
 
-            .glass-header .header-title .icon-circle {
-                width: 28px;
-                height: 28px;
-                font-size: 0.85rem;
-            }
-
-        .glass-header .header-sub {
-            font-size: 0.7rem;
+        .page-header {
+            padding: 14px;
         }
 
-    .btn-create-plan {
-        font-size: 0.75rem;
-        padding: 0.3rem 1rem;
-        align-self: flex-start;
-    }
-
-    .alert-glass {
-        font-size: 0.85rem;
-        padding: 0.6rem 0.8rem;
-        border-radius: 12px;
-        margin-bottom: 1rem;
-    }
-
-        .alert-glass i {
+        .page-title {
             font-size: 1.1rem;
         }
 
-    .calendar-card {
-        border-radius: 16px;
-    }
-
-        .calendar-card .card-body {
-            padding: 0.7rem !important;
+        .page-subtitle {
+            margin-left: 0;
+            margin-top: 8px;
         }
 
-    #calendar {
-        min-height: 300px;
-    }
-
-    .list-card {
-        border-radius: 16px;
-    }
-
-        .list-card .card-header {
-            padding: 0.6rem 0.7rem;
+        .stat-card {
+            padding: 12px;
         }
 
-            .list-card .card-header h5 {
-                font-size: 0.9rem;
-            }
-
-            .list-card .card-header .plan-badge {
-                font-size: 0.7rem;
-                padding: 0.15rem 0.8rem;
-            }
-
-    .table-responsive {
-        padding: 0.3rem;
-    }
-
-    .table-custom {
-        font-size: 0.78rem;
-        min-width: 480px;
-    }
-
-        .table-custom thead th {
-            font-size: 0.6rem;
-            padding: 0.4rem 0.4rem;
+        .stat-number {
+            font-size: 1.1rem;
         }
 
-            .table-custom thead th i {
-                font-size: 0.6rem;
-                margin-right: 0.2rem;
-            }
-
-        .table-custom tbody td {
-            padding: 0.35rem 0.4rem;
-            font-size: 0.75rem;
+        .calendar-body {
+            padding: 8px;
         }
 
-        .table-custom .date-badge {
-            font-size: 0.6rem;
-            padding: 0.1rem 0.5rem;
+        .fc .fc-toolbar {
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .table-custom .status-badge {
-            font-size: 0.6rem;
-            padding: 0.1rem 0.6rem;
+        .fc .fc-toolbar-title {
+            font-size: .9rem;
         }
-
-        .table-custom .note-text {
-            max-width: 80px;
-            font-size: 0.7rem;
-        }
-
-    .fc .fc-toolbar-title {
-        font-size: 0.9rem !important;
     }
 
-    .fc .fc-button {
-        font-size: 0.6rem !important;
-        padding: 0.15rem 0.5rem !important;
-    }
-
-    .fc .fc-col-header-cell-cushion {
-        font-size: 0.6rem;
-    }
-
-    .fc .fc-daygrid-day-number {
-        font-size: 0.7rem;
-    }
-
-    .fc .fc-event {
-        font-size: 0.6rem !important;
-        padding: 1px 6px !important;
-    }
-
-    .empty-state {
-        padding: 1.5rem 0.5rem;
-    }
-
-        .empty-state i {
-            font-size: 2.5rem;
-        }
-
-        .empty-state span {
-            font-size: 0.8rem;
-        }
-
-    }
-
-    @@media (max-width: 480px) {
-        body
-
-    {
-        font-size: 15px;
-    }
-
-    .container-fluid {
-        padding: 4px 2px !important;
-    }
-
-    .glass-header {
-        padding: 0.5rem 0.6rem;
-        border-radius: 12px;
-    }
-
-        .glass-header .header-title {
-            font-size: 0.9rem;
-        }
-
-            .glass-header .header-title .icon-circle {
-                width: 24px;
-                height: 24px;
-                font-size: 0.7rem;
-            }
-
-        .glass-header .header-sub {
-            font-size: 0.6rem;
-        }
-
-    .btn-create-plan {
-        font-size: 0.65rem;
-        padding: 0.25rem 0.8rem;
-    }
-
-    .alert-glass {
-        font-size: 0.75rem;
-        padding: 0.4rem 0.6rem;
-        border-radius: 10px;
-        border-left-width: 3px;
-    }
-
-        .alert-glass i {
-            font-size: 0.9rem;
-        }
-
-    .calendar-card {
-        border-radius: 12px;
-    }
-
-        .calendar-card .card-body {
-            padding: 0.4rem !important;
-        }
-
-    #calendar {
-        min-height: 250px;
-    }
-
-    .list-card {
-        border-radius: 12px;
-    }
-
-        .list-card .card-header {
-            padding: 0.4rem 0.5rem;
-        }
-
-            .list-card .card-header h5 {
-                font-size: 0.75rem;
-            }
-
-            .list-card .card-header .plan-badge {
-                font-size: 0.6rem;
-                padding: 0.1rem 0.6rem;
-            }
-
-    .table-responsive {
-        padding: 0.2rem;
-    }
-
-    .table-custom {
-        font-size: 0.7rem;
-        min-width: 400px;
-    }
-
-        .table-custom thead th {
-            font-size: 0.5rem;
-            padding: 0.3rem 0.3rem;
-        }
-
-        .table-custom tbody td {
-            padding: 0.25rem 0.3rem;
-            font-size: 0.65rem;
-        }
-
-        .table-custom .date-badge {
-            font-size: 0.5rem;
-            padding: 0.05rem 0.4rem;
-        }
-
-        .table-custom .status-badge {
-            font-size: 0.5rem;
-            padding: 0.05rem 0.4rem;
-        }
-
-        .table-custom .note-text {
-            max-width: 60px;
-            font-size: 0.6rem;
-        }
-
-    .fc .fc-toolbar-title {
-        font-size: 0.75rem !important;
-    }
-
-    .fc .fc-button {
-        font-size: 0.5rem !important;
-        padding: 0.1rem 0.4rem !important;
-        border-radius: 20px !important;
-    }
-
-    .fc .fc-col-header-cell-cushion {
-        font-size: 0.5rem;
-    }
-
-    .fc .fc-daygrid-day-number {
-        font-size: 0.6rem;
-    }
-
-    .fc .fc-event {
-        font-size: 0.5rem !important;
-        padding: 1px 4px !important;
-    }
-
-    .empty-state i {
-        font-size: 2rem;
-    }
-
-    .empty-state span {
-        font-size: 0.7rem;
-    }
-
-    }
-
-    /* ----- Scrollbar ----- */
-    ::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: rgba(44, 140, 153, 0.03);
-        border-radius: 30px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #2c8c99;
-        border-radius: 30px;
-    }
-
-    /* ----- Dark Mode ----- */
-    [data-bs-theme="dark"] .container-fluid {
-        background: #1a1a2e;
-    }
-
-    [data-bs-theme="dark"] .glass-header {
-        background: rgba(45, 45, 68, 0.80);
-        border-color: rgba(255, 255, 255, 0.05);
-    }
-
-        [data-bs-theme="dark"] .glass-header .header-title {
-            color: #7fcbd4;
-        }
-
-        [data-bs-theme="dark"] .glass-header .header-sub {
-            color: #a0a0a0;
-        }
-
-    [data-bs-theme="dark"] .calendar-card {
-        background: rgba(45, 45, 68, 0.70);
-        border-color: rgba(255, 255, 255, 0.05);
-    }
-
-    [data-bs-theme="dark"] .list-card {
-        background: rgba(45, 45, 68, 0.65);
-        border-color: rgba(255, 255, 255, 0.05);
-    }
-
-        [data-bs-theme="dark"] .list-card .card-header {
-            border-color: rgba(255, 255, 255, 0.05);
-        }
-
-            [data-bs-theme="dark"] .list-card .card-header h5 {
-                color: #7fcbd4;
-            }
-
-            [data-bs-theme="dark"] .list-card .card-header .plan-badge {
-                background: rgba(44, 140, 153, 0.15);
-                color: #7fcbd4;
-                border-color: rgba(44, 140, 153, 0.2);
-            }
-
-    [data-bs-theme="dark"] .table-custom thead {
-        background: rgba(44, 140, 153, 0.08);
-        border-color: rgba(255, 255, 255, 0.05);
-    }
-
-        [data-bs-theme="dark"] .table-custom thead th {
-            color: #7fcbd4;
-        }
-
-    [data-bs-theme="dark"] .table-custom tbody td {
-        border-color: rgba(255, 255, 255, 0.03);
-        color: #e0e0e0;
-    }
-
-    [data-bs-theme="dark"] .table-custom tbody tr:hover {
-        background: rgba(44, 140, 153, 0.05);
-    }
-
-    [data-bs-theme="dark"] .table-custom .tech-name {
-        color: #7fcbd4;
-    }
-
-    [data-bs-theme="dark"] .table-custom .date-badge {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.05);
-        color: #e0e0e0;
-    }
-
-    [data-bs-theme="dark"] .table-custom .note-text {
-        color: #a0a0a0;
-    }
-
-    [data-bs-theme="dark"] .alert-glass {
-        background: rgba(44, 140, 153, 0.15);
-        color: #7fcbd4;
-        border-left-color: #4ca6b3;
-    }
-
-    [data-bs-theme="dark"] .empty-state span {
-        color: #a0a0a0;
-    }
-
-    [data-bs-theme="dark"] .empty-state i {
-        color: #4a6a7a;
-    }
-
-    [data-bs-theme="dark"] .fc .fc-toolbar-title {
-        color: #7fcbd4;
-    }
-
-    [data-bs-theme="dark"] .fc .fc-col-header-cell-cushion {
-        color: #7fcbd4;
-    }
-
-    [data-bs-theme="dark"] .fc .fc-daygrid-day-number {
-        color: #c0c0c0;
-    }
-
-    [data-bs-theme="dark"] .fc .fc-daygrid-day.fc-day-today {
-        background: rgba(44, 140, 153, 0.10) !important;
-    }
 </style>
 
-<div class="container-fluid px-3 px-md-4 py-3 py-md-4">
 
-    <!-- ====== HEADER ====== -->
-    <div class="glass-header">
+<div class="schedule-page">
 
-        <div>
-            <div class="header-title">
-                <span class="icon-circle">
-                    <i class="fas fa-calendar-check"></i>
-                </span>
-                Technician Schedule
-            </div>
-            <p class="header-sub">
-                <i class="fas fa-circle me-1"></i>
-                Drag, click & manage all technician plans
-            </p>
-        </div>
+    <!-- HEADER -->
 
-        <a asp-controller="AdminService" asp-action="CreatePlan" class="btn-create-plan">
-            <i class="fas fa-plus-circle me-1"></i> Create Plan
-        </a>
+    <div class="page-header">
 
-    </div>
+        <h2 class="page-title">
 
-    <!-- ====== SUCCESS ALERT ====== -->
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert-glass alert-dismissible fade show">
-            <i class="fas fa-check-circle"></i>
-            <span class="fw-medium">@TempData["SuccessMessage"]</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    <!-- ====== CALENDAR CARD ====== -->
-    <div class="calendar-card">
-        <div class="card-body">
-            <div id="calendar"></div>
-        </div>
-    </div>
-
-    <!-- ====== SCHEDULE LIST ====== -->
-    <div class="list-card">
-
-        <div class="card-header">
-            <h5>
-                <i class="fas fa-list-check"></i>
-                Schedule Plan List
-            </h5>
-            <span class="plan-badge">
-                <i class="far fa-calendar-alt me-1"></i> @(Model?.Count() ?? 0) plans
+            <span class="page-icon">
+                <i class="fas fa-calendar-check"></i>
             </span>
+
+            Technician Schedule
+
+        </h2>
+
+        <p class="page-subtitle">
+            View and monitor technician service schedules
+        </p>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="row g-3 mb-3">
+
+        <div class="col-6 col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+
+                <div class="stat-title">
+                    Total Plans
+                </div>
+
+                <div class="stat-number">
+                    @totalPlans
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table-custom">
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-user-cog"></i> Technician</th>
-                            <th><i class="fas fa-user"></i> Customer</th>
-                            <th class="d-none d-sm-table-cell"><i class="fas fa-location-dot"></i> Location</th>
-                            <th><i class="far fa-clock"></i> Planned</th>
-                            <th><i class="fas fa-circle" style="font-size:6px;"></i> Status</th>
-                            <th class="d-none d-lg-table-cell"><i class="fas fa-pen"></i> Note</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            @foreach (var item in Model)
-                            {
-                                var statusClass = item.Status switch
-                                {
-                                    "Completed" => "status-completed",
-                                    "In Progress" => "status-progress",
-                                    _ => "status-pending"
-                                };
-                                var statusIcon = item.Status switch
-                                {
-                                    "Completed" => "fa-check-circle",
-                                    "In Progress" => "fa-spinner fa-pulse",
-                                    _ => "fa-clock"
-                                };
-                                <tr>
-                                    <td>
-                                        <span class="tech-name">@item.Technician?.Name</span>
-                                    </td>
-                                    <td>@item.CustomerName</td>
-                                    <td class="d-none d-sm-table-cell">@item.Location</td>
-                                    <td>
-                                        <span class="date-badge">
-                                            @item.PlannedDate.ToString("dd MMM yyyy hh:mm tt")
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge @statusClass">
-                                            <i class="fas @statusIcon"></i> @item.Status
-                                        </span>
-                                    </td>
-                                    <td class="d-none d-lg-table-cell">
-                                        <span class="note-text">@item.Notes</span>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="6">
-                                    <div class="empty-state">
-                                        <i class="far fa-calendar-plus"></i>
-                                        <span>No schedule plans available</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+
+        <div class="col-6 col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+
+                <div class="stat-title">
+                    Pending
+                </div>
+
+                <div class="stat-number">
+                    @pendingPlans
+                </div>
+
             </div>
+
+        </div>
+
+
+        <div class="col-6 col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+
+                <div class="stat-title">
+                    In Progress
+                </div>
+
+                <div class="stat-number">
+                    @progressPlans
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-6 col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <div class="stat-title">
+                    Completed
+                </div>
+
+                <div class="stat-number">
+                    @completedPlans
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CALENDAR -->
+
+    <div class="content-card mb-3">
+
+        <div class="card-header-custom">
+
+            <h5 class="card-title-custom">
+                <i class="fas fa-calendar-days me-2"
+                   style="color:#2c8c99;"></i>
+
+                Schedule Calendar
+            </h5>
+
+            <span class="count-badge">
+                @totalPlans Plans
+            </span>
+
+        </div>
+
+        <div class="calendar-body">
+
+            <div id="calendar"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SCHEDULE LIST -->
+
+    <div class="content-card">
+
+        <div class="card-header-custom">
+
+            <h5 class="card-title-custom">
+
+                <i class="fas fa-list-check me-2"
+                   style="color:#2c8c99;"></i>
+
+                Schedule Plan List
+
+            </h5>
+
+            <span class="count-badge">
+                @totalPlans Records
+            </span>
+
+        </div>
+
+
+        <div class="table-wrap">
+
+            @if (plans.Any())
+            {
+                <table class="schedule-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Technician
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Location
+                            </th>
+
+                            <th>
+                                Planned Date
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Notes
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var item in plans)
+                        {
+                            var statusClass =
+                            item.Status == "Completed"
+                            ? "status-completed"
+                            : item.Status == "In Progress"
+                            ? "status-progress"
+                            : "status-pending";
+
+                            var statusIcon =
+                            item.Status == "Completed"
+                            ? "fa-check"
+                            : item.Status == "In Progress"
+                            ? "fa-spinner"
+                            : "fa-clock";
+
+                            <tr>
+
+                                <td>
+
+                                    <span class="tech-name">
+                                        <i class="fas fa-user-cog me-1"
+                                           style="color:#2c8c99;"></i>
+
+                                        @item.Technician?.Name
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="customer-name">
+                                        @item.CustomerName
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="location-text">
+                                        @item.Location
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="date-text">
+
+                                        <i class="far fa-calendar me-1"
+                                           style="color:#2c8c99;"></i>
+
+                                        @item.PlannedDate.ToString(
+                                        "dd MMM yyyy, hh:mm tt")
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="status-badge @statusClass">
+
+                                <i class="fas @statusIcon"></i>
+
+                                @item.Status
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="note-text"
+                                  title="@item.Notes">
+
+                                @item.Notes
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+                                        }
+
+                    </tbody>
+
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+
+                    <i class="far fa-calendar-plus d-block"></i>
+
+                    <div>
+                        No technician schedules available.
+                    </div>
+
+                    <small>
+                        Assigned appointments will appear here automatically.
+                    </small>
+
+                </div>
+            }
+
         </div>
 
     </div>
 
 </div>
 
-<!-- ====== FULLCALENDAR SCRIPT ====== -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const calendarEl = document.getElementById('calendar');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+
             initialView: 'dayGridMonth',
+
             height: 'auto',
+
             contentHeight: 'auto',
-            aspectRatio: 1.4,
+
+            aspectRatio: 1.5,
 
             headerToolbar: {
-                left: 'prev,next',
+
+                left: 'prev,next today',
+
                 center: 'title',
+
                 right: 'dayGridMonth,timeGridWeek'
+
             },
 
             events: '/AdminService/GetPlans',
 
             eventColor: '#2c8c99',
-            eventTextColor: '#ffffff',
-            eventBorderColor: 'transparent',
-            eventBackgroundColor: '#2c8c99',
 
-            eventClassNames: ['fw-semibold', 'shadow-sm'],
+            eventTextColor: '#ffffff',
+
+            eventBorderColor: 'transparent',
 
             eventClick: function (info) {
+
                 if (info.event.url) {
-                    window.location.href = info.event.url;
+
                     info.jsEvent.preventDefault();
+
+                    window.location.href = info.event.url;
+
                 }
+
             },
 
             views: {
+
                 timeGridWeek: {
-                    titleFormat: { year: 'numeric', month: 'short', day: 'numeric' }
-                }
-            },
 
-            // Mobile responsive
-            windowResize: function(view) {
-                var width = window.innerWidth;
-                if (width < 576) {
-                    view.calendar.setOption('headerToolbar', {
-                        left: 'prev,next',
-                        center: 'title',
-                        right: ''
-                    });
-                } else if (width < 992) {
-                    view.calendar.setOption('headerToolbar', {
-                        left: 'prev,next',
-                        center: 'title',
-                        right: 'dayGridMonth'
-                    });
-                } else {
-                    view.calendar.setOption('headerToolbar', {
-                        left: 'prev,next',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek'
-                    });
+                    titleFormat: {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    }
+
                 }
+
             }
-        });
 
-        // Initial responsive check
-        var initialWidth = window.innerWidth;
-        if (initialWidth < 576) {
-            calendar.setOption('headerToolbar', {
-                left: 'prev,next',
-                center: 'title',
-                right: ''
-            });
-        } else if (initialWidth < 992) {
-            calendar.setOption('headerToolbar', {
-                left: 'prev,next',
-                center: 'title',
-                right: 'dayGridMonth'
-            });
-        }
+        });
 
         calendar.render();
 
-        // Reflow on resize
-        let resizeTimer;
-        window.addEventListener('resize', function () {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                calendar.updateSize();
-                var width = window.innerWidth;
-                if (width < 576) {
-                    calendar.setOption('headerToolbar', {
-                        left: 'prev,next',
-                        center: 'title',
-                        right: ''
-                    });
-                } else if (width < 992) {
-                    calendar.setOption('headerToolbar', {
-                        left: 'prev,next',
-                        center: 'title',
-                        right: 'dayGridMonth'
-                    });
-                } else {
-                    calendar.setOption('headerToolbar', {
-                        left: 'prev,next',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek'
-                    });
-                }
-            }, 100);
-        });
     });
+
 </script>

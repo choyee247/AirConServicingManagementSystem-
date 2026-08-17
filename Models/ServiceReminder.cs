@@ -41,6 +41,9 @@ public partial class ServiceReminder
     [InverseProperty("ServiceReminders")]
     public virtual Customer Customer { get; set; } = null!;
 
+    [InverseProperty("ServiceReminder")]
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
     [ForeignKey("ServiceRequestId")]
     [InverseProperty("ServiceReminders")]
     public virtual ServiceRequest? ServiceRequest { get; set; }

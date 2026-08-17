@@ -288,11 +288,10 @@ namespace AirConServicingManagementSystem.Controllers.Admin
 
             return RedirectToAction(nameof(Records));
         }
-        public async Task<IActionResult> Calendar(int id)
+        public async Task<IActionResult> Calendar()
         {
             var plans = await _context.TechnicianSchedulePlans
                 .Include(p => p.Technician)
-                .Where(p => p.TechnicianId == id)
                 .OrderBy(p => p.PlannedDate)
                 .ToListAsync();
 

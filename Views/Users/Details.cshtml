@@ -1,0 +1,432 @@
+﻿@model AirConServicingManagementSystem.Models.User
+
+@{
+    ViewData["Title"] = "Admin Profile";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .profile-wrapper {
+        max-width: 850px;
+        margin: 0 auto;
+    }
+
+    .profile-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, #2c8c99, #3ba6b5);
+        color: #ffffff;
+        padding: 28px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .profile-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .profile-header h4 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .profile-header p {
+        margin: 4px 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    .profile-body {
+        padding: 28px;
+    }
+
+    .info-item {
+        padding: 14px 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #f8fafc;
+        height: 100%;
+    }
+
+    .info-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+        .info-label i {
+            color: #2c8c99;
+            margin-right: 5px;
+        }
+
+    .info-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1e293b;
+        word-break: break-word;
+    }
+
+    .badge-admin {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: rgba(44, 140, 153, 0.12);
+        color: #1f6f78;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .badge-active {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .badge-disabled {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: #fee2e2;
+        color: #b91c1c;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .profile-footer {
+        padding: 18px 28px;
+        border-top: 1px solid #e5e7eb;
+        background: #f8fafc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-back {
+        border: 1px solid #94a3b8;
+        color: #475569;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 7px 14px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-back:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+            text-decoration: none;
+        }
+
+    .btn-edit {
+        border: none;
+        color: #ffffff;
+        background: #2c8c99;
+        border-radius: 8px;
+        padding: 7px 14px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-edit:hover {
+            background: #1f6f78;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 576px) {
+
+        .profile-header {
+            padding: 22px 18px;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            font-size: 26px;
+        }
+
+        .profile-body {
+            padding: 18px;
+        }
+
+        .profile-footer {
+            padding: 15px 18px;
+        }
+    }
+</style>
+
+
+<div class="profile-wrapper">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <h5 class="fw-bold mb-1">
+                <i class="fas fa-user-shield me-2"
+                   style="color:#2c8c99;"></i>
+                Admin Profile
+            </h5>
+
+            <small class="text-muted">
+                View administrator account information
+            </small>
+        </div>
+
+    </div>
+
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+
+        <!-- Header -->
+        <div class="profile-header">
+
+            <div class="profile-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+
+            <div>
+                <h4>
+                    @Model.Username
+                </h4>
+
+                <p>
+                    Administrator Account
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Body -->
+        <div class="profile-body">
+
+            <div class="row g-3">
+
+                <!-- User ID -->
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            <i class="fas fa-hashtag"></i>
+                            User ID
+                        </span>
+
+                        <div class="info-value">
+                            @Model.Id
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Username -->
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            <i class="fas fa-user"></i>
+                            Username
+                        </span>
+
+                        <div class="info-value">
+                            @Model.Username
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Role -->
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            <i class="fas fa-user-shield"></i>
+                            Role
+                        </span>
+
+                        <div class="info-value">
+
+                            <span class="badge-admin">
+                                <i class="fas fa-shield-alt"></i>
+                                @Model.Role
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Status -->
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            <i class="fas fa-toggle-on"></i>
+                            Status
+                        </span>
+
+                        <div class="info-value">
+
+                            @if (Model.IsActive == true)
+                            {
+                                <span class="badge-active">
+                                    <i class="fas fa-circle"
+                                       style="font-size:0.4rem;"></i>
+                                    Active
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge-disabled">
+                                    <i class="fas fa-circle"
+                                       style="font-size:0.4rem;"></i>
+                                    Disabled
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Technician ID -->
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            <i class="fas fa-tools"></i>
+                            Technician ID
+                        </span>
+
+                        <div class="info-value">
+
+                            @if (Model.TechnicianId.HasValue)
+                            {
+                                @Model.TechnicianId
+                            }
+                            else
+                            {
+                                <span class="text-muted">
+                                    Not Assigned
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Account Status -->
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            <i class="fas fa-check-circle"></i>
+                            Account Status
+                        </span>
+
+                        <div class="info-value">
+
+                            @if (Model.IsDeleted != true)
+                            {
+                                <span class="badge-active">
+                                    <i class="fas fa-check"></i>
+                                    Available
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge-disabled">
+                                    <i class="fas fa-times"></i>
+                                    Deleted
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Footer -->
+        <div class="profile-footer">
+
+            <a asp-action="Index"
+               class="btn-back">
+
+                <i class="fas fa-arrow-left me-1"></i>
+                Back to List
+
+            </a>
+
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn-edit">
+
+                <i class="fas fa-edit me-1"></i>
+                Edit Profile
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

@@ -29,4 +29,16 @@ public partial class Notification
     public int? ServiceReminderId { get; set; }
 
     public int? ServiceRequestId { get; set; }
+
+    [ForeignKey("ServiceReminderId")]
+    [InverseProperty("Notifications")]
+    public virtual ServiceReminder? ServiceReminder { get; set; }
+
+    [ForeignKey("ServiceRequestId")]
+    [InverseProperty("Notifications")]
+    public virtual ServiceRequest? ServiceRequest { get; set; }
+
+    [ForeignKey("UserId")]
+    [InverseProperty("Notifications")]
+    public virtual User User { get; set; } = null!;
 }

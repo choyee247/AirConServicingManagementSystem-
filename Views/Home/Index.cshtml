@@ -4,10 +4,21 @@
 }
 
 <!-- Font Awesome & Animate.css -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+@* <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> *@
+
+<link rel="stylesheet"
+      href="~/fontawesome/css/all.min650.css">
+
+@* <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" /> *@
+
+<link rel="stylesheet"
+      href="~/fontawesome/css/animate.min.css" />
 
 <style>
+
     :root {
         --primary-color: #2c8c99;
         --secondary-color: #4a6572;
@@ -22,22 +33,46 @@
         --text-muted: #6c7a8a;
     }
 
-    /* ===== GLOBAL ===== */
+
+    /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+    html {
+        scroll-behavior: smooth;
+    }
+
     body {
         overflow-x: hidden;
+        margin: 0;
     }
-    .text-warning{
-        color: #07eaff;
+
+    img {
+        max-width: 100%;
     }
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-color) 100%);
+
+    .text-white-75 {
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+
+    /* =========================================================
+           HERO
+        ========================================================= */
+
+    .hero-section {
         position: relative;
         overflow: hidden;
     }
 
-        /* Animated background shapes */
+    .bg-gradient-primary {
+        background: linear-gradient( 135deg, var(--primary-color) 0%, var(--dark-color) 100% );
+        position: relative;
+        overflow: hidden;
+    }
+
         .bg-gradient-primary::before {
-            content: '';
+            content: "";
             position: absolute;
             top: -40%;
             right: -10%;
@@ -49,7 +84,7 @@
         }
 
         .bg-gradient-primary::after {
-            content: '';
+            content: "";
             position: absolute;
             bottom: -30%;
             left: -5%;
@@ -61,61 +96,65 @@
         }
 
     @@keyframes floatShape {
-        0%
 
-    {
-        transform: translate(0, 0) scale(1);
-    }
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
 
-    100% {
-        transform: translate(40px, -30px) scale(1.1);
-    }
-
+        100% {
+            transform: translate(40px, -30px) scale(1.1);
+        }
     }
 
     .min-vh-80 {
         min-height: 80vh;
     }
 
-    /* ===== HERO IMAGE ===== */
-    .hero-image-wrapper {
-        perspective: 1000px;
+
+    /* =========================================================
+           HERO CONTENT
+        ========================================================= */
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
     }
 
-        .hero-image-wrapper img {
-            transition: transform 0.6s ease, box-shadow 0.6s ease;
-            transform: rotateY(-2deg) rotateX(2deg);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+    }
+
+    .hero-title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        line-height: 1.15;
+        font-weight: 800;
+    }
+
+        .hero-title .highlight {
+            color: #58e9f3;
         }
 
-            .hero-image-wrapper img:hover {
-                transform: rotateY(0deg) rotateX(0deg) scale(1.01);
-                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.30);
-            }
-
-    /* Floating badge */
-    .floating-badge {
-        animation: floatBadge 3s ease-in-out infinite;
-        border-radius: 12px 0 12px 12px;
-        backdrop-filter: blur(4px);
-        background: rgba(44, 140, 153, 0.92);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+    .hero-description {
+        max-width: 620px;
+        font-size: 1.05rem;
+        line-height: 1.7;
     }
 
-    @@keyframes floatBadge {
-        0%, 100%
 
-    {
-        transform: translateY(0px);
+    /* =========================================================
+           HERO BUTTONS
+        ========================================================= */
+
+    .hero-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
-    50% {
-        transform: translateY(-8px);
-    }
-
-    }
-
-    /* ===== BUTTONS ===== */
     .btn-primary {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
@@ -143,19 +182,96 @@
             background: rgba(255, 255, 255, 0.10);
         }
 
-    /* ===== STATS CARDS ===== */
+
+    /* =========================================================
+           HERO IMAGE
+        ========================================================= */
+
+    .hero-image-wrapper {
+        position: relative;
+        perspective: 1000px;
+    }
+
+        .hero-image-wrapper img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            display: block;
+            border-radius: 20px;
+            transition: transform 0.6s ease, box-shadow 0.6s ease;
+            transform: rotateY(-2deg) rotateX(2deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+            .hero-image-wrapper img:hover {
+                transform: rotateY(0deg) rotateX(0deg) scale(1.01);
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.30);
+            }
+
+
+    /* =========================================================
+           FLOATING BADGE
+        ========================================================= */
+
+    .floating-badge {
+        animation: floatBadge 3s ease-in-out infinite;
+        border-radius: 12px 0 12px 12px;
+        backdrop-filter: blur(6px);
+        background: rgba(44, 140, 153, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        max-width: calc(100% - 30px);
+    }
+
+    @@keyframes floatBadge {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-8px);
+        }
+    }
+
+
+    /* =========================================================
+           CTA GLOW
+        ========================================================= */
+
+    .btn-glow {
+        animation: glowPulse 2.5s ease-in-out infinite;
+    }
+
+    @@keyframes glowPulse {
+
+        0%,
+        100% {
+            box-shadow: 0 0 0 0 rgba(44, 140, 153, 0.3);
+        }
+
+        50% {
+            box-shadow: 0 0 30px 6px rgba(44, 140, 153, 0.15);
+        }
+    }
+
+
+    /* =========================================================
+           STATS
+        ========================================================= */
+
     .stat-card {
         border: none;
         border-radius: 20px;
         background: white;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
         position: relative;
         overflow: hidden;
         cursor: default;
     }
 
         .stat-card::after {
-            content: '';
+            content: "";
             position: absolute;
             bottom: 0;
             left: 0;
@@ -191,7 +307,7 @@
         font-size: 2.4rem;
         font-weight: 800;
         letter-spacing: -0.5px;
-        background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
+        background: linear-gradient( 135deg, var(--dark-color), var(--primary-color) );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -202,26 +318,36 @@
         font-weight: 500;
         font-size: 0.9rem;
         letter-spacing: 0.3px;
+        margin-bottom: 0;
     }
 
-    /* ===== FEATURES ===== */
+
+    /* =========================================================
+           FEATURES
+        ========================================================= */
+
     .features-section {
-        padding: 50px 0 40px;
-        background: linear-gradient(180deg, #f8fbfc 0%, #eef5f7 100%);
+        padding: 70px 0 60px;
+        background: linear-gradient( 180deg, #f8fbfc 0%, #eef5f7 100% );
         position: relative;
     }
 
-    .section-header h2 {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--text-dark);
-        letter-spacing: -0.5px;
+    .section-header {
+        text-align: center;
+        margin-bottom: 40px;
     }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
 
     .divider {
         width: 56px;
         height: 4px;
-        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        background: linear-gradient( 90deg, var(--primary-color), var(--accent-color) );
         border-radius: 4px;
         margin: 12px auto 0;
     }
@@ -229,10 +355,10 @@
     .feature-card {
         background: white;
         border-radius: 20px;
-        padding: 28px 16px;
+        padding: 30px 16px;
         text-align: center;
         border: 1px solid rgba(44, 140, 153, 0.06);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
         height: 100%;
         box-shadow: 0 4px 16px rgba(44, 140, 153, 0.04);
         position: relative;
@@ -240,13 +366,10 @@
     }
 
         .feature-card::before {
-            content: '';
+            content: "";
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(44, 140, 153, 0.04), rgba(255, 126, 95, 0.02));
+            inset: 0;
+            background: linear-gradient( 135deg, rgba(44, 140, 153, 0.04), rgba(255, 126, 95, 0.02) );
             opacity: 0;
             transition: opacity 0.5s ease;
         }
@@ -267,6 +390,8 @@
         display: block;
         margin-bottom: 12px;
         transition: all 0.4s ease;
+        position: relative;
+        z-index: 1;
     }
 
     .feature-card:hover .feature-icon {
@@ -278,8 +403,9 @@
         font-size: 1rem;
         font-weight: 700;
         color: var(--text-dark);
-        margin-bottom: 2px;
-        letter-spacing: -0.2px;
+        margin-bottom: 5px;
+        position: relative;
+        z-index: 1;
     }
 
     .feature-card p {
@@ -287,37 +413,19 @@
         color: var(--text-muted);
         margin-bottom: 0;
         font-weight: 400;
+        position: relative;
+        z-index: 1;
     }
 
-    /* ===== RESPONSIVE ===== */
-    @@media (max-width: 768px) {
-        .min-vh-80 {
-            min-height: auto;
-            padding: 40px 0;
-        }
 
-        .stat-number {
-            font-size: 1.8rem;
-        }
+    /* =========================================================
+           SCROLL ANIMATION
+        ========================================================= */
 
-        .feature-card {
-            padding: 20px 12px;
-        }
-
-        .feature-icon {
-            font-size: 2rem;
-        }
-
-        .floating-badge {
-            display: none;
-        }
-    }
-
-    /* ===== SCROLL ANIMATIONS (AOS style) ===== */
     .animate-on-scroll {
         opacity: 0;
         transform: translateY(30px);
-        transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
         .animate-on-scroll.visible {
@@ -325,7 +433,6 @@
             transform: translateY(0);
         }
 
-    /* staggered delay */
     .delay-1 {
         transition-delay: 0.05s;
     }
@@ -346,219 +453,854 @@
         transition-delay: 0.25s;
     }
 
-    .delay-6 {
-        transition-delay: 0.30s;
-    }
 
-    .delay-7 {
-        transition-delay: 0.35s;
-    }
+    /* =========================================================
+           TABLET
+        ========================================================= */
 
-    .delay-8 {
-        transition-delay: 0.40s;
-    }
+    @@media (max-width: 991.98px) {
 
-    /* ===== CTA BUTTON GLOW ===== */
-    .btn-glow {
-        animation: glowPulse 2.5s ease-in-out infinite;
-    }
-
-    @@keyframes glowPulse {
-        0%,
-        100% {
-            box-shadow: 0 0 0 0 rgba(44, 140, 153, 0.3);
+        .min-vh-80 {
+            min-height: auto;
+            padding-top: 70px;
+            padding-bottom: 70px;
         }
 
-        50% {
-            box-shadow: 0 0 30px 6px rgba(44, 140, 153, 0.15);
+        .hero-title {
+            font-size: 2.7rem;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+        }
+
+        .hero-image-wrapper img {
+            height: 350px;
+        }
+
+        .floating-badge {
+            margin: 15px !important;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .features-section {
+            padding: 55px 0 50px;
         }
     }
 
-    .text-white-75 {
-        color: rgba(255, 255, 255, 0.75);
+
+    /* =========================================================
+           MOBILE
+        ========================================================= */
+
+    @@media (max-width: 767.98px) {
+        /* HERO */
+
+        .min-vh-80 {
+            min-height: auto;
+            padding-top: 45px;
+            padding-bottom: 50px;
+        }
+
+        .hero-section .container {
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+
+        .hero-content {
+            text-align: center;
+        }
+
+        .hero-badge {
+            font-size: 0.78rem;
+            padding: 8px 13px !important;
+            margin-bottom: 18px !important;
+        }
+
+        .hero-title {
+            font-size: 2.05rem;
+            line-height: 1.2;
+            margin-bottom: 18px !important;
+        }
+
+        .hero-description {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 25px !important;
+        }
+        /* BUTTONS */
+
+        .hero-buttons {
+            width: 100%;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+            .hero-buttons .btn {
+                width: 100%;
+                padding: 12px 18px !important;
+                font-size: 0.95rem;
+            }
+        /* IMAGE */
+
+        .hero-image-wrapper {
+            margin-top: 25px;
+        }
+
+            .hero-image-wrapper img {
+                height: 240px;
+                border-radius: 16px;
+                transform: none;
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.20);
+            }
+
+                .hero-image-wrapper img:hover {
+                    transform: none;
+                }
+        /* BADGE */
+
+        .floating-badge {
+            position: absolute !important;
+            bottom: 10px !important;
+            left: 10px !important;
+            margin: 0 !important;
+            padding: 9px 12px !important;
+            border-radius: 10px !important;
+            max-width: calc(100% - 20px);
+        }
+
+            .floating-badge i.fa-2x {
+                font-size: 1.5rem;
+            }
+
+            .floating-badge h5 {
+                font-size: 0.85rem;
+            }
+
+            .floating-badge small {
+                font-size: 0.68rem;
+            }
+        /* STATS */
+
+        .py-5 {
+            padding-top: 35px !important;
+            padding-bottom: 35px !important;
+        }
+
+        .stat-card {
+            border-radius: 15px;
+            padding: 10px !important;
+        }
+
+            .stat-card .card-body {
+                padding: 12px 5px;
+            }
+
+        .stat-icon {
+            width: 52px !important;
+            height: 52px !important;
+            margin-bottom: 10px !important;
+        }
+
+            .stat-icon i {
+                font-size: 1.25rem;
+            }
+
+        .stat-number {
+            font-size: 1.55rem;
+            letter-spacing: -0.3px;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            line-height: 1.3;
+            margin-top: 3px;
+        }
+        /* FEATURES */
+
+        .features-section {
+            padding: 45px 0 40px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+        }
+
+            .section-header h2 {
+                font-size: 1.65rem;
+            }
+
+            .section-header p {
+                font-size: 0.85rem;
+                padding: 0 15px;
+                line-height: 1.5;
+            }
+
+        .divider {
+            width: 45px;
+            height: 3px;
+        }
+
+        .feature-card {
+            border-radius: 15px;
+            padding: 22px 10px;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 9px;
+        }
+
+        .feature-card h5 {
+            font-size: 0.9rem;
+        }
+
+        .feature-card p {
+            font-size: 0.72rem;
+            line-height: 1.35;
+        }
+        /* Disable heavy hover effect on touch devices */
+
+        .stat-card:hover,
+        .feature-card:hover {
+            transform: none;
+        }
     }
+
+
+    /* =========================================================
+           SMALL MOBILE
+           360px / 375px
+        ========================================================= */
+
+    @@media (max-width: 390px) {
+
+        .hero-title {
+            font-size: 1.8rem;
+        }
+
+        .hero-description {
+            font-size: 0.86rem;
+        }
+
+        .hero-image-wrapper img {
+            height: 210px;
+        }
+
+        .floating-badge {
+            padding: 7px 9px !important;
+        }
+
+            .floating-badge h5 {
+                font-size: 0.75rem;
+            }
+
+            .floating-badge small {
+                font-size: 0.62rem;
+            }
+
+        .stat-card {
+            padding: 7px !important;
+        }
+
+        .stat-icon {
+            width: 46px !important;
+            height: 46px !important;
+        }
+
+        .stat-number {
+            font-size: 1.35rem;
+        }
+
+        .stat-label {
+            font-size: 0.66rem;
+        }
+
+        .feature-card {
+            padding: 18px 7px;
+        }
+
+        .feature-icon {
+            font-size: 1.75rem;
+        }
+
+        .feature-card h5 {
+            font-size: 0.82rem;
+        }
+
+        .feature-card p {
+            font-size: 0.65rem;
+        }
+    }
+
+
+    /* =========================================================
+           VERY SMALL DEVICES
+        ========================================================= */
+
+    @@media (max-width: 340px) {
+
+        .hero-title {
+            font-size: 1.65rem;
+        }
+
+        .hero-image-wrapper img {
+            height: 190px;
+        }
+
+        .stat-number {
+            font-size: 1.2rem;
+        }
+
+        .stat-label {
+            font-size: 0.6rem;
+        }
+    }
+
+
+    /* =========================================================
+           REDUCE MOTION
+        ========================================================= */
+
+    @@media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+
+        .animate-on-scroll {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
 </style>
 
-<!-- ===== HERO ===== -->
+<!-- =========================================================
+     HERO
+========================================================= -->
+
 <section class="hero-section bg-gradient-primary">
-    <div class="container position-relative" style="z-index:2;">
+
+    <div class="container position-relative" style="z-index: 2;">
+
         <div class="row align-items-center min-vh-80">
-            <!-- Left -->
+
+            <!-- LEFT -->
             <div class="col-lg-6">
-                <div class="animate__animated animate__fadeInUp" style="animation-duration: 0.8s;">
-                    <span class="badge bg-opacity-15 text-white px-3 py-2 rounded-pill mb-3">
-                        <i class="fas fa-snowflake me-2"></i> DIS Service Management
+
+                <div class="hero-content animate__animated animate__fadeInUp"
+                     style="animation-duration: 0.8s;">
+
+                    <span class="hero-badge badge text-white px-3 py-2 rounded-pill mb-3">
+
+                        <i class="fas fa-snowflake me-2"></i>
+
+                        DIS Service Management
+
                     </span>
-                    <h1 class="display-4 fw-bold text-white mb-4">
-                        Professional Air Conditioning <br><span class="text-info">Servicing</span> Management
+
+
+                    <h1 class="hero-title text-white mb-4">
+
+                        Professional Air Conditioning
+
+                        <br />
+
+                        <span class="highlight">
+                            Servicing
+                        </span>
+
+                        Management
+
                     </h1>
-                    <p class="lead text-white-75 mb-4">
-                        Streamline your DIS service operations with our comprehensive management system.
-                        Track appointments, manage technicians, and improve customer satisfaction.
+
+
+                    <p class="hero-description lead text-white-75 mb-4">
+
+                        Streamline your DIS service operations with our
+                        comprehensive management system.
+
+                        Track appointments, manage technicians,
+                        and improve customer satisfaction.
+
                     </p>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="/Contact" class="btn btn-primary btn-lg px-5 py-3 btn-glow">
-                            <i class="fas fa-phone me-2"></i>Contact Us
+
+
+                    <div class="hero-buttons">
+
+                        <a href="/Contact"
+                           class="btn btn-primary btn-lg px-5 py-3 btn-glow">
+
+                            <i class="fas fa-phone me-2"></i>
+
+                            Contact Us
+
                         </a>
-                        <a href="#services" class="btn btn-outline-light btn-lg px-4 py-3">
-                            <i class="fas fa-arrow-down me-2"></i>Explore
+
+
+                        <a href="#services"
+                           class="btn btn-outline-light btn-lg px-4 py-3">
+
+                            <i class="fas fa-arrow-down me-2"></i>
+
+                            Explore
+
                         </a>
+
                     </div>
+
                 </div>
+
             </div>
 
-            <!-- Right -->
-            <div class="col-lg-6 mt-4 mt-lg-0">
-                <div class="hero-image-wrapper position-relative animate__animated animate__fadeInRight" style="animation-duration: 1s; animation-delay: 0.2s;">
+
+            <!-- RIGHT -->
+            <div class="col-lg-6 mt-5 mt-lg-0">
+
+                <div class="hero-image-wrapper
+                        animate__animated
+                        animate__fadeInRight"
+                     style="
+                     animation-duration: 1s;
+                     animation-delay: 0.2s;
+                 ">
+
                     <img src="~/images/aircon.jpg"
-                         class="img-fluid rounded-4 shadow-lg w-100"
-                         alt="Air Conditioning System"
-                         style="object-fit:cover; max-height:420px;">
+                         class="img-fluid"
+                         alt="Air Conditioning System" />
 
-                    <!-- Floating Badge -->
-                    <div class="floating-badge position-absolute bottom-0 start-0 text-white p-3 shadow-lg m-3">
+
+                    <!-- FLOATING BADGE -->
+
+                    <div class="floating-badge
+                            position-absolute
+                            bottom-0
+                            start-0
+                            text-white
+                            p-3
+                            shadow-lg
+                            m-3">
+
                         <div class="d-flex align-items-center">
+
                             <i class="fas fa-check-circle fa-2x me-3 text-info"></i>
+
                             <div>
-                                <h5 class="mb-0 fw-bold">Trusted Service</h5>
-                                <small class="opacity-75"><i class="far fa-calendar-alt me-1"></i> Since 2026</small>
+
+                                <h5 class="mb-0 fw-bold">
+                                    Trusted Service
+                                </h5>
+
+                                <small class="opacity-75">
+
+                                    <i class="far fa-calendar-alt me-1"></i>
+
+                                    Since 2026
+
+                                </small>
+
                             </div>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
+
 </section>
 
-<!-- ===== STATS ===== -->
+<!-- =========================================================
+     STATS
+========================================================= -->
+
 <section class="py-5 bg-white">
+
     <div class="container">
-        <div class="row g-4">
-            <!-- Stat 1 -->
-            <div class="col-md-3 col-6 animate-on-scroll delay-1">
+
+        <div class="row g-3 g-md-4">
+
+            <!-- STAT 1 -->
+
+            <div class="col-6 col-md-3 animate-on-scroll delay-1">
+
                 <div class="card stat-card shadow-sm h-100 p-3 text-center">
+
                     <div class="card-body">
-                        <div class="stat-icon bg-primary-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; background:rgba(44,140,153,0.08);">
+
+                        <div class="stat-icon rounded-circle
+                                d-inline-flex
+                                align-items-center
+                                justify-content-center
+                                mb-3"
+                             style="
+                             background: rgba(44,140,153,0.08);
+                         ">
+
                             <i class="fas fa-calendar-check fa-2x text-primary"></i>
+
                         </div>
-                        <div class="stat-number">1,250+</div>
-                        <p class="stat-label">Monthly Services</p>
+
+
+                        <div class="stat-number">
+                            1,250+
+                        </div>
+
+                        <p class="stat-label">
+                            Monthly Services
+                        </p>
+
                     </div>
+
                 </div>
+
             </div>
-            <!-- Stat 2 -->
-            <div class="col-md-3 col-6 animate-on-scroll delay-2">
+
+
+            <!-- STAT 2 -->
+
+            <div class="col-6 col-md-3 animate-on-scroll delay-2">
+
                 <div class="card stat-card shadow-sm h-100 p-3 text-center">
+
                     <div class="card-body">
-                        <div class="stat-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; background:rgba(40,167,69,0.08);">
+
+                        <div class="stat-icon rounded-circle
+                                d-inline-flex
+                                align-items-center
+                                justify-content-center
+                                mb-3"
+                             style="
+                             background: rgba(40,167,69,0.08);
+                         ">
+
                             <i class="fas fa-user-tie fa-2x text-success"></i>
+
                         </div>
-                        <div class="stat-number">45+</div>
-                        <p class="stat-label">Certified Technicians</p>
+
+
+                        <div class="stat-number">
+                            45+
+                        </div>
+
+                        <p class="stat-label">
+                            Certified Technicians
+                        </p>
+
                     </div>
+
                 </div>
+
             </div>
-            <!-- Stat 3 -->
-            <div class="col-md-3 col-6 animate-on-scroll delay-3">
+
+
+            <!-- STAT 3 -->
+
+            <div class="col-6 col-md-3 animate-on-scroll delay-3">
+
                 <div class="card stat-card shadow-sm h-100 p-3 text-center">
+
                     <div class="card-body">
-                        <div class="stat-icon bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; background:rgba(255,193,7,0.08);">
+
+                        <div class="stat-icon rounded-circle
+                                d-inline-flex
+                                align-items-center
+                                justify-content-center
+                                mb-3"
+                             style="
+                             background: rgba(255,193,7,0.08);
+                         ">
+
                             <i class="fas fa-users fa-2x text-warning"></i>
+
                         </div>
-                        <div class="stat-number">850+</div>
-                        <p class="stat-label">Satisfied Clients</p>
+
+
+                        <div class="stat-number">
+                            850+
+                        </div>
+
+                        <p class="stat-label">
+                            Satisfied Clients
+                        </p>
+
                     </div>
+
                 </div>
+
             </div>
-            <!-- Stat 4 -->
-            <div class="col-md-3 col-6 animate-on-scroll delay-4">
+
+
+            <!-- STAT 4 -->
+
+            <div class="col-6 col-md-3 animate-on-scroll delay-4">
+
                 <div class="card stat-card shadow-sm h-100 p-3 text-center">
+
                     <div class="card-body">
-                        <div class="stat-icon bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:70px; height:70px; background:rgba(23,162,184,0.08);">
+
+                        <div class="stat-icon rounded-circle
+                                d-inline-flex
+                                align-items-center
+                                justify-content-center
+                                mb-3"
+                             style="
+                             background: rgba(23,162,184,0.08);
+                         ">
+
                             <i class="fas fa-map-marker-alt fa-2x text-info"></i>
+
                         </div>
-                        <div class="stat-number">6</div>
-                        <p class="stat-label">Service Areas</p>
+
+
+                        <div class="stat-number">
+                            6
+                        </div>
+
+                        <p class="stat-label">
+                            Service Areas
+                        </p>
+
                     </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
+
 </section>
 
-<!-- ===== FEATURES ===== -->
+<!-- =========================================================
+     FEATURES
+========================================================= -->
+
 <section class="features-section" id="services">
+
     <div class="container">
+
         <div class="section-header animate-on-scroll delay-1">
-            <h2>Our Services</h2>
+
+            <h2>
+                Our Services
+            </h2>
+
             <div class="divider"></div>
-            <p class="text-muted mt-2">Comprehensive air conditioning solutions for your DIS operations</p>
+
+            <p class="text-muted mt-2">
+
+                Comprehensive air conditioning solutions
+                for your DIS operations
+
+            </p>
+
         </div>
 
-        <div class="row g-4">
-            <!-- Feature 1 -->
-            <div class="col-md-3 col-6 animate-on-scroll delay-2">
+
+        <div class="row g-3 g-md-4">
+
+
+            <!-- REPAIR -->
+
+            <div class="col-6 col-md-3 animate-on-scroll delay-2">
+
                 <div class="feature-card">
-                    <span class="feature-icon"><i class="fas fa-wrench"></i></span>
-                    <h5>Repair</h5>
-                    <p>Fast &amp; reliable AC repair</p>
+
+                    <span class="feature-icon">
+
+                        <i class="fas fa-wrench"></i>
+
+                    </span>
+
+                    <h5>
+                        Repair
+                    </h5>
+
+                    <p>
+                        Fast &amp; reliable AC repair
+                    </p>
+
                 </div>
+
             </div>
-            <!-- Feature 2 -->
-            <div class="col-md-3 col-6 animate-on-scroll delay-3">
+
+
+            <!-- MAINTENANCE -->
+
+            <div class="col-6 col-md-3 animate-on-scroll delay-3">
+
                 <div class="feature-card">
-                    <span class="feature-icon"><i class="fas fa-tools"></i></span>
-                    <h5>Maintenance</h5>
-                    <p>Preventive &amp; routine care</p>
+
+                    <span class="feature-icon">
+
+                        <i class="fas fa-tools"></i>
+
+                    </span>
+
+                    <h5>
+                        Maintenance
+                    </h5>
+
+                    <p>
+                        Preventive &amp; routine care
+                    </p>
+
                 </div>
+
             </div>
-            <!-- Feature 3 -->
-            <div class="col-md-3 col-6 animate-on-scroll delay-4">
+
+
+            <!-- INSTALLATION -->
+
+            <div class="col-6 col-md-3 animate-on-scroll delay-4">
+
                 <div class="feature-card">
-                    <span class="feature-icon"><i class="fas fa-boxes"></i></span>
-                    <h5>Installation</h5>
-                    <p>New system setup</p>
+
+                    <span class="feature-icon">
+
+                        <i class="fas fa-boxes"></i>
+
+                    </span>
+
+                    <h5>
+                        Installation
+                    </h5>
+
+                    <p>
+                        New system setup
+                    </p>
+
                 </div>
+
             </div>
-            <!-- Feature 4 -->
-            <div class="col-md-3 col-6 animate-on-scroll delay-5">
+
+
+            <!-- DIAGNOSTICS -->
+
+            <div class="col-6 col-md-3 animate-on-scroll delay-5">
+
                 <div class="feature-card">
-                    <span class="feature-icon"><i class="fas fa-microchip"></i></span>
-                    <h5>Diagnostics</h5>
-                    <p>Smart system analysis</p>
+
+                    <span class="feature-icon">
+
+                        <i class="fas fa-microchip"></i>
+
+                    </span>
+
+                    <h5>
+                        Diagnostics
+                    </h5>
+
+                    <p>
+                        Smart system analysis
+                    </p>
+
                 </div>
+
             </div>
+
+
         </div>
+
     </div>
+
 </section>
 
-<!-- ===== SCROLL ANIMATION SCRIPT ===== -->
+<!-- =========================================================
+     SCROLL ANIMATION
+========================================================= -->
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const elements = document.querySelectorAll('.animate-on-scroll');
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, {
-            threshold: 0.15,
-            rootMargin: '0px 0px -40px 0px'
-        });
+    document.addEventListener("DOMContentLoaded", function () {
 
-        elements.forEach(el => observer.observe(el));
+        const elements =
+            document.querySelectorAll(".animate-on-scroll");
 
-        // Also trigger visible for any already visible on load
-        setTimeout(() => {
+
+        if ("IntersectionObserver" in window) {
+
+            const observer =
+                new IntersectionObserver(
+                    (entries) => {
+
+                        entries.forEach(entry => {
+
+                            if (entry.isIntersecting) {
+
+                                entry.target.classList.add("visible");
+
+                                observer.unobserve(entry.target);
+
+                            }
+
+                        });
+
+                    },
+                    {
+                        threshold: 0.10,
+
+                        rootMargin:
+                            "0px 0px -30px 0px"
+                    }
+                );
+
+
             elements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight) {
-                    el.classList.add('visible');
-                }
+
+                observer.observe(el);
+
             });
+
+        }
+        else {
+
+            elements.forEach(el => {
+
+                el.classList.add("visible");
+
+            });
+
+        }
+
+
+        /* Trigger elements already visible */
+
+        setTimeout(() => {
+
+            elements.forEach(el => {
+
+                const rect =
+                    el.getBoundingClientRect();
+
+                if (rect.top < window.innerHeight) {
+
+                    el.classList.add("visible");
+
+                }
+
+            });
+
         }, 100);
+
     });
+
 </script>

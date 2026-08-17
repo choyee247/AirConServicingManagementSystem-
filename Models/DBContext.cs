@@ -15,6 +15,8 @@ public partial class DBContext : DbContext
     {
     }
 
+    public virtual DbSet<ActivityLog> ActivityLogs { get; set; }
+
     public virtual DbSet<AirConBrand> AirConBrands { get; set; }
 
     public virtual DbSet<AirConModel> AirConModels { get; set; }
@@ -81,6 +83,15 @@ public partial class DBContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ActivityLog>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Activity__3214EC07AD788CD0");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.User).WithMany(p => p.ActivityLogs).HasConstraintName("FK_ActivityLogs_Users");
+        });
+
         modelBuilder.Entity<AirConBrand>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__AirConBr__3214EC072286C9BB");
@@ -245,6 +256,14 @@ public partial class DBContext : DbContext
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.IsRead).HasDefaultValue(false);
+
+            entity.HasOne(d => d.ServiceReminder).WithMany(p => p.Notifications).HasConstraintName("FK_Notification_ServiceReminder");
+
+            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.Notifications).HasConstraintName("FK_Notification_ServiceRequest");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Notifications)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notification_User");
         });
 
         modelBuilder.Entity<Payment>(entity =>

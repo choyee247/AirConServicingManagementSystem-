@@ -30,36 +30,86 @@
         <form asp-action="Create" method="post" class="modern-form" autocomplete="off">
             @Html.AntiForgeryToken()
 
-            <!-- Username -->
             <div class="form-group">
+
                 <label class="form-label">
-                    <i class="fas fa-user"></i> Username
+                    <i class="fas fa-user"></i>
+                    Username
                 </label>
+
                 <div class="input-wrapper">
+
                     <input type="text"
+                           id="username"
                            name="username"
                            class="form-control"
-                           placeholder="Enter new username"
+                           placeholder="Enter username"
                            autocomplete="off"
                            required />
-                    <span class="input-icon"><i class="fas fa-user-circle"></i></span>
+
+                    <span class="input-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </span>
+
                 </div>
+
+                @if (ViewData.ModelState["username"]?.Errors.Count > 0)
+                {
+                    <div class="field-error">
+                        <i class="fas fa-circle-exclamation me-1"></i>
+                        @ViewData.ModelState["username"]?.Errors.First().ErrorMessage
+                    </div>
+                }
+                else
+                {
+                    <small class="form-hint">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Username must be unique.
+                    </small>
+                }
+
             </div>
 
-            <!-- Password -->
             <div class="form-group">
+
                 <label class="form-label">
-                    <i class="fas fa-lock"></i> Password
+                    <i class="fas fa-lock"></i>
+                    Password
                 </label>
-                <div class="input-wrapper">
+
+                <div class="input-wrapper password-wrapper">
+
                     <input type="password"
+                           id="password"
                            name="password"
                            class="form-control"
                            placeholder="Enter new password"
                            autocomplete="new-password"
                            required />
-                    <span class="input-icon"><i class="fas fa-key"></i></span>
+
+                    <span class="input-icon">
+                        <i class="fas fa-key"></i>
+                    </span>
+
+                    <button type="button"
+                            class="password-toggle"
+                            id="togglePassword"
+                            aria-label="Show password">
+
+                        <i class="fas fa-eye" id="passwordEye"></i>
+
+                    </button>
+
                 </div>
+
+                @if (ViewData.ModelState["password"]?.Errors.Count > 0)
+                {
+                    <div class="field-error">
+                        <i class="fas fa-circle-exclamation me-1"></i>
+                        @ViewData.ModelState["password"]?.Errors.First().ErrorMessage
+                    </div>
+                }
+
             </div>
 
             <!-- Role -->
@@ -90,7 +140,6 @@
     </div>
 </div>
 
-<!-- Font Awesome (if not already in layout) -->
 @* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" /> *@
 <link rel="stylesheet" href="~/fontawesome/css/beta3allmin600.css" />
 <style>
@@ -274,6 +323,94 @@
     .form-control:focus + .input-icon,
     .input-wrapper:focus-within .input-icon {
         color: #2c8c99;
+    }
+
+    /* =========================================
+       PASSWORD SHOW / HIDE
+       ========================================= */
+
+    .password-wrapper {
+        position: relative;
+    }
+
+        .password-wrapper .form-control {
+            padding-right: 3.4rem;
+        }
+
+    .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 0.7rem;
+        transform: translateY(-50%);
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: #8ba0ad;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        z-index: 5;
+    }
+
+        .password-toggle:hover {
+            color: #2c8c99;
+            background: rgba(44, 140, 153, 0.08);
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            color: #2c8c99;
+            box-shadow: 0 0 0 3px rgba(44, 140, 153, 0.12);
+        }
+
+        .password-toggle i {
+            font-size: 1rem;
+        }
+
+
+    /* Validation */
+
+    .field-error {
+        color: #dc3545;
+        font-size: 0.82rem;
+        margin-top: 0.35rem;
+        padding-left: 0.2rem;
+        font-weight: 500;
+    }
+
+    .form-hint {
+        color: #8ba0ad;
+        font-size: 0.78rem;
+        margin-top: 0.25rem;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+        .form-control.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.12);
+        }
+
+
+    /* Mobile */
+
+    @@media (max-width: 640px) {
+
+        .password-toggle {
+            right: 0.5rem;
+            width: 36px;
+            height: 36px;
+        }
+
+        .password-wrapper .form-control {
+            padding-right: 3.1rem;
+        }
     }
 
     /* ----- buttons ----- */
@@ -503,3 +640,45 @@
         -webkit-tap-highlight-color: transparent;
     }
 </style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const passwordInput = document.getElementById("password");
+        const togglePassword = document.getElementById("togglePassword");
+        const passwordEye = document.getElementById("passwordEye");
+
+        if (passwordInput && togglePassword && passwordEye) {
+
+            togglePassword.addEventListener("click", function () {
+
+                if (passwordInput.type === "password") {
+
+                    // Show password
+                    passwordInput.type = "text";
+
+                    passwordEye.classList.remove("fa-eye");
+                    passwordEye.classList.add("fa-eye-slash");
+
+                    togglePassword.setAttribute(
+                        "aria-label",
+                        "Hide password"
+                    );
+
+                } else {
+
+                    // Hide password
+                    passwordInput.type = "password";
+
+                    passwordEye.classList.remove("fa-eye-slash");
+                    passwordEye.classList.add("fa-eye");
+
+                    togglePassword.setAttribute(
+                        "aria-label",
+                        "Show password"
+                    );
+                }
+            });
+        }
+
+    });
+</script>

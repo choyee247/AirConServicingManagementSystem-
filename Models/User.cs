@@ -35,6 +35,12 @@ public partial class User
     [Column(TypeName = "datetime")]
     public DateTime? UpdatedAt { get; set; }
 
+    [InverseProperty("User")]
+    public virtual ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
     [ForeignKey("TechnicianId")]
     [InverseProperty("Users")]
     public virtual Technician? Technician { get; set; }

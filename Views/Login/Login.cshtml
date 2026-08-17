@@ -1,0 +1,755 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Login - AirCon Management System</title>
+    <link rel="icon" type="image/png" href="~/images/NewAClogo.png" />
+
+    <!-- FontAwesome -->
+    <link href="~/fontawesome/css/all.min(fw651).css" rel="stylesheet" />
+
+    <style>
+        :root {
+            --primary: #2c8c99;
+            --primary-dark: #1f6f78;
+            --primary-light: #4ca6b3;
+            --primary-soft: rgba(44, 140, 153, 0.08);
+            --bg-light: #f4f9fb;
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --text-dark: #e5e7eb;
+            --font-base: 17px;
+        }
+
+        /* ----- Base Reset ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c8c99, #3ba6b5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            transition: 0.3s;
+            font-size: var(--font-base);
+        }
+
+            body.dark {
+                background: linear-gradient(135deg, #020617, #0f172a);
+            }
+
+        /* ----- Login Box ----- */
+        .login-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .login-box::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            }
+
+        body.dark .login-box {
+            background: var(--card-dark);
+            color: var(--text-dark);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ----- Icon ----- */
+        .icon {
+            font-size: 44px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: inline-block;
+            background: var(--primary-soft);
+            width: 72px;
+            height: 72px;
+            line-height: 72px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        body.dark .icon {
+            background: rgba(44, 140, 153, 0.15);
+        }
+
+        /* ----- Titles ----- */
+        h3 {
+            margin: 10px 0 4px;
+            color: var(--primary);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .sub {
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        body.dark .sub {
+            color: #94a3b8;
+        }
+
+        /* ----- Form Groups ----- */
+        .input-group {
+            position: relative;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+            .input-group label {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #1e293b;
+                display: block;
+                margin-bottom: 4px;
+            }
+
+        body.dark .input-group label {
+            color: #e5e7eb;
+        }
+
+        .input-group label i {
+            margin-right: 4px;
+            color: var(--primary);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 44px 12px 14px;
+            border-radius: 10px;
+            border: 2px solid #d1d5db;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            background: #f8fafc;
+            color: #1e293b;
+            box-sizing: border-box;
+        }
+
+        body.dark .input-group input {
+            background: #0f172a;
+            border-color: #334155;
+            color: var(--text-dark);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(44, 140, 153, 0.12);
+            background: #ffffff;
+        }
+
+        body.dark .input-group input:focus {
+            background: #0f172a;
+            box-shadow: 0 0 0 4px rgba(44, 140, 153, 0.15);
+        }
+
+        .input-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        /* ----- Toggle Password ----- */
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            cursor: pointer;
+            color: #64748b;
+            font-size: 1.1rem;
+            transition: 0.2s;
+            padding: 0 4px;
+        }
+
+            .toggle-password:hover {
+                color: var(--primary);
+            }
+
+        body.dark .toggle-password {
+            color: #94a3b8;
+        }
+
+            body.dark .toggle-password:hover {
+                color: var(--primary-light);
+            }
+
+        /* ----- Button ----- */
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+            letter-spacing: 0.3px;
+        }
+
+            .btn-login:hover {
+                background: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(44, 140, 153, 0.3);
+            }
+
+            .btn-login:active {
+                transform: translateY(0);
+            }
+
+        body.dark .btn-login:hover {
+            box-shadow: 0 8px 24px rgba(44, 140, 153, 0.25);
+        }
+
+        /* ----- Links ----- */
+        .links {
+            margin-top: 18px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dark-toggle {
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6b7280;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .dark-toggle:hover {
+                color: var(--primary);
+            }
+
+        body.dark .dark-toggle {
+            color: #94a3b8;
+        }
+
+            body.dark .dark-toggle:hover {
+                color: var(--primary-light);
+            }
+
+        /* ----- Error Message ----- */
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 12px 14px;
+            margin-top: 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-left: 4px solid #b91c1c;
+            text-align: left;
+        }
+
+            .error i {
+                font-size: 1.1rem;
+            }
+
+        body.dark .error {
+            background: #7f1d1d;
+            color: #fecaca;
+            border-left-color: #f87171;
+        }
+
+        /* ----- Responsive ----- */
+        @@media (max-width: 70px) {
+            body {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            .login-box {
+                padding: 24px 18px;
+                border-radius: 16px;
+            }
+
+            .icon {
+                font-size: 34px;
+                width: 60px;
+                height: 60px;
+                line-height: 60px;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .sub {
+                font-size: 0.8rem;
+                margin-bottom: 20px;
+            }
+
+            .input-group {
+                margin-bottom: 14px;
+            }
+
+                .input-group label {
+                    font-size: 0.78rem;
+                }
+
+                .input-group input {
+                    padding: 10px 40px 10px 12px;
+                    font-size: 0.85rem;
+                    border-radius: 8px;
+                }
+
+            .toggle-password {
+                bottom: 12px;
+                right: 12px;
+                font-size: 1rem;
+            }
+
+            .btn-login {
+                padding: 12px;
+                font-size: 0.9rem;
+                border-radius: 8px;
+            }
+
+            .links {
+                font-size: 0.75rem;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .error {
+                font-size: 0.78rem;
+                padding: 10px 12px;
+                margin-top: 12px;
+            }
+        }
+
+        @@media (max-width: 60px) {
+            body {
+                padding: 8px;
+            }
+
+            .login-box {
+                padding: 18px 14px;
+                border-radius: 14px;
+            }
+
+            .icon {
+                font-size: 28px;
+                width: 50px;
+                height: 50px;
+                line-height: 50px;
+            }
+
+            h3 {
+                font-size: 1.1rem;
+            }
+
+            .sub {
+                font-size: 0.7rem;
+            }
+
+            .input-group input {
+                padding: 8px 36px 8px 10px;
+                font-size: 0.8rem;
+            }
+
+            .btn-login {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ----- Input Autofill Style ----- */
+        input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+        }
+
+        body.dark input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important;
+            -webkit-text-fill-color: #e5e7eb !important;
+        }
+
+        /* ----- Focus Visible ----- */
+        .btn-login:focus-visible,
+        .input-group input:focus-visible,
+        .dark-toggle:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* ----- Smooth Dark Mode Transition ----- */
+        .login-box,
+        body,
+        .icon,
+        .input-group input,
+        .btn-login,
+        .error,
+        .dark-toggle {
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!--
+        One Login Form
+        Admin + Technician
+    -->
+    <form asp-controller="Login"
+          asp-action="Login"
+          method="post"
+          class="login-box">
+
+        @Html.AntiForgeryToken()
+
+        <div class="icon">
+            <i class="fas fa-snowflake"></i>
+        </div>
+
+        <h3>System Login</h3>
+
+        <div class="sub">
+            AirCon Management System
+        </div>
+
+
+        <!-- Username -->
+        <div class="input-group">
+
+            <label for="username">
+                <i class="fas fa-user"></i>
+                Username
+            </label>
+
+            <input type="text"
+                   id="username"
+                   name="username"
+                   placeholder="Enter your username"
+                   required
+                   autocomplete="username" />
+
+        </div>
+
+
+        <!-- Password -->
+        <div class="input-group">
+
+            <label for="password">
+                <i class="fas fa-lock"></i>
+                Password
+            </label>
+
+            <input type="password"
+                   id="password"
+                   name="password"
+                   placeholder="Enter your password"
+                   required
+                   autocomplete="current-password" />
+
+            <i class="fas fa-eye toggle-password"
+               id="togglePasswordIcon"
+               onclick="togglePassword()"
+               aria-label="Toggle password visibility"
+               role="button"
+               tabindex="0">
+            </i>
+
+        </div>
+
+
+        <!-- Login Button -->
+        <button type="submit"
+                class="btn-login">
+
+            <i class="fas fa-sign-in-alt"
+               style="margin-right:8px;">
+            </i>
+
+            Login
+
+        </button>
+
+
+        <!-- Dark Mode -->
+        <div class="links">
+
+            <span class="dark-toggle"
+                  onclick="toggleDark()"
+                  role="button"
+                  tabindex="0"
+                  aria-label="Toggle dark mode">
+
+                <i class="fas fa-moon"
+                   id="darkIcon">
+                </i>
+
+                <span id="darkText">
+                    Dark
+                </span>
+
+            </span>
+
+        </div>
+
+
+        <!-- Error -->
+        @if (ViewBag.Error != null)
+        {
+            <div class="error">
+
+                <i class="fas fa-exclamation-circle"></i>
+
+                @ViewBag.Error
+
+            </div>
+        }
+
+    </form>
+
+
+    <script>
+
+        // ============================================
+        // TOGGLE PASSWORD VISIBILITY
+        // ============================================
+
+        function togglePassword() {
+
+            const pwd =
+                document.getElementById("password");
+
+            const icon =
+                document.getElementById("togglePasswordIcon");
+
+            if (pwd.type === "password") {
+
+                pwd.type = "text";
+
+                icon.className =
+                    "fas fa-eye-slash toggle-password";
+
+                icon.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+            } else {
+
+                pwd.type = "password";
+
+                icon.className =
+                    "fas fa-eye toggle-password";
+
+                icon.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+            }
+        }
+
+
+        // ============================================
+        // TOGGLE DARK MODE
+        // ============================================
+
+        function toggleDark() {
+
+            const body =
+                document.body;
+
+            const icon =
+                document.getElementById("darkIcon");
+
+            const text =
+                document.getElementById("darkText");
+
+            body.classList.toggle("dark");
+
+            if (body.classList.contains("dark")) {
+
+                icon.className =
+                    "fas fa-sun";
+
+                text.textContent =
+                    "Light";
+
+                localStorage.setItem(
+                    "darkMode",
+                    "enabled"
+                );
+
+            } else {
+
+                icon.className =
+                    "fas fa-moon";
+
+                text.textContent =
+                    "Dark";
+
+                localStorage.setItem(
+                    "darkMode",
+                    "disabled"
+                );
+            }
+        }
+
+
+        // ============================================
+        // DOM READY
+        // ============================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                // Load Dark Mode
+                const darkMode =
+                    localStorage.getItem("darkMode");
+
+                if (darkMode === "enabled") {
+
+                    document.body.classList.add("dark");
+
+                    const icon =
+                        document.getElementById("darkIcon");
+
+                    const text =
+                        document.getElementById("darkText");
+
+                    if (icon) {
+                        icon.className =
+                            "fas fa-sun";
+                    }
+
+                    if (text) {
+                        text.textContent =
+                            "Light";
+                    }
+                }
+
+
+                // Dark Mode Keyboard Support
+                const darkToggle =
+                    document.querySelector(".dark-toggle");
+
+                if (darkToggle) {
+
+                    darkToggle.addEventListener(
+                        "keydown",
+                        function (e) {
+
+                            if (
+                                e.key === "Enter" ||
+                                e.key === " "
+                            ) {
+
+                                e.preventDefault();
+
+                                toggleDark();
+                            }
+                        }
+                    );
+                }
+
+
+                // Auto Focus Username
+                const usernameInput =
+                    document.getElementById("username");
+
+                if (usernameInput) {
+
+                    usernameInput.focus();
+                }
+
+
+                // Password Toggle Keyboard Support
+                const toggleBtn =
+                    document.querySelector(
+                        ".toggle-password"
+                    );
+
+                if (toggleBtn) {
+
+                    toggleBtn.addEventListener(
+                        "keydown",
+                        function (e) {
+
+                            if (
+                                e.key === "Enter" ||
+                                e.key === " "
+                            ) {
+
+                                e.preventDefault();
+
+                                togglePassword();
+                            }
+                        }
+                    );
+                }
+            }
+        );
+
+
+        // ============================================
+        // PREVENT DOUBLE SUBMISSION
+        // ============================================
+
+        document
+            .querySelector("form")
+            ?.addEventListener(
+                "submit",
+                function () {
+
+                    const btn =
+                        this.querySelector(".btn-login");
+
+                    if (btn) {
+
+                        btn.disabled = true;
+
+                        btn.innerHTML =
+                            '<i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i> Signing In...';
+                    }
+                }
+            );
+
+    </script>
+
+</body>
+</html>
