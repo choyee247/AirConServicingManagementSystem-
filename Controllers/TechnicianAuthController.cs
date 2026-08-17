@@ -114,7 +114,7 @@ public class TechnicianAuthController : Controller
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();  
-        return RedirectToAction("Login", "TechnicianAuth");
+        return RedirectToAction("Login", "Login");
     }
 
     private string ComputeSha256Hash(string rawData)

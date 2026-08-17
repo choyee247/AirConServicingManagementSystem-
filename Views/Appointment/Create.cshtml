@@ -1,10 +1,25 @@
-﻿@model Appointment
-
+﻿
 @{
     ViewData["Title"] = "Create Appointment";
-    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+    //Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
+@{
+    var userRole = Context.Session.GetString("UserRole");
 
+    if (userRole == "Admin")
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else if (userRole == "Senior" || userRole == "Junior")
+    {
+        Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+@model Appointment
 
 <link rel="stylesheet" href="~/css/select2.min(css).css" />
 @* <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"

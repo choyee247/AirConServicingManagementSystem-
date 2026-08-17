@@ -204,7 +204,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             var technicianId = HttpContext.Session.GetInt32("TechnicianId");
 
             if (!technicianId.HasValue)
-                return RedirectToAction("Login", "TechnicianAuth");
+                return RedirectToAction("Login", "Login");
 
             var records = _context.ServiceRecordUnits
                 .Include(x => x.ServiceRecord)

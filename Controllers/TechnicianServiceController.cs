@@ -21,7 +21,7 @@ public class TechnicianServiceController : Controller
         int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
         if (techId == 0)
-            return RedirectToAction("Login", "TechnicianAuth");
+            return RedirectToAction("Login", "Login");
 
         var technician = await _context.Technicians
             .FirstOrDefaultAsync(x => x.TechnicianId == techId);
@@ -199,7 +199,7 @@ public class TechnicianServiceController : Controller
     {
         int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
         if (techId == 0)
-            return RedirectToAction("Login", "TechnicianAuth");
+            return RedirectToAction("Login", "Login");
 
         var service = await _context.ServiceRequests.FindAsync(id);
 
@@ -1240,7 +1240,7 @@ public class TechnicianServiceController : Controller
         int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
         if (techId == 0)
-            return RedirectToAction("Login", "TechnicianAuth");
+            return RedirectToAction("Login", "Login");
 
         var today = DateTime.Today;
 

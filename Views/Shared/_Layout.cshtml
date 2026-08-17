@@ -162,14 +162,13 @@
         /* =========================================================
                NAVBAR RIGHT SIDE
             ========================================================= */
-
         .navbar-actions {
             display: flex;
             align-items: center;
             justify-content: flex-end;
             gap: 8px;
+            flex-shrink: 0;
         }
-
 
         /* =========================================================
                BUTTONS
@@ -488,11 +487,20 @@
             }
 
             .navbar-actions {
-                width: 100%;
-                padding-top: 8px;
-                border-top: 1px solid rgba(44, 140, 153, 0.08);
-                justify-content: stretch;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 8px;
+                width: auto;
+                padding-top: 0;
+                border-top: none;
+                flex-shrink: 0;
             }
+
+                .navbar-actions .btn {
+                    flex: 0 0 auto;
+                    text-align: center;
+                }
 
             [data-bs-theme="dark"] .navbar-actions {
                 border-color: rgba(255, 255, 255, 0.06);
@@ -548,8 +556,17 @@
                     margin-right: 5px !important;
                 }
 
+            .theme-switch {
+                width: 38px;
+                height: 38px;
+                min-width: 38px;
+            }
+
             .navbar-toggler {
-                padding: 7px 8px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
             }
 
             .navbar-toggler-icon {
@@ -569,21 +586,33 @@
             }
 
             .navbar-actions {
-                gap: 8px;
-                padding-top: 10px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding-top: 0;
+                border-top: none;
+                width: auto;
+                flex-shrink: 0;
             }
 
                 .navbar-actions .btn {
-                    font-size: 0.82rem;
-                    padding: 9px 12px;
-                    min-height: 40px;
+                    flex: 0 0 auto;
+                    font-size: 0.78rem;
+                    padding: 8px 10px;
+                    min-height: 38px;
                 }
 
-            .theme-switch {
+                    .navbar-actions .btn i {
+                        margin-right: 3px !important;
+                    }
+
+           
+
+           /*  .theme-switch {
                 width: 40px;
                 height: 40px;
                 min-width: 40px;
-            }
+            } */
             /* FOOTER */
 
             .footer {
@@ -775,144 +804,109 @@
     ========================================================= -->
 
     <nav class="navbar navbar-expand-lg sticky-top">
-
         <div class="container">
 
-
             <!-- BRAND -->
-
             <a class="navbar-brand"
                asp-controller="Home"
                asp-action="Index">
 
                 <i class="fas fa-wind me-2"></i>
-
                 AirCon<span>Serv</span>
 
             </a>
 
 
-            <!-- MOBILE TOGGLE -->
-
-            <button class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-
-                <span class="navbar-toggler-icon"></span>
-
-            </button>
-
-
-            <!-- NAVIGATION -->
-
-            <div class="collapse navbar-collapse"
-                 id="navbarNav">
-
+            <!-- DESKTOP NAVIGATION -->
+            <div class="collapse navbar-collapse" id="navbarNav">
 
                 <ul class="navbar-nav me-auto">
 
                     <li class="nav-item">
-
                         <a class="nav-link active"
                            asp-controller="Home"
                            asp-action="Index">
-
                             Home
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item">
-
                         <a class="nav-link"
                            href="/Features">
-
                             Features
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item">
-
                         <a class="nav-link"
                            href="/Pricing">
-
                             Pricing
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item">
-
                         <a class="nav-link"
                            href="/About">
-
                             About
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item">
-
                         <a class="nav-link"
                            href="/Contact">
-
                             Contact
-
                         </a>
-
                     </li>
 
                 </ul>
 
-
-                <!-- RIGHT ACTIONS -->
-
-                <div class="navbar-actions">
-
-                    <!-- Theme -->
-
-                    <button class="theme-switch"
-                            id="themeToggle"
-                            type="button"
-                            aria-label="Toggle dark mode">
-
-                        <i class="fas fa-moon"
-                           id="themeIcon"></i>
-
-                    </button>
+            </div>
 
 
-                    <!-- Login -->
+            <!-- RIGHT ACTIONS
+                 Keep outside navbar-collapse
+                 so they stay visible on mobile -->
+            <div class="navbar-actions">
 
-                    <a asp-controller="Login"
-                       asp-action="Login"
-                       class="btn btn-outline-primary">
+                <!-- Theme -->
+                <button class="theme-switch"
+                        id="themeToggle"
+                        type="button"
+                        aria-label="Toggle dark mode">
 
-                        <i class="fas fa-sign-in-alt me-1"></i>
+                    <i class="fas fa-moon"
+                       id="themeIcon"></i>
 
-                        Login
+                </button>
 
-                    </a>
 
-                </div>
+                <!-- Login -->
+                <a asp-controller="Login"
+                   asp-action="Login"
+                   class="btn btn-outline-primary">
+
+                    <i class="fas fa-sign-in-alt me-1"></i>
+                    <span>Login</span>
+
+                </a>
+
+
+                <!-- MOBILE MENU TOGGLE -->
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav"
+                        aria-controls="navbarNav"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+
+                    <span class="navbar-toggler-icon"></span>
+
+                </button>
 
             </div>
 
         </div>
-
     </nav>
 
 

@@ -17,7 +17,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
         public IActionResult Dashboard()
         {
             if (HttpContext.Session.GetInt32("AdminId") == null)
-                return RedirectToAction("Login", "AdminLogin");
+                return RedirectToAction("Login", "Login");
 
             var today = DateTime.Today;
 

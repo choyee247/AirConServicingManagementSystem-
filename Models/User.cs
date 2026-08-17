@@ -38,6 +38,9 @@ public partial class User
     [InverseProperty("User")]
     public virtual ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
 
+    [InverseProperty("CreatedByUser")]
+    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
     [InverseProperty("User")]
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 

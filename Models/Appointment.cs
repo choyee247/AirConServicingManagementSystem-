@@ -31,8 +31,14 @@ public partial class Appointment
 
     public int? ParentAppointmentId { get; set; }
 
+    public int? CreatedByUserId { get; set; }
+
     [InverseProperty("Appointment")]
     public virtual ICollection<AppointmentReassign> AppointmentReassigns { get; set; } = new List<AppointmentReassign>();
+
+    [ForeignKey("CreatedByUserId")]
+    [InverseProperty("Appointments")]
+    public virtual User? CreatedByUser { get; set; }
 
     [ForeignKey("CustomerId")]
     [InverseProperty("Appointments")]
