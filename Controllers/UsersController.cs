@@ -114,6 +114,125 @@ public class UsersController : Controller
 
         return Convert.ToBase64String(bytes);
     }
+
+  
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(
+        int id,
+        string newPassword)
+    {
+
+        var userId = HttpContext.Session.GetInt32("UserId");
+        var role = HttpContext.Session.GetString("UserRole");
+
+        if (userId == null || role != "Admin")
+        {
+            return RedirectToAction("Login", "Login");
+        }
+
+        if (string.IsNullOrWhiteSpace(newPassword))
+        {
+            TempData["ErrorMessage"] =
+                "New password is required.";
+
+            return RedirectToAction("Index");
+        }
+
+        if (newPassword.Length < 6)
+        {
+            TempData["ErrorMessage"] =
+                "Password must be at least 6 characters.";
+
+            return RedirectToAction("Index");
+        }
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u =>
+                u.Id == id &&
+                u.IsDeleted != true);
+
+        if (user == null)
+        {
+            TempData["ErrorMessage"] =
+                "User account not found.";
+
+            return RedirectToAction("Index");
+        }
+
+        if (user.Role?.Trim() == "Admin")
+        {
+            TempData["ErrorMessage"] =
+                "Admin password cannot be reset from this page.";
+
+            return RedirectToAction("Index");
+        }
+
+        user.PasswordHash = ComputeSha256Hash(newPassword);
+
+        user.PasswordResetAt = DateTime.Now;
+        user.UpdatedAt = DateTime.Now;
+
+        await _context.SaveChangesAsync();
+
+        await CreateActivityLog(
+            userId.Value,
+            user.Username,
+            role,
+            "Password Reset",
+            $"Password reset for technician account: {user.Username}",
+            "User",
+            "ResetPassword"
+        );
+
+        TempData["SuccessMessage"] =
+            $"Password reset successfully for {user.Username}.";
+
+        return RedirectToAction("Index");
+    }
+
+    private async Task CreateActivityLog(
+           int? userId,
+           string? username,
+           string? role,
+           string action,
+           string? description,
+           string? controller,
+           string? actionName)
+    {
+
+        var ipAddress =
+            HttpContext.Connection
+                .RemoteIpAddress?
+                .ToString();
+
+        var activityLog = new ActivityLog
+        {
+            UserId = userId,
+
+            Username = username,
+
+            Role = role,
+
+            Action = action,
+
+            Description = description,
+
+            Controller = controller,
+
+            ActionName = actionName,
+
+            IpAddress = ipAddress,
+
+            CreatedAt = DateTime.Now
+        };
+
+        _context.ActivityLogs.Add(
+            activityLog
+        );
+
+        await _context.SaveChangesAsync();
+    }
     // ==========================
     // DELETE / DISABLE ACCOUNT
     // ==========================

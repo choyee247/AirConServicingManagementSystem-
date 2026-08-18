@@ -521,19 +521,11 @@ namespace AirConServicingManagementSystem.Controllers
             string? controller,
             string? actionName)
         {
-            // ============================================
-            // GET IP ADDRESS
-            // ============================================
 
             var ipAddress =
                 HttpContext.Connection
                     .RemoteIpAddress?
                     .ToString();
-
-
-            // ============================================
-            // CREATE ACTIVITY LOG
-            // ============================================
 
             var activityLog = new ActivityLog
             {
@@ -555,11 +547,6 @@ namespace AirConServicingManagementSystem.Controllers
 
                 CreatedAt = DateTime.Now
             };
-
-
-            // ============================================
-            // SAVE
-            // ============================================
 
             _context.ActivityLogs.Add(
                 activityLog

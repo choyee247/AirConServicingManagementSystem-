@@ -182,6 +182,17 @@
             color: #8c979c;
         }
 
+    .action-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+        .action-group form {
+            margin: 0;
+        }
 
     /* =====================================================
            TABLE
@@ -333,6 +344,34 @@
             color: #8b969c;
         }
 
+    .password-wrapper {
+        position: relative;
+    }
+
+        .password-wrapper .form-control {
+            padding-right: 45px;
+        }
+
+    .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #71808d;
+        cursor: pointer;
+        padding: 5px 7px;
+        z-index: 2;
+    }
+
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        .password-toggle i {
+            font-size: 0.9rem;
+        }
 
     /* =====================================================
            ACTION BUTTONS
@@ -716,7 +755,19 @@
         white-space: nowrap;
     }
 
+    .btn-reset-password {
+        color: var(--primary);
+        background: rgba(44, 140, 153, 0.06);
+        border: 1px solid rgba(44, 140, 153, 0.20);
+    }
 
+        .btn-reset-password:hover {
+            color: #fff;
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(44, 140, 153, 0.18);
+        }
 
     /* =====================================================
            TABLET
@@ -1009,7 +1060,7 @@
         }
 
     .btn-modal-disable {
-        background: var(--primary-color);
+        background: black;
         color: red;
     }
 
@@ -1289,57 +1340,41 @@
                                     <!-- Action -->
 
                                     <td class="text-center">
-
                                         @if (item.Role?.Trim() == "Admin")
                                         {
-
-                                            <!-- ADMIN -->
-
                                             <a asp-action="Details"
                                                asp-route-id="@item.Id"
                                                class="btn-action btn-view">
-
                                                 <i class="fas fa-user-circle"></i>
-
-                                                <span>
-                                                    View Profile
-                                                </span>
-
+                                                View Profile
                                             </a>
-
                                         }
                                         else
                                         {
-
-                                            <!-- SENIOR / JUNIOR -->
-                                            <form asp-action="Delete"
-                                                  method="post"
-                                                  class="delete-form">
-
-                                                @Html.AntiForgeryToken()
-
-                                                <input type="hidden"
-                                                       name="id"
-                                                       value="@item.Id" />
-
-                                                <button type="submit"
-                                                        class="btn-action btn-delete"
+                                            <div class="action-group">
+                                                <button type="button"
+                                                        class="btn-action btn-reset-password"
+                                                        data-id="@item.Id"
                                                         data-username="@item.Username">
-
-                                                    <i class="fas fa-ban"></i>
-
-                                                    <span class="btn-text">
-                                                        Disable
-                                                    </span>
-
-                                                    <span class="spinner"></span>
-
+                                                    <i class="fas fa-key"></i>
+                                                    Reset
                                                 </button>
 
-                                            </form>
+                                                <form asp-action="Delete"
+                                                      method="post"
+                                                      class="delete-form d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@item.Id" />
 
+                                                    <button type="submit"
+                                                            class="btn-action btn-delete"
+                                                            data-username="@item.Username">
+                                                        <i class="fas fa-ban"></i>
+                                                        Disable
+                                                    </button>
+                                                </form>
+                                            </div>
                                         }
-
                                     </td>
 
                                 </tr>
@@ -1558,6 +1593,18 @@
                             }
                             else
                             {
+                                <button type="button"
+                                        class="btn-action btn-reset-password"
+                                        data-id="@item.Id"
+                                        data-username="@item.Username">
+
+                                    <i class="fas fa-key"></i>
+
+                                    <span>
+                                        Reset Password
+                                    </span>
+
+                                </button>
 
                                 <!-- SENIOR / JUNIOR -->
 
@@ -1701,17 +1748,186 @@
     </div>
 </div>
 
+<!-- ============================================
+     RESET PASSWORD MODAL
+============================================ -->
+
+<div class="modal fade"
+     id="resetPasswordModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content disable-modal">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    <i class="fas fa-key me-2"></i>
+
+                    Reset Password
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <form asp-action="ResetPassword"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-body">
+
+                    <input type="hidden"
+                           id="resetUserId"
+                           name="id" />
+
+
+                    <div class="text-center mb-3">
+
+                        <div class="disable-icon">
+
+                            <i class="fas fa-key"></i>
+
+                        </div>
+
+                        <h5 class="mt-3">
+
+                            Reset Password
+
+                        </h5>
+
+                        <p class="text-muted mb-1">
+
+                            Account:
+
+                        </p>
+
+                        <strong id="resetUsername"
+                                class="disable-username">
+                        </strong>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            New Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input type="password"
+                                   name="newPassword"
+                                   id="newPassword"
+                                   class="form-control"
+                                   minlength="6"
+                                   required
+                                   placeholder="Enter new password" />
+
+                            <button type="button"
+                                    class="password-toggle"
+                                    data-target="newPassword">
+
+                                <i class="fas fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-2">
+
+                        <label class="form-label fw-semibold">
+                            Confirm Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input type="password"
+                                   id="confirmPassword"
+                                   class="form-control"
+                                   minlength="6"
+                                   required
+                                   placeholder="Confirm new password" />
+
+                            <button type="button"
+                                    class="password-toggle"
+                                    data-target="confirmPassword">
+
+                                <i class="fas fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div id="passwordError"
+                         class="text-danger small"
+                         style="display:none;">
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer justify-content-center">
+
+                    <button type="button"
+                            class="btn-modal-cancel"
+                            data-bs-dismiss="modal">
+
+                        <i class="fas fa-times me-1"></i>
+
+                        Cancel
+
+                    </button>
+
+
+                    <button type="submit"
+                            id="resetPasswordBtn"
+                            class="btn-modal-disable"
+                            style="color:white;">
+
+                        <i class="fas fa-key me-1"></i>
+
+                        Reset Password
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
 <script>
 
-     document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // =====================================================
+        // DISABLE ACCOUNT
+        // =====================================================
 
         let selectedForm = null;
 
         const disableModalElement =
             document.getElementById("disableModal");
-
-        const disableModal =
-            new bootstrap.Modal(disableModalElement);
 
         const disableUsername =
             document.getElementById("disableUsername");
@@ -1719,141 +1935,457 @@
         const confirmDisable =
             document.getElementById("confirmDisable");
 
+        let disableModal = null;
 
-        // ============================================
-        // DISABLE BUTTON
-        // ============================================
+        if (disableModalElement) {
+            disableModal =
+                new bootstrap.Modal(disableModalElement);
+        }
 
-        document.querySelectorAll(".delete-form").forEach(form => {
 
-            form.addEventListener("submit", function (e) {
+        // Disable Button
 
-                // Stop form from submitting immediately
-                e.preventDefault();
+        document.querySelectorAll(".delete-form")
+            .forEach(form => {
 
-                selectedForm = this;
+                form.addEventListener("submit", function (e) {
 
-                const button =
-                    this.querySelector(".btn-delete");
+                    e.preventDefault();
 
-                const username =
-                    button.getAttribute("data-username");
+                    selectedForm = this;
 
-                // Show username in modal
-                disableUsername.textContent =
-                    '"' + username + '"';
+                    const button =
+                        this.querySelector(".btn-delete");
 
-                // Reset confirm button
-                confirmDisable.disabled = false;
+                    const username =
+                        button.getAttribute("data-username");
 
-                confirmDisable.innerHTML =
-                    '<i class="fas fa-ban me-1"></i> Disable Account';
+                    if (disableUsername) {
 
-                // Show modal
-                disableModal.show();
+                        disableUsername.textContent =
+                            '"' + username + '"';
+
+                    }
+
+                    if (confirmDisable) {
+
+                        confirmDisable.disabled = false;
+
+                        confirmDisable.innerHTML =
+                            '<i class="fas fa-ban me-1"></i> Disable Account';
+
+                    }
+
+                    if (disableModal) {
+                        disableModal.show();
+                    }
+
+                });
+
             });
 
-        });
 
+        // Confirm Disable
 
-        // ============================================
-        // CONFIRM DISABLE
-        // ============================================
+        if (confirmDisable) {
 
-        confirmDisable.addEventListener("click", function () {
+            confirmDisable.addEventListener("click", function () {
 
-            if (!selectedForm) {
-                return;
-            }
-
-            // Disable button
-            this.disabled = true;
-
-            this.innerHTML =
-                '<i class="fas fa-spinner fa-spin me-1"></i> Disabling...';
-
-            // Submit the original form
-            selectedForm.submit();
-
-        });
-
-    });
-
-
-
-
-       const totalAccounts = @Model.Count();
-
-    const searchInput = document.getElementById("accountSearch");
-    const clearSearch = document.getElementById("clearSearch");
-    const searchResult = document.getElementById("searchResult");
-
-    if (searchInput) {
-
-        searchInput.addEventListener("input", function () {
-
-            const keyword = this.value.trim().toLowerCase();
-
-            let visibleCount = 0;
-
-            // Desktop table rows
-            document.querySelectorAll(".desktop-table tbody tr").forEach(row => {
-
-                // Ignore empty state
-                if (row.querySelector(".empty-state")) {
+                if (!selectedForm) {
                     return;
                 }
 
-                const text = row.textContent.toLowerCase();
+                this.disabled = true;
 
-                if (text.includes(keyword)) {
-                    row.style.display = "";
-                    visibleCount++;
-                } else {
-                    row.style.display = "none";
-                }
+                this.innerHTML =
+                    '<i class="fas fa-spinner fa-spin me-1"></i> Disabling...';
+
+                selectedForm.submit();
+
             });
 
+        }
 
-            // Mobile cards
-            document.querySelectorAll(".mobile-account-card").forEach(card => {
 
-                const text = card.textContent.toLowerCase();
 
-                if (text.includes(keyword)) {
-                    card.style.display = "";
-                } else {
-                    card.style.display = "none";
-                }
+        // =====================================================
+        // RESET PASSWORD
+        // =====================================================
+
+        const resetPasswordModalElement =
+            document.getElementById("resetPasswordModal");
+
+        const resetUserId =
+            document.getElementById("resetUserId");
+
+        const resetUsername =
+            document.getElementById("resetUsername");
+
+        const newPassword =
+            document.getElementById("newPassword");
+
+        const confirmPassword =
+            document.getElementById("confirmPassword");
+
+        const passwordError =
+            document.getElementById("passwordError");
+
+
+        let resetPasswordModal = null;
+
+
+        // Check Modal
+
+        if (resetPasswordModalElement) {
+
+            resetPasswordModal =
+                new bootstrap.Modal(
+                    resetPasswordModalElement
+                );
+
+        }
+
+
+        // =====================================================
+        // RESET BUTTON
+        // =====================================================
+
+        document.querySelectorAll(".btn-reset-password")
+            .forEach(button => {
+
+                button.addEventListener("click", function () {
+
+                    const id =
+                        this.getAttribute("data-id");
+
+                    const username =
+                        this.getAttribute("data-username");
+
+
+                    console.log(
+                        "Reset Password clicked:",
+                        id,
+                        username
+                    );
+
+
+                    if (resetUserId) {
+
+                        resetUserId.value = id;
+
+                    }
+
+
+                    if (resetUsername) {
+
+                        resetUsername.textContent =
+                            '"' + username + '"';
+
+                    }
+
+
+                    if (newPassword) {
+
+                        newPassword.value = "";
+
+                    }
+
+
+                    if (confirmPassword) {
+
+                        confirmPassword.value = "";
+
+                    }
+
+
+                    if (passwordError) {
+
+                        passwordError.style.display =
+                            "none";
+
+                    }
+
+
+                    // SHOW MODAL
+
+                    if (resetPasswordModal) {
+
+                        resetPasswordModal.show();
+
+                    }
+                    else {
+
+                        console.error(
+                            "Reset Password Modal not found!"
+                        );
+
+                    }
+
+                });
+
             });
 
+    document.querySelectorAll(".password-toggle")
+        .forEach(button => {
 
-            // Show / hide clear button
-            if (keyword.length > 0) {
-                clearSearch.style.display = "flex";
-                searchResult.textContent = visibleCount + " found";
-            }
-            else {
-                clearSearch.style.display = "none";
-                searchResult.textContent = totalAccounts + " accounts";
-            }
+            button.addEventListener("click", function () {
+
+                const targetId =
+                    this.getAttribute("data-target");
+
+                const input =
+                    document.getElementById(targetId);
+
+                const icon =
+                    this.querySelector("i");
+
+                if (input.type === "password") {
+
+                    input.type = "text";
+
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+
+                }
+                else {
+
+                    input.type = "password";
+
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+
+                }
+
+            });
 
         });
-    }
 
 
-    // Clear search
-    if (clearSearch) {
+        // =====================================================
+        // PASSWORD VALIDATION
+        // =====================================================
 
-        clearSearch.addEventListener("click", function () {
-
-            searchInput.value = "";
-
-            searchInput.dispatchEvent(
-                new Event("input")
+        const resetForm =
+            document.querySelector(
+                "#resetPasswordModal form"
             );
 
-            searchInput.focus();
-        });
-    }
+
+        if (resetForm) {
+
+            resetForm.addEventListener(
+                "submit",
+                function (e) {
+
+                    // Password length
+
+                    if (newPassword.value.length < 6) {
+
+                        e.preventDefault();
+
+                        passwordError.textContent =
+                            "Password must be at least 6 characters.";
+
+                        passwordError.style.display =
+                            "block";
+
+                        newPassword.focus();
+
+                        return;
+                    }
+
+
+                    // Password match
+
+                    if (
+                        newPassword.value !==
+                        confirmPassword.value
+                    ) {
+
+                        e.preventDefault();
+
+                        passwordError.textContent =
+                            "Passwords do not match.";
+
+                        passwordError.style.display =
+                            "block";
+
+                        confirmPassword.focus();
+
+                        return;
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        // =====================================================
+        // SEARCH
+        // =====================================================
+
+        const totalAccounts =
+            @Model.Count();
+
+        const searchInput =
+            document.getElementById("accountSearch");
+
+        const clearSearch =
+            document.getElementById("clearSearch");
+
+        const searchResult =
+            document.getElementById("searchResult");
+
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                function () {
+
+                    const keyword =
+                        this.value
+                            .trim()
+                            .toLowerCase();
+
+
+                    let visibleCount = 0;
+
+
+                    // Desktop
+
+                    document
+                        .querySelectorAll(
+                            ".desktop-table tbody tr"
+                        )
+                        .forEach(row => {
+
+                            if (
+                                row.querySelector(
+                                    ".empty-state"
+                                )
+                            ) {
+                                return;
+                            }
+
+
+                            const text =
+                                row.textContent
+                                    .toLowerCase();
+
+
+                            if (
+                                text.includes(keyword)
+                            ) {
+
+                                row.style.display =
+                                    "";
+
+                                visibleCount++;
+
+                            }
+                            else {
+
+                                row.style.display =
+                                    "none";
+
+                            }
+
+                        });
+
+
+                    // Mobile
+
+                    document
+                        .querySelectorAll(
+                            ".mobile-account-card"
+                        )
+                        .forEach(card => {
+
+                            const text =
+                                card.textContent
+                                    .toLowerCase();
+
+
+                            if (
+                                text.includes(keyword)
+                            ) {
+
+                                card.style.display =
+                                    "";
+
+                            }
+                            else {
+
+                                card.style.display =
+                                    "none";
+
+                            }
+
+                        });
+
+
+                    // Clear button
+
+                    if (keyword.length > 0) {
+
+                        if (clearSearch) {
+
+                            clearSearch.style.display =
+                                "flex";
+
+                        }
+
+                        searchResult.textContent =
+                            visibleCount + " found";
+
+                    }
+                    else {
+
+                        if (clearSearch) {
+
+                            clearSearch.style.display =
+                                "none";
+
+                        }
+
+                        searchResult.textContent =
+                            totalAccounts + " accounts";
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        // =====================================================
+        // CLEAR SEARCH
+        // =====================================================
+
+        if (clearSearch) {
+
+            clearSearch.addEventListener(
+                "click",
+                function () {
+
+                    searchInput.value = "";
+
+                    searchInput.dispatchEvent(
+                        new Event("input")
+                    );
+
+                    searchInput.focus();
+
+                }
+            );
+
+        }
+
+    });
+
 </script>

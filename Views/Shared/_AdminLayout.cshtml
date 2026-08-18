@@ -4,7 +4,9 @@
     var adminName = Context.Session.GetString("AdminUsername");
     var adminRole = Context.Session.GetString("AdminRole");
 }
-
+@{
+    var adminId = Context.Session.GetInt32("UserId");
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -251,6 +253,128 @@
             .notification-dropdown .dropdown-item {
                 white-space: normal;
             }
+
+        /* =========================================
+           USER DROPDOWN
+        ========================================= */
+
+        .user-info-btn {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 10px;
+            color: inherit;
+            transition: 0.2s ease;
+        }
+
+            .user-info-btn:hover {
+                background: rgba(44, 140, 153, 0.08);
+            }
+
+        .user-info-text {
+            text-align: left;
+            line-height: 1.2;
+        }
+
+            .user-info-text b {
+                font-size: 0.88rem;
+            }
+
+            .user-info-text small {
+                color: #71808d;
+                font-size: 0.72rem;
+            }
+
+        .user-chevron {
+            font-size: 0.65rem;
+            color: #71808d;
+            margin-left: 2px;
+            transition: transform 0.2s ease;
+        }
+
+
+        /* Rotate arrow when dropdown is open */
+
+        .user-info-btn[aria-expanded="true"] .user-chevron {
+            transform: rotate(180deg);
+        }
+
+
+        /* Dropdown */
+
+        .user-dropdown {
+            min-width: 170px;
+            margin-top: 8px !important;
+            padding: 7px;
+            border: 1px solid rgba(44, 140, 153, 0.12);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+        }
+
+
+            /* Dropdown item */
+
+            .user-dropdown .dropdown-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 9px 11px;
+                border-radius: 8px;
+                font-size: 0.82rem;
+                font-weight: 500;
+                color: #34444d;
+            }
+
+                .user-dropdown .dropdown-item i {
+                    width: 18px;
+                    text-align: center;
+                    color: #2c8c99;
+                }
+
+                .user-dropdown .dropdown-item:hover {
+                    background: rgba(44, 140, 153, 0.08);
+                    color: #216f79;
+                }
+
+
+            /* Logout */
+
+            .user-dropdown .logout-item {
+                color: #dc3545;
+            }
+
+                .user-dropdown .logout-item i {
+                    color: #dc3545;
+                }
+
+                .user-dropdown .logout-item:hover {
+                    background: rgba(220, 53, 69, 0.08);
+                    color: #dc3545;
+                }
+
+
+        /* Mobile */
+
+        @@media (max-width: 576px) {
+            .user-info-text
+
+        {
+            display: none;
+        }
+
+        .user-chevron {
+            display: none;
+        }
+
+        .user-info-btn {
+            padding: 3px;
+        }
+
+        }
     </style>
 
     @RenderSection("Styles", required: false)
@@ -452,7 +576,6 @@
 
 
                 <!-- NOTIFICATION -->
-                <!-- NOTIFICATION -->
                 <div class="dropdown me-3">
 
                     <button class="btn position-relative"
@@ -494,53 +617,91 @@
 
 
                 <!-- AVATAR -->
-
+@* 
                 <div class="avatar">
 
                     @(adminName?.Substring(0, 1).ToUpper())
 
                 </div>
+ *@
 
 
 
 
+                <!-- USER DROPDOWN -->
 
-                <!-- USER INFO -->
+                <div class="dropdown">
 
-                <div>
+                    <button class="user-info-btn"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
 
-                    <div>
+                        <!-- Avatar -->
+                        <div class="avatar">
+                            @(adminName?.Substring(0, 1).ToUpper())
+                        </div>
 
-                        <b>@adminName</b>
+                        <!-- User Info -->
+                        <div class="user-info-text">
 
-                    </div>
+                            <div>
+                                <b>@adminName</b>
+                            </div>
+
+                            <small>
+                                @adminRole
+                            </small>
+
+                        </div>
+
+                        <i class="fas fa-chevron-down user-chevron"></i>
+
+                    </button>
 
 
-                    <small>
+                    <!-- Dropdown Menu -->
 
-                        @adminRole
+                    <ul class="dropdown-menu dropdown-menu-end user-dropdown">
 
-                    </small>
+                        <!-- Profile -->
 
+                        <li>
+                            <a asp-controller="Users"
+                               asp-action="Details"
+                               asp-route-id="@adminId"
+                               class="dropdown-item">
+
+                                <i class="fas fa-user-circle"></i>
+                                <span>Profile</span>
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+
+                        <!-- Logout -->
+
+                        <li>
+
+                            <a class="dropdown-item logout-item"
+                               asp-controller="Login"
+                               asp-action="Logout">
+
+                                <i class="fas fa-sign-out-alt"></i>
+
+                                <span>Logout</span>
+
+                            </a>
+
+                        </li>
+
+                    </ul>
 
                 </div>
-
-
-
-
-
-
-                <!-- LOGOUT -->
-
-                <a asp-controller="Login"
-                   asp-action="Logout"
-                   class="btn btn-sm btn-outline-danger">
-
-
-                    Logout
-
-
-                </a>
 
 
 

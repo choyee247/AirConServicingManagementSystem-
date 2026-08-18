@@ -35,6 +35,9 @@ public partial class User
     [Column(TypeName = "datetime")]
     public DateTime? UpdatedAt { get; set; }
 
+    [Column(TypeName = "datetime")]
+    public DateTime? PasswordResetAt { get; set; }
+
     [InverseProperty("User")]
     public virtual ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
 
