@@ -950,13 +950,7 @@
                             {
                                 <div class="aircon-card">
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                                        @* <input type="checkbox" class="form-check-input aircon-selector" data-target="service_@i" asp-for="Units[i].IsSelected" /> *@
-                                       @*  <input type="checkbox"
-                                               name="Units[@i].IsSelected"
-                                               value="true"
-                                        @(unit.IsSelected ? "checked" : "")
-                                               class="form-check-input aircon-selector"
-                                               data-target="service_@i" /> *@
+                                    
                                         <input type="hidden"
                                                name="Units[@i].IsSelected"
                                                value="false"
@@ -1050,22 +1044,6 @@
                                            name="Units[@i].InstallationType"
                                            value="@unit.InstallationType" />
 
-                                 @*    <input type="hidden"
-                                           name="Units[@i].Condition"
-                                           value="@unit.Condition" />
-
-                                    <input type="hidden"
-                                           name="Units[@i].ProblemFound"
-                                           value="@unit.ProblemFound" />
-
-                                    <input type="hidden"
-                                           name="Units[@i].RepairAction"
-                                           value="@unit.RepairAction" />
-
-                                    <input type="hidden"
-                                           name="Units[@i].NextServiceDue"
-                                           value="@unit.NextServiceDue?.ToString("yyyy-MM-dd")" /> *@
-
                                     <div class="quantity-box">
                                         <p><strong>Total:</strong> @unit.TotalQuantity Units</p>
                                         <p><strong class="text-success">Completed:</strong> <span id="completed_@i">@unit.CompletedQuantity</span></p>
@@ -1089,10 +1067,7 @@
                                         <small class="text-muted">max @unit.RemainingQuantity</small>
                                     </div>
 
-                                   @*  @foreach (var acId in unit.AirConUnitIds)
-                                    {
-                                        <input type="hidden" name="Units[@i].AirConUnitIds" value="@acId" />
-                                    } *@
+                                   
                                     @for (int j = 0; j < unit.AirConUnitIds.Count; j++)
                                     {
                                         <input type="hidden"
@@ -1447,7 +1422,7 @@
                             <tr>
                                 <td><input type="text" name="Parts[0].PartName" class="form-control" placeholder="Capacitor" /></td>
                                 <td><input type="number" name="Parts[0].Quantity" class="form-control qty" value="1" min="1" /></td>
-                                <td><input type="number" name="Parts[0].UnitPrice" class="form-control price" value="0" /></td>
+                                <td><input type="number" name="Parts[0].UnitPrice" class="form-control price" placeholder="0000" /></td>
                                 <td><input type="text" class="form-control total" readonly /></td>
                                 <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">✕</button></td>
                             </tr>
@@ -1460,14 +1435,14 @@
                     <table class="table">
                         <thead><tr><th>Description</th><th>Amount</th></tr></thead>
                         <tbody>
-                            <tr><td><input class="form-control" name="Charges[0].Description" placeholder="Cleaning Service" /></td><td><input class="form-control chargeAmount" type="number" name="Charges[0].Amount" value="0" /></td></tr>
+                            <tr><td><input class="form-control" name="Charges[0].Description" placeholder="Cleaning Service" /></td><td><input class="form-control chargeAmount" type="number" name="Charges[0].Amount" placeholder="0000" /></td></tr>
                         </tbody>
                     </table>
 
                     <!-- Expenses -->
                     <div class="section-title"><i class="fas fa-money-bill"></i> Other Expenses</div>
                     <table class="table">
-                        <tr><td><input class="form-control" name="Expenses[0].Description" placeholder="Transportation" /></td><td><input class="form-control expenseAmount" type="number" name="Expenses[0].Amount" value="0" /></td></tr>
+                        <tr><td><input class="form-control" name="Expenses[0].Description" placeholder="Transportation" /></td><td><input class="form-control expenseAmount" type="number" name="Expenses[0].Amount" placeholder="0000" /></td></tr>
                     </table>
 
                     <!-- Invoice Summary -->

@@ -2,541 +2,1309 @@
 
 @{
     ViewData["Title"] = "Invoice";
-    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+    Layout = null;
 }
 
-
-<div class="invoice-container">
-
-
-    <!-- HEADER -->
-
-    <div class="invoice-header">
-
-
-        <div>
-            <h2>
-                <i class="fas fa-snowflake"></i>
-                AirCon Servicing
-            </h2>
-
-            <p>
-                Professional Air Conditioner Service
-            </p>
-
-        </div>
-
-
-
-        <div class="invoice-meta">
-
-            <h5>
-                INVOICE
-            </h5>
-
-            <p>
-                No :
-                <b>
-                    @Model.InvoiceNo
-                </b>
-            </p>
-
-            <p>
-                Date :
-                @Model.PaymentDate?.ToString("dd-MM-yyyy")
-            </p>
-
-
-        </div>
-
-
-    </div>
-
-
-
-    <hr />
-
-
-
-    <!-- CUSTOMER + TECHNICIAN -->
-
-
-    <div class="info-grid">
-
-
-        <div class="info-card">
-
-
-            <h5>
-                <i class="fas fa-user"></i>
-                Customer Information
-            </h5>
-
-
-            <p>
-                <b>Name :</b>
-                @Model.ServiceRecord.Customer.Name
-            </p>
-
-
-            <p>
-                <b>Phone :</b>
-                @Model.ServiceRecord.Customer.Phone
-            </p>
-
-
-            <p>
-                <b>Location :</b>
-                @Model.ServiceRecord.Customer.Address
-            </p>
-
-
-        </div>
-
-
-
-
-        <div class="info-card">
-
-
-            <h5>
-                <i class="fas fa-user-cog"></i>
-                Technician Information
-            </h5>
-
-
-            <p>
-                <b>Name :</b>
-                @Model.ServiceRecord.Technician.Name
-            </p>
-
-
-            <p>
-                <b>Service Date :</b>
-                @Model.ServiceRecord.CreatedAt?.ToString("dd-MM-yyyy")
-            </p>
-
-
-            @* <p>
-                <b>Service Type :</b>
-                @Model.ServiceRecord.ServiceType
-            </p> *@
-
-
-        </div>
-
-
-    </div>
-
-
-
-
-    <hr />
-
-
-
-
-    <!-- AIRCON DETAILS -->
-
-
-    <h5 class="section-title">
-
-        <i class="fas fa-wind"></i>
-
-        Air Conditioner Details
-
-    </h5>
-
-
-
-    <table class="table invoice-table">
-
-
-        <thead>
-
-            <tr>
-
-                <th>
-                    Brand
-                </th>
-
-
-                <th>
-                    Model
-                </th>
-
-
-                <th>
-                    Capacity
-                </th>
-
-
-                <th>
-                    Condition
-                </th>
-
-
-                <th>
-                    Next Service
-                </th>
-
-
-            </tr>
-
-
-        </thead>
-
-
-        <tbody>
-
-
-            @foreach (var item in Model.ServiceRecord.ServiceRecordUnits)
-            {
-
-                <tr>
-
-                    <td>
-                        @item.AirConUnit.Brand.BrandName
-                    </td>
-
-
-                    <td>
-                        @item.AirConUnit.Model.ModelName
-                    </td>
-
-
-                    <td>
-                        @item.AirConUnit.CapacityHp HP
-                    </td>
-
-
-                    <td>
-
-                        @item.Accondition
-
-                    </td>
-
-
-                    <td>
-
-                        @item.NextServiceDue?.ToString("dd-MM-yyyy")
-
-                    </td>
-
-
-                </tr>
-
-
-            }
-
-
-        </tbody>
-
-
-    </table>
-
-
-
-
-
-    <!-- PAYMENT SUMMARY -->
-
-
-    <div class="payment-box">
-
-
-        <h5>
-            Payment Summary
-        </h5>
-
-
-
-        <div class="payment-row">
-
-            <span>
-                Service Cost
-            </span>
-
-
-            <b>
-                @Model.Amount?.ToString("N0")
-                MMK
-            </b>
-
-        </div>
-
-
-
-        <div class="payment-row">
-
-            <span>
-                Paid Amount
-            </span>
-
-
-            <b>
-                @Model.PaidAmount?.ToString("N0")
-                MMK
-            </b>
-
-        </div>
-
-
-
-        <div class="payment-row">
-
-
-            <span>
-                Change
-            </span>
-
-
-            <b>
-                @Model.ChangeAmount?.ToString("N0")
-                MMK
-            </b>
-
-
-        </div>
-
-
-
-
-        <div class="payment-row">
-
-
-            <span>
-                Payment Method
-            </span>
-
-
-            <b>
-                @Model.PaymentMethod
-            </b>
-
-
-        </div>
-
-
-
-
-        <div class="payment-status">
-
-
-            @Model.PaymentStatus
-
-
-        </div>
-
-
-
-    </div>
-
-
-
-
-
-
-    <!-- QR RECEIPT -->
-
-
-    <div class="qr-section">
-
-
-        <div>
-
-
-            <h6>
-                Scan to Verify Receipt
-            </h6>
-
-
-            <img src="~/images/payment-qr.png"
-                 width="120" />
-
-        </div>
-
-
-    </div>
-
-
-
-
-
-
-    <hr />
-
-
-
-    <div class="footer">
-
-
-        <h5>
-            Thank You
-        </h5>
-
-
-        <p>
-            Thank you for choosing AirCon Servicing.
-        </p>
-
-
-    </div>
-
-
-
-
-    <button onclick="window.print()"
-            class="btn btn-primary print-btn">
-
-
-        <i class="fas fa-print"></i>
-
-        Print Invoice
-
-
-    </button>
-
-
-
-</div>
-
-<style>
-    .invoice-container {
-        max-width: 1000px;
-        margin: auto;
-        background: white;
-        padding: 35px;
-        border-radius: 15px;
-        box-shadow: 0 5px 25px rgba(0,0,0,.1);
-    }
-
-
-
-    .invoice-header {
-        display: flex;
-        justify-content: space-between;
-    }
-
-
-
-        .invoice-header h2 {
-            color: #2c8c99;
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Invoice - @Model.InvoiceNo</title>
+
+    <!-- Bootstrap -->
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min5.3.3.css"
+          rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="~/fontawesome/css/all.min660.css" />
+
+    <!-- Bootstrap 5.3 -->
+   @*  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"> *@
+
+    <!-- Font Awesome 6.6.0 -->
+   @*  <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"> *@
+
+
+    <style>
+
+        :root {
+            --primary: #2c8c99;
+            --primary-dark: #23727d;
+            --primary-light: #e9f7f8;
+            --text-dark: #263238;
+            --text-muted: #6c757d;
+            --border: #e3e8eb;
+            --background: #f4f7f9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            background: var(--background);
+            font-family: Arial, "Segoe UI", sans-serif;
+            color: var(--text-dark);
+        }
+
+
+        /* =========================
+           PAGE WRAPPER
+        ========================= */
+
+        .invoice-page {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+
+        /* =========================
+           TOP ACTION BAR
+        ========================= */
+
+        .invoice-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: white;
+            color: #495057;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: .2s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .print-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            transition: .2s ease;
+        }
+
+        .print-btn:hover {
+            background: var(--primary-dark);
+        }
+
+
+        /* =========================
+           INVOICE
+        ========================= */
+
+        .invoice-container {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 35px rgba(0, 0, 0, .08);
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .invoice-header {
+            padding: 35px 40px;
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--primary-dark)
+            );
+            color: white;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .company-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .company-logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.15);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 27px;
+        }
+
+        .company-name {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: .3px;
+        }
+
+        .company-subtitle {
+            margin: 5px 0 0;
+            font-size: 13px;
+            opacity: .9;
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-title h1 {
+            margin: 0;
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .invoice-title .invoice-number {
+            margin-top: 7px;
+            font-size: 14px;
+            opacity: .95;
+        }
+
+
+        /* =========================
+           META AREA
+        ========================= */
+
+        .invoice-meta {
+            padding: 22px 40px;
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            font-weight: 700;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+
+            padding: 7px 15px;
+            border-radius: 30px;
+
+            background: var(--primary-light);
+            color: var(--primary);
+
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+
+        /* =========================
+           BODY
+        ========================= */
+
+        .invoice-body {
+            padding: 35px 40px;
+        }
+
+
+        /* =========================
+           INFORMATION CARDS
+        ========================= */
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-bottom: 35px;
+        }
+
+        .info-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+            background: #fff;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-icon {
+            width: 34px;
+            height: 34px;
+
+            border-radius: 8px;
+
+            background: var(--primary-light);
+            color: var(--primary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 15px;
+        }
+
+        .info-card-title {
+            margin: 0;
+            color: var(--primary);
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 11px;
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            width: 105px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .info-value {
+            flex: 1;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+
+        /* =========================
+           SECTION TITLE
+        ========================= */
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 15px;
+        }
+
+        .section-icon {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 17px;
             font-weight: 800;
         }
 
 
+        /* =========================
+           AIRCON TABLE
+        ========================= */
 
-    .invoice-meta {
-        text-align: right;
-    }
+        .table-wrapper {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow-x: auto;
+            margin-bottom: 35px;
+        }
 
+        .invoice-table {
+            width: 100%;
+            margin: 0;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
 
+        .invoice-table thead th {
+            background: var(--primary);
+            color: white;
 
-    .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
+            padding: 13px 15px;
 
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .3px;
 
+            border: none;
+        }
 
-    .info-card {
-        background: #f8fafc;
-        padding: 20px;
-        border-radius: 12px;
-    }
+        .invoice-table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            vertical-align: middle;
+        }
 
+        .invoice-table tbody tr:last-child td {
+            border-bottom: none;
+        }
 
+        .invoice-table tbody tr:hover {
+            background: #f8fbfc;
+        }
 
-        .info-card h5,
-        .section-title {
-            color: #2c8c99;
+        .condition-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+
+            background: var(--primary-light);
+            color: var(--primary);
+
+            font-size: 11px;
             font-weight: 700;
         }
 
 
+        /* =========================
+           PAYMENT + QR
+        ========================= */
 
-    .invoice-table th {
-        background: #2c8c99;
-        color: white;
-    }
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 390px;
+            gap: 35px;
+            align-items: start;
+        }
 
+        .qr-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
 
+        .qr-title {
+            margin: 0 0 7px;
+            font-size: 15px;
+            font-weight: 800;
+        }
 
-    .payment-box {
-        margin-top: 25px;
-        margin-left: auto;
-        width: 350px;
-    }
+        .qr-description {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
 
-
-
-    .payment-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-    }
-
-
-
-    .payment-status {
-        margin-top: 15px;
-        background: #dff9fb;
-        color: #2c8c99;
-        text-align: center;
-        padding: 8px;
-        border-radius: 20px;
-        font-weight: bold;
-    }
-
-
-
-    .qr-section {
-        text-align: center;
-        margin-top: 30px;
-    }
-
-
-
-    .footer {
-        text-align: center;
-    }
-
-
-
-    @@media(max - width:768px) {
-        .invoice-header, .info-grid
-
-    {
-        display: block;
-    }
-
-
-    .invoice-meta {
-        text-align: left;
-        margin-top: 20px;
-    }
-
-    }
-
-
-
-    @@media print {
-
-
-        .print-btn {
-            display: none;
+        .qr-card img {
+            width: 125px;
+            height: 125px;
+            object-fit: contain;
         }
 
 
-        body {
-            background: white;
+        /* =========================
+           PAYMENT SUMMARY
+        ========================= */
+
+        .payment-summary {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .payment-header {
+            padding: 15px 20px;
+            background: #f7fafb;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .payment-header h5 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .payment-body {
+            padding: 20px;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 9px 0;
+
+            font-size: 13px;
+        }
+
+        .payment-row span {
+            color: var(--text-muted);
+        }
+
+        .payment-row strong {
+            color: var(--text-dark);
+        }
+
+        .payment-divider {
+            border-top: 1px dashed #d9dfe2;
+            margin: 8px 0;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding-top: 12px;
+
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .total-row span {
+            color: var(--primary);
+        }
+
+        .total-row strong {
+            color: var(--primary);
+        }
+
+        .payment-method {
+            margin-top: 15px;
+            padding: 10px;
+
+            border-radius: 8px;
+            background: var(--primary-light);
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            font-size: 12px;
+        }
+
+        .payment-method span {
+            color: var(--text-muted);
+        }
+
+        .payment-method strong {
+            color: var(--primary);
         }
 
 
-        .invoice-container {
-            box-shadow: none;
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .invoice-footer {
+            padding: 25px 40px;
+
+            background: #f8fafb;
+            border-top: 1px solid var(--border);
+
+            text-align: center;
         }
-    }
-</style>
+
+        .thank-you {
+            margin: 0;
+            color: var(--primary);
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .footer-text {
+            margin: 6px 0 0;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .footer-contact {
+            margin-top: 10px;
+            color: #7b858b;
+            font-size: 11px;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @@media (max-width: 768px) {
+
+            body {
+                padding: 15px 8px;
+            }
+
+            .invoice-actions {
+                gap: 10px;
+            }
+
+            .back-btn,
+            .print-btn {
+                padding: 9px 12px;
+                font-size: 12px;
+            }
+
+            .invoice-header {
+                padding: 25px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .company-name {
+                font-size: 21px;
+            }
+
+            .company-logo {
+                width: 48px;
+                height: 48px;
+                font-size: 22px;
+            }
+
+            .invoice-title {
+                text-align: left;
+            }
+
+            .invoice-title h1 {
+                font-size: 28px;
+            }
+
+            .invoice-meta {
+                padding: 18px 20px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .invoice-body {
+                padding: 25px 18px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .bottom-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .payment-summary {
+                order: -1;
+            }
+
+            .info-card {
+                padding: 18px;
+            }
+
+            .invoice-footer {
+                padding: 22px 15px;
+            }
+        }
+
+
+        /* =========================
+           SMALL MOBILE
+        ========================= */
+
+        @@media (max-width: 480px) {
+
+            .invoice-actions {
+                /* flex-direction: column; */
+                align-items: stretch;
+            }
+
+            .back-btn,
+            .print-btn {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .invoice-meta {
+                grid-template-columns: 1fr;
+                gap: 13px;
+            }
+
+            .info-row {
+                display: block;
+            }
+
+            .info-label {
+                display: block;
+                width: auto;
+                margin-bottom: 3px;
+            }
+
+            .section-title {
+                font-size: 15px;
+            }
+
+            .payment-row {
+                font-size: 12px;
+            }
+
+            .total-row {
+                font-size: 15px;
+            }
+        }
+
+
+        /* =========================
+           PRINT
+        ========================= */
+
+        @@media print {
+
+            body {
+                padding: 0;
+                margin: 0;
+                background: white;
+            }
+
+            .invoice-page {
+                max-width: none;
+            }
+
+            .invoice-actions {
+                display: none !important;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .invoice-header {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .invoice-table thead th {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .status-badge,
+            .condition-badge,
+            .payment-method,
+            .info-icon {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .invoice-footer {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            @@page {
+                size: A4;
+                margin: 10mm;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="invoice-page">
+
+
+        <!-- =========================
+             ACTION BUTTONS
+        ========================= -->
+
+        <div class="invoice-actions">
+
+            <a asp-controller="ServiceRequest"
+               asp-action="Index"
+               class="back-btn btn-sm">
+
+                <i class="fas fa-arrow-left"></i>
+
+                Back
+
+            </a>
+
+
+            <button type="button"
+                    onclick="window.print()"
+                    class="print-btn">
+
+                <i class="fas fa-print"></i>
+
+                Print Invoice
+
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             INVOICE CONTAINER
+        ========================= -->
+
+        <div class="invoice-container">
+
+
+            <!-- HEADER -->
+
+            <div class="invoice-header">
+
+                <div class="company-area">
+
+                    <div class="company-logo">
+
+                        <i class="fas fa-snowflake"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h2 class="company-name">
+                            AirCon Servicing
+                        </h2>
+
+                        <p class="company-subtitle">
+                            Professional Air Conditioner Service
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="invoice-title">
+
+                    <h1>
+                        INVOICE
+                    </h1>
+
+                    <div class="invoice-number">
+
+                        Invoice No :
+                        <strong>
+                            @Model.InvoiceNo
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- INVOICE META -->
+
+            <div class="invoice-meta">
+
+
+                <div class="meta-item">
+
+                    <span class="meta-label">
+                        Invoice Date
+                    </span>
+
+                    <span class="meta-value">
+
+                        @Model.PaymentDate?.ToString("dd MMMM yyyy")
+
+                    </span>
+
+                </div>
+
+
+                <div class="meta-item">
+
+                    <span class="meta-label">
+                        Service Date
+                    </span>
+
+                    <span class="meta-value">
+
+                        @Model.ServiceRecord.CreatedAt?.ToString("dd MMMM yyyy")
+
+                    </span>
+
+                </div>
+
+
+                <div class="meta-item">
+
+                    <span class="meta-label">
+                        Payment Status
+                    </span>
+
+                    <span class="status-badge">
+
+                        <i class="fas fa-check-circle"></i>
+
+                        @Model.PaymentStatus
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- BODY -->
+
+            <div class="invoice-body">
+
+
+                <!-- CUSTOMER / TECHNICIAN -->
+
+                <div class="info-grid">
+
+
+                    <!-- CUSTOMER -->
+
+                    <div class="info-card">
+
+                        <div class="info-card-header">
+
+                            <div class="info-icon">
+
+                                <i class="fas fa-user"></i>
+
+                            </div>
+
+                            <h5 class="info-card-title">
+                                Customer Information
+                            </h5>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <div class="info-label">
+                                Name
+                            </div>
+
+                            <div class="info-value">
+                                @Model.ServiceRecord.Customer.Name
+                            </div>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <div class="info-label">
+                                Phone
+                            </div>
+
+                            <div class="info-value">
+                                @Model.ServiceRecord.Customer.Phone
+                            </div>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <div class="info-label">
+                                Location
+                            </div>
+
+                            <div class="info-value">
+                                @Model.ServiceRecord.Customer.Address
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- TECHNICIAN -->
+
+                    <div class="info-card">
+
+                        <div class="info-card-header">
+
+                            <div class="info-icon">
+
+                                <i class="fas fa-user-cog"></i>
+
+                            </div>
+
+                            <h5 class="info-card-title">
+                                Technician Information
+                            </h5>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <div class="info-label">
+                                Name
+                            </div>
+
+                            <div class="info-value">
+                                @Model.ServiceRecord.Technician.Name
+                            </div>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <div class="info-label">
+                                Service Date
+                            </div>
+
+                            <div class="info-value">
+                                @Model.ServiceRecord.CreatedAt?.ToString("dd-MM-yyyy")
+                            </div>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <div class="info-label">
+                                Service ID
+                            </div>
+
+                            <div class="info-value">
+                                #@Model.ServiceRecord.Id
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- AIRCON DETAILS -->
+
+                <div class="section-header">
+
+                    <i class="fas fa-wind section-icon"></i>
+
+                    <h5 class="section-title">
+                        Air Conditioner Details
+                    </h5>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table class="invoice-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    #
+                                </th>
+
+                                <th>
+                                    Brand
+                                </th>
+
+                                <th>
+                                    Model
+                                </th>
+
+                                <th>
+                                    Capacity
+                                </th>
+
+                                <th>
+                                    Condition
+                                </th>
+
+                                <th>
+                                    Next Service
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @{
+                                var no = 1;
+                            }
+
+                            @foreach (var item in Model.ServiceRecord.ServiceRecordUnits)
+                            {
+
+                                <tr>
+
+                                    <td>
+                                        @no
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            @item.AirConUnit.Brand.BrandName
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        @item.AirConUnit.Model.ModelName
+                                    </td>
+
+                                    <td>
+                                        @item.AirConUnit.CapacityHp HP
+                                    </td>
+
+                                    <td>
+
+                                        <span class="condition-badge">
+
+                                            @item.Accondition
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+                                        @item.NextServiceDue?.ToString("dd-MM-yyyy")
+                                    </td>
+
+                                </tr>
+
+                                no++;
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+
+                <!-- PAYMENT + QR -->
+
+                <div class="bottom-grid">
+
+
+                    <!-- QR -->
+
+                    <div class="qr-card">
+
+                        <h5 class="qr-title">
+                            Scan to Verify Receipt
+                        </h5>
+
+                        <p class="qr-description">
+                            Scan the QR code to verify this payment receipt.
+                        </p>
+
+                        <img src="~/images/payment-qr.png"
+                             alt="Payment Verification QR Code" />
+
+                    </div>
+
+
+
+                    <!-- PAYMENT SUMMARY -->
+
+                    <div class="payment-summary">
+
+                        <div class="payment-header">
+
+                            <h5>
+                                Payment Summary
+                            </h5>
+
+                        </div>
+
+
+                        <div class="payment-body">
+
+
+                            <div class="payment-row">
+
+                                <span>
+                                    Service Cost
+                                </span>
+
+                                <strong>
+                                    @Model.Amount?.ToString("N0") MMK
+                                </strong>
+
+                            </div>
+
+
+                            <div class="payment-row">
+
+                                <span>
+                                    Paid Amount
+                                </span>
+
+                                <strong>
+                                    @Model.PaidAmount?.ToString("N0") MMK
+                                </strong>
+
+                            </div>
+
+
+                            <div class="payment-row">
+
+                                <span>
+                                    Change
+                                </span>
+
+                                <strong>
+                                    @Model.ChangeAmount?.ToString("N0") MMK
+                                </strong>
+
+                            </div>
+
+
+                            <div class="payment-divider"></div>
+
+
+                            <div class="total-row">
+
+                                <span>
+                                    Total Paid
+                                </span>
+
+                                <strong>
+                                    @Model.PaidAmount?.ToString("N0") MMK
+                                </strong>
+
+                            </div>
+
+
+                            <div class="payment-method">
+
+                                <span>
+                                    Payment Method
+                                </span>
+
+                                <strong>
+
+                                    <i class="fas fa-wallet me-1"></i>
+
+                                    @Model.PaymentMethod
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- FOOTER -->
+
+            <div class="invoice-footer">
+
+                <h5 class="thank-you">
+                    Thank You for Choosing Us!
+                </h5>
+
+                <p class="footer-text">
+                    Thank you for choosing AirCon Servicing.
+                    We appreciate your trust in our professional service.
+                </p>
+
+                <div class="footer-contact">
+
+                    <i class="fas fa-snowflake"></i>
+
+                    AirCon Servicing Management System
+
+                    &nbsp; • &nbsp;
+
+                    Professional AC Service
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

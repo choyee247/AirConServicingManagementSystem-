@@ -17,15 +17,29 @@ namespace AirConServicingManagementSystem.Controllers
         // GET: Index - List all AirConUnits
         public async Task<IActionResult> Index()
         {
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+            if (technicianId == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
             var aircons = await _context.AirConUnits
-             .AsNoTracking()
-             .Include(a => a.Brand)
-             .Include(a => a.Model)
-             .Include(a => a.Customer)
-             .Include(a => a.Warranty)
-             .Where(a => a.IsDeleted == false || a.IsDeleted == null)
-             .OrderByDescending(a => a.CreatedAt)
-             .ToListAsync();
+                .AsNoTracking()
+                .Include(a => a.Brand)
+                .Include(a => a.Model)
+                .Include(a => a.Customer)
+                .Include(a => a.Warranty)
+                .Include(a => a.Service)
+                .Where(a =>
+                    (a.IsDeleted == false || a.IsDeleted == null)
+                    &&
+                    a.Service != null
+                    &&
+                    a.Service.TechnicianId == technicianId
+                )
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
 
             return View(aircons);
         }
@@ -145,6 +159,7 @@ namespace AirConServicingManagementSystem.Controllers
                         InstallationDate =
                             item.InstallationDate,
 
+                        ServiceId = service.ServiceId,
 
                         CreatedAt = DateTime.Now,
 
@@ -222,7 +237,7 @@ namespace AirConServicingManagementSystem.Controllers
 
             service.Status = "In Progress";
 
-
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(
       "Complete",
@@ -257,123 +272,59 @@ namespace AirConServicingManagementSystem.Controllers
         //    return View(aircon);
         //}
 
-        public async Task<IActionResult> Edit(
-     int id,
-     int serviceId)
+        public async Task<IActionResult> Edit(int serviceId)
         {
-
             var aircon = await _context.AirConUnits
                 .Include(x => x.Customer)
                 .Include(x => x.Brand)
                 .Include(x => x.Model)
                 .FirstOrDefaultAsync(x =>
-                    x.Id == id &&
+                    x.ServiceId == serviceId &&
                     x.IsDeleted != true);
-
-
 
             if (aircon == null)
                 return NotFound();
 
-
             ViewBag.ServiceId = serviceId;
 
-
-            ViewBag.Brands =
-                await _context.AirConBrands
+            ViewBag.Brands = await _context.AirConBrands
                 .Where(x => x.IsDeleted != true)
                 .ToListAsync();
 
-
-
-
-            ViewBag.Models =
-                await _context.AirConModels
+            ViewBag.Models = await _context.AirConModels
                 .Where(x =>
                     x.BrandId == aircon.BrandId &&
                     x.IsDeleted != true)
                 .ToListAsync();
 
-
-
             ViewBag.CustomerName = aircon.Customer?.Name;
             ViewBag.CustomerPhone = aircon.Customer?.Phone;
 
-
-            // Same Brand + Model + Installation Type Count
-
-            var quantity =
-                await _context.AirConUnits
+            var quantity = await _context.AirConUnits
                 .CountAsync(x =>
-                    x.CustomerId == aircon.CustomerId &&
-                    x.BrandId == aircon.BrandId &&
-                    x.ModelId == aircon.ModelId &&
-                    x.InstallationType == aircon.InstallationType &&
+                    x.ServiceId == serviceId &&
                     x.IsDeleted != true);
-
-
-
-
 
             var vm = new EditAirConUnitViewModel
             {
-
                 Id = aircon.Id,
-
-
                 CustomerId = aircon.CustomerId,
-
-
                 BrandId = aircon.BrandId,
-
-
                 ModelId = aircon.ModelId,
-
-
                 BrandName = aircon.Brand?.BrandName,
-
-
                 ModelName = aircon.Model?.ModelName,
-
-
                 SerialNumber = aircon.SerialNumber,
-
-
                 CapacityHp = aircon.CapacityHp,
-
-
                 AirConType = aircon.AirConType,
-
-
                 InstallationType = aircon.InstallationType,
-
-
                 InstallationDate = aircon.InstallationDate,
-
-
-
                 Quantity = quantity,
-
-
-
-                CustomerName =
-                    aircon.Customer?.Name,
-
-
-                CustomerPhone =
-                    aircon.Customer?.Phone,
-
-
-
+                CustomerName = aircon.Customer?.Name,
+                CustomerPhone = aircon.Customer?.Phone,
                 ServiceId = serviceId
-
             };
 
-
-
-
             return View(vm);
-
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -421,6 +372,7 @@ namespace AirConServicingManagementSystem.Controllers
             var currentUnits = await _context.AirConUnits
                 .Where(x =>
                     x.CustomerId == aircon.CustomerId &&
+                    x.ServiceId == serviceId &&
                     x.BrandId == aircon.BrandId &&
                     x.ModelId == aircon.ModelId &&
                     x.InstallationType == aircon.InstallationType &&
@@ -454,6 +406,8 @@ namespace AirConServicingManagementSystem.Controllers
                         CapacityHp = aircon.CapacityHp,
 
                         AirConType = aircon.AirConType,
+
+                        ServiceId = serviceId,
 
                         InstallationType = aircon.InstallationType,
 
@@ -537,8 +491,8 @@ namespace AirConServicingManagementSystem.Controllers
 
 
             return RedirectToAction(
-                "Complete",
-                "TechnicianService",
+                "Index",
+                "ServiceRequest",
                 new
                 {
                     id = serviceId

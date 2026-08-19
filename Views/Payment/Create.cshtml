@@ -45,37 +45,43 @@
 
 </style>
 
-
-
 <div class="container py-4">
-
 
     <div class="payment-card">
 
+        <!-- ========================= -->
+        <!-- Header -->
+        <!-- ========================= -->
 
-        <h3 class="title">
-
-            <i class="fas fa-money-bill-wave"></i>
+        <h3 class="title mb-4">
+            <i class="fas fa-money-bill-wave me-2"></i>
             Payment
-
         </h3>
 
 
-
         <form asp-action="Create"
+              asp-controller="Payment"
               method="post"
               enctype="multipart/form-data">
 
+            @Html.AntiForgeryToken()
 
+
+            <!-- ========================= -->
+            <!-- Hidden -->
+            <!-- ========================= -->
 
             <input type="hidden"
                    asp-for="ServiceRecordId" />
 
 
+            <!-- ========================= -->
+            <!-- Invoice -->
+            <!-- ========================= -->
 
             <div class="mb-3">
 
-                <label>
+                <label class="form-label fw-bold">
                     Invoice No
                 </label>
 
@@ -86,352 +92,478 @@
             </div>
 
 
-
+            <!-- ========================= -->
+            <!-- Total Amount -->
+            <!-- ========================= -->
 
             <div class="mb-3">
 
-                <label>
+                <label class="form-label fw-bold">
                     Total Amount
                 </label>
 
-                <input class="form-control"
-                       asp-for="Amount"
-                       id="amount"
-                       readonly />
+                <div class="input-group">
+
+                    <input class="form-control fw-bold"
+                           asp-for="Amount"
+                           id="amount"
+                           readonly />
+
+                    <span class="input-group-text">
+                        MMK
+                    </span>
+
+                </div>
 
             </div>
 
 
-
+            <!-- ========================= -->
+            <!-- Payment Method -->
+            <!-- ========================= -->
 
             <div class="mb-3">
 
-                <label>
+                <label class="form-label fw-bold">
                     Payment Method
                 </label>
-
 
                 <select class="form-select"
                         asp-for="PaymentMethod"
                         id="paymentMethod">
 
-
                     <option value="Cash">
                         Cash
                     </option>
-
 
                     <option value="KBZPay">
                         KBZPay
                     </option>
 
-
                     <option value="WavePay">
                         WavePay
                     </option>
-
 
                     <option value="AYAPay">
                         AYA Pay
                     </option>
 
-
                     <option value="CBPay">
                         CB Pay
                     </option>
 
-
                     <option value="BankTransfer">
                         Bank Transfer
                     </option>
-
 
                 </select>
 
             </div>
 
 
-
-
+            <!-- ========================= -->
             <!-- CASH SECTION -->
+            <!-- ========================= -->
 
             <div id="cashSection">
 
+                <div class="card border-0 bg-light mb-3">
 
-                <div class="mb-3">
+                    <div class="card-body">
 
-                    <label>
-                        Customer Paid
-                    </label>
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-money-bill me-2"></i>
+                            Cash Payment
+                        </h6>
 
 
-                    <input class="form-control"
-                           asp-for="PaidAmount"
-                           id="paidAmount"
-                           type="number"
-                           step="0.01" />
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Customer Paid
+                            </label>
+
+                            <div class="input-group">
+
+                                <input class="form-control"
+                                       asp-for="PaidAmount"
+                                       id="paidAmount"
+                                       type="number"
+                                       step="0.01"
+                                       min="0" />
+
+                                <span class="input-group-text">
+                                    MMK
+                                </span>
+
+                            </div>
+
+                            <span asp-validation-for="PaidAmount"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+                        <div class="mb-0">
+
+                            <label class="form-label">
+                                Change Amount
+                            </label>
+
+                            <div class="input-group">
+
+                                <input class="form-control"
+                                       asp-for="ChangeAmount"
+                                       id="changeAmount"
+                                       readonly />
+
+                                <span class="input-group-text">
+                                    MMK
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
-
-
-
-                <div class="mb-3">
-
-                    <label>
-                        Change Amount
-                    </label>
-
-
-                    <input class="form-control"
-                           asp-for="ChangeAmount"
-                           id="changeAmount"
-                           readonly />
-
-                </div>
-
 
             </div>
 
 
-
-
+            <!-- ========================= -->
             <!-- DIGITAL PAYMENT -->
+            <!-- ========================= -->
 
             <div id="digitalSection">
 
+                <div class="card border-0 bg-light mb-3">
 
-                <div class="mb-3">
+                    <div class="card-body">
 
-                    <label>
-                        Transaction No
-                    </label>
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-mobile-alt me-2"></i>
+                            Digital Payment
+                        </h6>
 
 
-                    <input class="form-control"
-                           asp-for="TransactionNo" />
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Transaction No
+                            </label>
+
+                            <input class="form-control"
+                                   asp-for="TransactionNo"
+                                   placeholder="Enter transaction number" />
+
+                        </div>
+
+
+                        <div class="mb-0">
+
+                            <label class="form-label">
+                                Payment Slip
+                            </label>
+
+                            <input class="form-control"
+                                   asp-for="PaymentSlip"
+                                   type="file"
+                                   accept="image/*,.pdf" />
+
+                            <small class="text-muted">
+                                Upload payment slip if available.
+                            </small>
+
+                        </div>
+
+                    </div>
 
                 </div>
-
-
-
-                <div class="mb-3">
-
-                    <label>
-                        Payment Slip
-                    </label>
-
-
-                    <input class="form-control"
-                           asp-for="PaymentSlip"
-                           type="file" />
-
-                </div>
-
 
             </div>
 
 
-
-
-
+            <!-- ========================= -->
             <!-- BANK SECTION -->
+            <!-- ========================= -->
 
             <div id="bankSection">
 
+                <div class="card border-0 bg-light mb-3">
 
-                <div class="section-title">
-                    Bank Information
+                    <div class="card-body">
+
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-university me-2"></i>
+                            Bank Information
+                        </h6>
+
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Bank Name
+                            </label>
+
+                            <input class="form-control"
+                                   asp-for="BankName"
+                                   placeholder="Enter bank name" />
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Account Name
+                            </label>
+
+                            <input class="form-control"
+                                   asp-for="AccountName"
+                                   placeholder="Enter account name" />
+
+                        </div>
+
+
+                        <div class="mb-0">
+
+                            <label class="form-label">
+                                Account No
+                            </label>
+
+                            <input class="form-control"
+                                   asp-for="AccountNo"
+                                   placeholder="Enter account number" />
+
+                        </div>
+
+                    </div>
+
                 </div>
-
-
-
-                <div class="mb-3">
-
-                    <label>
-                        Bank Name
-                    </label>
-
-
-                    <input class="form-control"
-                           asp-for="BankName" />
-
-                </div>
-
-
-
-
-                <div class="mb-3">
-
-                    <label>
-                        Account Name
-                    </label>
-
-
-                    <input class="form-control"
-                           asp-for="AccountName" />
-
-                </div>
-
-
-
-
-                <div class="mb-3">
-
-                    <label>
-                        Account No
-                    </label>
-
-
-                    <input class="form-control"
-                           asp-for="AccountNo" />
-
-                </div>
-
 
             </div>
 
 
+            <!-- ========================= -->
+            <!-- REMARK -->
+            <!-- ========================= -->
 
+            <div class="mb-4">
 
-
-            <div class="mb-3">
-
-                <label>
+                <label class="form-label fw-bold">
                     Remark
                 </label>
 
-
                 <textarea class="form-control"
                           asp-for="Remark"
-                          rows="3"></textarea>
-
+                          rows="3"
+                          placeholder="Enter remark if necessary"></textarea>
 
             </div>
 
 
+            <!-- ========================= -->
+            <!-- Buttons -->
+            <!-- ========================= -->
+
+            <div class="d-flex gap-2">
+
+                <button type="submit"
+                        id="confirmPaymentBtn"
+                        class="btn btn-success px-4">
+
+                    <i class="fas fa-check-circle me-1"></i>
+
+                    Confirm Payment
+
+                </button>
 
 
-            <button type="submit"
-                    class="btn btn-success px-4">
+                <a asp-controller="ServiceRequest"
+                   asp-action="Index"
+                   class="btn btn-outline-secondary">
 
-                <i class="fas fa-check-circle"></i>
+                    <i class="fas fa-times me-1"></i>
 
-                Confirm Payment
+                    Cancel
 
-            </button>
+                </a>
 
-
+            </div>
 
         </form>
 
-
     </div>
-
 
 </div>
 
 
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const method =
+            document.getElementById("paymentMethod");
+
+        const cash =
+            document.getElementById("cashSection");
+
+        const digital =
+            document.getElementById("digitalSection");
+
+        const bank =
+            document.getElementById("bankSection");
+
+        const amountInput =
+            document.getElementById("amount");
+
+        const paidInput =
+            document.getElementById("paidAmount");
+
+        const changeInput =
+            document.getElementById("changeAmount");
 
 
-<script>
+        // ==========================================
+        // Payment Method
+        // ==========================================
 
-
-    const method =
-        document.getElementById("paymentMethod");
-
-
-    const cash =
-        document.getElementById("cashSection");
-
-
-    const digital =
-        document.getElementById("digitalSection");
-
-
-    const bank =
-        document.getElementById("bankSection");
-
-
-
-    function changePaymentType()
-    {
-
-        let value = method.value;
-
-
-        cash.style.display = "none";
-        digital.style.display = "none";
-        bank.style.display = "none";
-
-
-
-        if(value === "Cash")
+        function changePaymentType()
         {
-            cash.style.display = "block";
+            const value = method.value;
+
+
+            // Hide all
+            cash.style.display = "none";
+            digital.style.display = "none";
+            bank.style.display = "none";
+
+
+            // Cash
+            if (value === "Cash")
+            {
+                cash.style.display = "block";
+            }
+
+
+            // Digital
+            else if (
+                value === "KBZPay" ||
+                value === "WavePay" ||
+                value === "AYAPay" ||
+                value === "CBPay"
+            )
+            {
+                digital.style.display = "block";
+            }
+
+
+            // Bank Transfer
+            else if (value === "BankTransfer")
+            {
+                digital.style.display = "block";
+                bank.style.display = "block";
+            }
+
+
+            // Reset Cash fields when not Cash
+            if (value !== "Cash")
+            {
+                paidInput.value = "";
+                changeInput.value = "";
+            }
         }
 
 
-        else if(
-            value === "KBZPay" ||
-            value === "WavePay" ||
-            value === "AYAPay" ||
-            value === "CBPay"
-        )
+        method.addEventListener(
+            "change",
+            changePaymentType
+        );
+
+
+        changePaymentType();
+
+
+        // ==========================================
+        // Cash Change Calculation
+        // ==========================================
+
+        function calculateChange()
         {
-            digital.style.display = "block";
-        }
+            const amount =
+                parseFloat(amountInput.value) || 0;
+
+            const paid =
+                parseFloat(paidInput.value) || 0;
 
 
-        else if(value === "BankTransfer")
-        {
-            digital.style.display = "block";
-            bank.style.display = "block";
-        }
-
-    }
+            if (paid <= 0)
+            {
+                changeInput.value = "";
+                return;
+            }
 
 
-
-
-    method.addEventListener(
-        "change",
-        changePaymentType
-    );
-
-
-
-    changePaymentType();
-
-
-
-
-    // Cash Change Calculation
-
-
-    document
-    .getElementById("paidAmount")
-    .addEventListener(
-        "input",
-        function()
-        {
-
-            let amount =
-            parseFloat(
-                document.getElementById("amount").value
-            ) || 0;
-
-
-            let paid =
-            parseFloat(this.value) || 0;
-
-
-
-            document.getElementById("changeAmount").value =
+            const change =
                 paid - amount;
 
 
-        });
+            changeInput.value =
+                change >= 0
+                    ? change.toFixed(2)
+                    : "0.00";
+        }
 
 
+        paidInput.addEventListener(
+            "input",
+            calculateChange
+        );
 
-</script>
+
+        // ==========================================
+        // Prevent Cash Underpayment
+        // ==========================================
+
+        document
+            .querySelector("form")
+            .addEventListener(
+                "submit",
+                function (e)
+                {
+                    if (method.value === "Cash")
+                    {
+                        const amount =
+                            parseFloat(
+                                amountInput.value
+                            ) || 0;
+
+                        const paid =
+                            parseFloat(
+                                paidInput.value
+                            ) || 0;
+
+
+                        if (paid < amount)
+                        {
+                            e.preventDefault();
+
+                            alert(
+                                "Customer Paid Amount cannot be less than Total Amount."
+                            );
+
+                            paidInput.focus();
+
+                            return;
+                        }
+                    }
+                }
+            );
+
+    </script>
+}

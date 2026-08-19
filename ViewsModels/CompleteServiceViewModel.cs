@@ -55,5 +55,7 @@ namespace AirConServicingManagementSystem.ViewModels
 
 
         public DateTime? CompletedDate { get; set; }
+        public string? PartsReplaced { get;  set; }
+        public string? ServiceType { get;  set; }
     }
 }

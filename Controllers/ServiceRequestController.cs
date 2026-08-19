@@ -37,6 +37,8 @@ namespace AirConServicingManagementSystem.Controllers
                 HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
             var services = await _context.ServiceRequests
+              .Include(x => x.ServiceRecords)
+                .ThenInclude(x => x.Payments)
              .Include(x => x.Customer)
              .Include(x => x.AirConUnits)
              .Where(x => x.TechnicianId == technicianId)
@@ -133,19 +135,40 @@ namespace AirConServicingManagementSystem.Controllers
             var service = await _context.ServiceRequests
                 .Include(x => x.Customer)
                 .Include(x => x.Technician)
+
                 .Include(x => x.AirConUnits)
                     .ThenInclude(x => x.Brand)
+
                 .Include(x => x.AirConUnits)
                     .ThenInclude(x => x.Model)
+
                 .FirstOrDefaultAsync(x => x.AppointmentId == appointmentId);
+
 
             if (service == null)
                 return NotFound();
 
+
+            
             var record = await _context.ServiceRecords
-                .FirstOrDefaultAsync(x => x.ServiceRequestId == service.ServiceId);
+                .FirstOrDefaultAsync(x =>
+                    x.ServiceRequestId == service.ServiceId);
+
+
+            // =========================
+            // PAYMENT
+            // =========================
+
+            var payment = record == null
+                ? null
+                : await _context.Payments
+                    .FirstOrDefaultAsync(x =>
+                        x.ServiceRecordId == record.Id);
+
 
             ViewBag.Record = record;
+            ViewBag.Payment = payment;
+
 
             return View(service);
         }
@@ -204,7 +227,7 @@ namespace AirConServicingManagementSystem.Controllers
             int customerId = HttpContext.Session.GetInt32("CustomerId") ?? 0;
 
             if (customerId == 0)
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Login");
 
             var records = await _context.ServiceRecords
                 .Include(r => r.Technician)

@@ -253,7 +253,7 @@ namespace AirConServicingManagementSystem.Controllers.Admin
             int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
             if (techId == 0)
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Login");
 
             var record = await _context.ServiceRecords
                 .Include(x => x.Customer)

@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Remaining Options";
+    Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
+}
+<div class="container mt-5">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body text-center p-5">
+
+            <div class="mb-3">
+                <i class="fas fa-check-circle fa-3x text-success"></i>
+            </div>
+
+            <h3 class="fw-bold">
+                Service Saved Successfully
+            </h3>
+
+            <p class="mt-3">
+                Some AC units are still remaining.
+            </p>
+
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-circle me-1"></i>
+                Service Status:
+                <strong>Remaining</strong>
+            </div>
+
+            <p class="text-muted">
+                What would you like to do next?
+            </p>
+
+            <div class="d-flex justify-content-center gap-2 mt-4">
+
+                <!-- Payment -->
+                <a asp-controller="Payment"
+                   asp-action="Create"
+                   asp-route-serviceId="@Model.ServiceId"
+                   class="btn btn-success">
+
+                    <i class="fas fa-money-bill-wave me-1"></i>
+
+                    Go to Payment
+
+                </a>
+
+
+                <!-- Details -->
+                <a asp-controller="ServiceRequest"
+                   asp-action="Details"
+                   asp-route-appointmentId="@Model.AppointmentId"
+                   class="btn btn-primary">
+
+                    <i class="fas fa-eye me-1"></i>
+
+                    Go to Details
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

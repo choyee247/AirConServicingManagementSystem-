@@ -219,7 +219,7 @@
         }
 
     .btn-fill-ac {
-        background: #22c55e;
+        background: #8645fb;
         color: white;
     }
 
@@ -307,6 +307,17 @@
             text-decoration: none;
         }
 
+    .btn-remain {
+        background-color: #f59e0b;
+        color: white;
+        border: none;
+        text-decoration: none;
+    }
+
+        .btn-remain:hover {
+            background-color: #d97706;
+            color: white;
+        }
     /* =========================
            Empty State
         ========================= */
@@ -656,7 +667,16 @@
                                                     Start Service
                                                 </a>
                                             }
-
+                                            @if (item.ServiceRequest.Status == "Remaining")
+                                            {
+                                                <a asp-controller="TechnicianService"
+                                                   asp-action="Complete"
+                                                   asp-route-id="@item.ServiceRequest.ServiceId"
+                                                   class="btn-sm-custom btn-remain">
+                                                    <i class="fas fa-redo"></i>
+                                                    Remain
+                                                </a>
+                                            }
                                             @if (item.ServiceRequest.Status == "In Progress")
                                             {
                                                 var acCount = item.ServiceRequest.AirConUnits?.Count ?? 0;
@@ -674,21 +694,30 @@
                                                 else
                                                 {
                                                     <a asp-controller="AirConUnit"
-                                                       asp-action="Index"
+                                                       asp-action="Edit"
                                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        class="btn-sm-custom btn-edit-ac">
                                                         <i class="fas fa-edit"></i>
-                                                        View / Edit AC
+                                                        Edit / Add AC
                                                     </a>
 
-                                                    <a asp-controller="AirConUnit"
+                                                    <a asp-controller="TechnicianService" asp-action="Complete"
+                                                       asp-route-id="@item.ServiceRequest.ServiceId"
+                                                       class="btn-sm-custom btn-another-ac">
+
+                                                        <i class="fas fa-check-circle"></i>
+
+                                                       Fill Complete Form
+
+                                                    </a>
+                                                   @*  <a asp-controller="AirConUnit"
                                                        asp-action="Create"
                                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        asp-route-isAnother="true"
                                                        class="btn-sm-custom btn-another-ac">
                                                         <i class="fas fa-plus"></i>
                                                         Another AC
-                                                    </a>
+                                                    </a> *@
                                                 }
                                             }
 
@@ -698,19 +727,43 @@
                                                    asp-action="Details"
                                                    asp-route-appointmentId="@item.ServiceRequest.AppointmentId"
                                                    class="btn-sm-custom btn-view-service">
+
                                                     <i class="fas fa-eye"></i>
                                                     View Service
+
                                                 </a>
 
-                                                if (item.ServiceRequest.PaymentStatus == "Paid")
+                                                @if (item.ServiceRequest.PaymentStatus == "Paid")
                                                 {
-                                                    <a asp-controller="Payment"
-                                                       asp-action="Invoice"
-                                                       asp-route-id="@item.ServiceRequest.ServiceRecords?.FirstOrDefault()?.Payments?.FirstOrDefault()?.PaymentId"
-                                                       class="btn-payment-success">
-                                                        <i class="fas fa-file-invoice"></i>
-                                                        Paid
-                                                    </a>
+                                                    var paymentId = item.ServiceRequest.ServiceRecords?
+                                                    .SelectMany(x => x.Payments ?? Enumerable.Empty<Payment>())
+                                                    .Where(x => x.PaymentStatus == "Paid"
+                                                    && x.IsDeleted != true)
+                                                    .OrderByDescending(x => x.PaymentId)
+                                                    .Select(x => (int?)x.PaymentId)
+                                                    .FirstOrDefault();
+
+
+                                                    @if (paymentId.HasValue)
+                                                    {
+                                                        <a asp-controller="Payment"
+                                                           asp-action="Invoice"
+                                                           asp-route-id="@paymentId.Value"
+                                                           class="btn-payment-success">
+
+                                                            <i class="fas fa-file-invoice"></i>
+                                                            Paid
+
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <span class="btn-payment-success">
+                                                            <i class="fas fa-check-circle"></i>
+                                                            Paid
+                                                        </span>
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -718,8 +771,10 @@
                                                        asp-action="Create"
                                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                                        class="btn-payment">
+
                                                         <i class="fas fa-money-bill-wave"></i>
                                                         Payment
+
                                                     </a>
                                                 }
                                             }
@@ -838,43 +893,81 @@
                                 else
                                 {
                                     <a asp-controller="AirConUnit"
-                                       asp-action="Index"
+                                       asp-action="Edit"
                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                        class="btn-sm-mobile btn-edit-ac">
                                         <i class="fas fa-edit"></i>
-                                        View / Edit AC
+                                        Edit / Add AC
                                     </a>
 
-                                    <a asp-controller="AirConUnit"
-                                       asp-action="Create"
-                                       asp-route-serviceId="@item.ServiceRequest.ServiceId"
-                                       asp-route-isAnother="true"
+                                    <a asp-controller="TechnicianService" asp-action="Complete"
+                                       asp-route-id="@item.ServiceRequest.ServiceId"
                                        class="btn-sm-mobile btn-another-ac">
-                                        <i class="fas fa-plus"></i>
-                                        + AC
+
+                                        <i class="fas fa-check-circle"></i>
+
+                                        Fill Complete Form
+
                                     </a>
                                 }
                             }
-
+                            @if (item.ServiceRequest.Status == "Remaining")
+                            {
+                                <a asp-controller="TechnicianService"
+                                   asp-action="Complete"
+                                   asp-route-id="@item.ServiceRequest.ServiceId"
+                                   class="btn-sm-custom btn-remain">
+                                    <i class="fas fa-redo"></i>
+                                    Remain
+                                </a>
+                            }
                             @if (item.ServiceRequest.Status == "Completed")
                             {
+
                                 <a asp-controller="ServiceRequest"
                                    asp-action="Details"
                                    asp-route-appointmentId="@item.ServiceRequest.AppointmentId"
                                    class="btn-sm-mobile btn-view-service">
+
                                     <i class="fas fa-eye"></i>
                                     View
+
                                 </a>
 
-                                if (item.ServiceRequest.PaymentStatus == "Paid")
+                                @if (item.ServiceRequest.PaymentStatus == "Paid")
                                 {
-                                    <a asp-controller="Payment"
-                                       asp-action="Invoice"
-                                       asp-route-id="@item.ServiceRequest.ServiceRecords?.FirstOrDefault()?.Payments?.FirstOrDefault()?.PaymentId"
-                                       class="btn-sm-mobile btn-payment-success">
-                                        <i class="fas fa-file-invoice"></i>
-                                        Paid
-                                    </a>
+                                    var paymentId = item.ServiceRequest.ServiceRecords?
+                                    .SelectMany(x =>
+                                    x.Payments ?? Enumerable.Empty<Payment>())
+                                    .Where(x =>
+                                    x.PaymentStatus == "Paid" &&
+                                    x.IsDeleted != true)
+                                    .OrderByDescending(x => x.PaymentId)
+                                    .Select(x => (int?)x.PaymentId)
+                                    .FirstOrDefault();
+
+
+                                    @if (paymentId.HasValue)
+                                    {
+                                        <a asp-controller="Payment"
+                                           asp-action="Invoice"
+                                           asp-route-id="@paymentId.Value"
+                                           class="btn-sm-mobile btn-payment-success">
+
+                                            <i class="fas fa-file-invoice"></i>
+                                            Paid
+
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="btn-sm-mobile btn-payment-success">
+
+                                            <i class="fas fa-check-circle"></i>
+                                            Paid
+
+                                        </span>
+                                    }
                                 }
                                 else
                                 {
@@ -882,8 +975,10 @@
                                        asp-action="Create"
                                        asp-route-serviceId="@item.ServiceRequest.ServiceId"
                                        class="btn-sm-mobile btn-payment">
+
                                         <i class="fas fa-money-bill-wave"></i>
                                         Payment
+
                                     </a>
                                 }
                             }

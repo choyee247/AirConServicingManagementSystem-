@@ -261,7 +261,7 @@ public class TechnicianServiceController : Controller
 
 
         if (techId == 0)
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login", "Login");
 
 
 
@@ -304,9 +304,10 @@ public class TechnicianServiceController : Controller
             .Include(x => x.ServiceRecordUnits)
                 .ThenInclude(x => x.ServiceRecord)
 
-            .Where(x =>
+             .Where(x =>
                 x.CustomerId == service.CustomerId &&
-                x.IsDeleted == false)
+                x.IsDeleted == false &&
+                x.ServiceId == service.ServiceId)
 
             .ToListAsync();
 
@@ -374,11 +375,23 @@ public class TechnicianServiceController : Controller
                     //        )
                     //    ),
 
+                    //CompletedQuantity =
+                    //g.Count(x =>
+                    //    x.ServiceRecordUnits.Any()
+                    //),
+                    //CompletedQuantity =
+                    //g.Count(x =>
+                    //    x.ServiceRecordUnits.Any(r =>
+                    //        r.ServiceRecordId == service.ServiceId
+                    //    )
+                    //),
+
                     CompletedQuantity =
                     g.Count(x =>
-                        x.ServiceRecordUnits.Any()
+                        x.ServiceRecordUnits.Any(sru =>
+                            sru.ServiceRecord.ServiceRequestId == service.ServiceId
+                        )
                     ),
-
                     InstallationType =
                         first.InstallationType,
 
@@ -493,563 +506,301 @@ public class TechnicianServiceController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Complete(
-        CompleteServiceViewModel model)
+        CompleteServiceViewModel model,
+        string submitAction = "details")
     {
+        
 
         int techId =
             HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
-
         if (techId == 0)
-            return RedirectToAction(
-                "Login",
-                "Account");
-
-
-        foreach (var u in model.Units)
         {
-            Console.WriteLine(
-                $"TYPE={u.InstallationType}, " +
-                $"Brand={u.BrandName}, " +
-                $"Selected={u.IsSelected}, " +
-                $"Qty={u.ServiceQuantity}, " +
-                $"IDs={u.AirConUnitIds.Count}, " +
-                $"Problem={u.ProblemFound}"
-            );
+            return RedirectToAction("Login", "Login");
         }
-
-        // ==============================
-        // Get Service Request
-        // ==============================
-
-        var service =
-            await _context.ServiceRequests
+ 
+        var service = await _context.ServiceRequests
             .Include(x => x.Customer)
             .FirstOrDefaultAsync(x =>
                 x.ServiceId == model.ServiceId &&
                 x.TechnicianId == techId);
 
-
-
         if (service == null)
+        {
             return NotFound();
-
+        }
 
 
         if (service.Status == "Completed")
+        {
             return Content("Already Completed");
+        }
+
+        if (model.Units == null || !model.Units.Any())
+        {
+            TempData["Error"] = "No AC units found.";
+
+            return RedirectToAction(
+                "Complete",
+                new
+                {
+                    id = service.ServiceId
+                });
+        }
 
 
-
-
-        // ==============================
-        // Create Service Record
-        // ==============================
-
-
-        var record =
-            await _context.ServiceRecords
+        var record = await _context.ServiceRecords
             .FirstOrDefaultAsync(x =>
                 x.ServiceRequestId == service.ServiceId);
 
-
-
         if (record == null)
         {
-
             record = new ServiceRecord
             {
+                ServiceRequestId = service.ServiceId,
 
-                ServiceRequestId =
-                    service.ServiceId,
+                CustomerId = service.CustomerId,
 
+                TechnicianId = techId,
 
-                CustomerId =
-                    service.CustomerId,
+                CreatedAt = DateTime.Now,
 
-
-                TechnicianId =
-                    techId,
-
-
-                Status =
-                    "Completed",
-
-
-                CreatedAt =
-                    DateTime.Now,
-
-
-                IsDeleted =
-                    false
-
+                IsDeleted = false
             };
-
 
             _context.ServiceRecords.Add(record);
 
-
-
             await _context.SaveChangesAsync();
-
-
         }
 
 
+        record.TechnicianNote = model.TechnicianNote;
+
+        record.PartsReplaced = model.PartsReplaced;
+
+        record.ServiceCost = model.GrandTotal;
+
+        record.ServiceType = model.ServiceType;
+
+        record.UpdatedAt = DateTime.Now;
 
 
-        record.TechnicianNote =
-            model.TechnicianNote;
-
-
-
-        record.ServiceCost =
-            model.GrandTotal;
-
-
-
-        record.UpdatedAt =
-            DateTime.Now;
-
-        // ==============================
-        // Selected AC Units
-        // ==============================
-
-
-
-        var selectedUnits = model.Units
-     .Where(x =>
-         x.IsSelected == true &&
-         x.ServiceQuantity > 0 &&
-         x.AirConUnitIds.Any())
-     .ToList();
-
-
-
-        Console.WriteLine("SELECTED COUNT = " + selectedUnits.Count);
-
-
-        foreach (var item in selectedUnits)
-        {
-            Console.WriteLine(
-                $"INSERT READY => {item.BrandName} Qty={item.ServiceQuantity}"
-            );
-        }
-
-        Console.WriteLine("======== BEFORE SERVICE RECORD UNIT ========");
-
-        foreach (var unit in model.Units)
-        {
-            Console.WriteLine(
-                $"Brand:{unit.BrandName}, " +
-                $"Selected:{unit.IsSelected}, " +
-                $"Qty:{unit.ServiceQuantity}, " +
-                $"Ids:{unit.AirConUnitIds.Count}"
-            );
-        }
-
+        var completedAirConIds = await _context.ServiceRecordUnits
+            .Where(x =>
+                x.ServiceRecordId == record.Id)
+            .Select(x => x.AirConUnitId)
+            .ToListAsync();
 
 
         foreach (var unit in model.Units
             .Where(x =>
-                x.IsSelected ==true &&
+                x.IsSelected &&
                 x.ServiceQuantity > 0 &&
+                x.AirConUnitIds != null &&
                 x.AirConUnitIds.Any()))
+        {
+
+            var availableIds = unit.AirConUnitIds
+                .Where(x => x > 0)
+                .ToList();
+
+            var remainingIds = availableIds
+                .Where(x => !completedAirConIds.Contains(x))
+                .Take(unit.ServiceQuantity)
+                .ToList();
+
+            foreach (var airconId in remainingIds)
             {
-
-
-            // Take Only Today Quantity
-
-            var serviceAircons =
-            unit.AirConUnitIds
-            .Where(x => x > 0)
-            .Take(unit.ServiceQuantity)
-            .ToList();
-
-            foreach (var airconId in serviceAircons)
-            {
-                DateTime nextDate =
-                    unit.Condition switch
-                    {
-
-                        "Good" =>
+                var nextDate = unit.Condition switch
+                {
+                    "Good" =>
                         DateTime.Now.AddMonths(6),
 
-
-                        "Normal" =>
+                    "Normal" =>
                         DateTime.Now.AddMonths(3),
 
-
-                        "Bad" =>
+                    "Bad" =>
                         DateTime.Now.AddMonths(1),
 
-
-                        _ =>
+                    _ =>
                         DateTime.Now.AddMonths(3)
-
-                    };
-
+                };
 
 
+                var recordUnit = new ServiceRecordUnit
+                {
+                    ServiceRecordId = record.Id,
 
-                // ==========================
-                // Service Record Unit
-                // ==========================
+                    AirConUnitId = airconId,
 
+                    Accondition = unit.Condition,
 
-                var recordUnit =
-                    new ServiceRecordUnit
-                    {
+                    ProblemFound = unit.ProblemFound,
 
+                    RepairAction = unit.RepairAction,
 
-                        ServiceRecordId =
-                            record.Id,
+                    NextServiceDue = nextDate,
 
-
-                        AirConUnitId =
-                            airconId,
-
-
-                        Accondition =
-                            unit.Condition,
-
-
-                        ProblemFound =
-                            unit.ProblemFound,
-
-
-                        RepairAction =
-                            unit.RepairAction,
-
-
-                        NextServiceDue =
-                            nextDate,
-
-
-                        CreatedAt =
-                            DateTime.Now
-
-
-                    };
-
+                    CreatedAt = DateTime.Now
+                };
 
 
                 _context.ServiceRecordUnits.Add(recordUnit);
 
-                await _context.SaveChangesAsync();
 
-                Console.WriteLine(
-                 $"INSERTED SRU ID = {recordUnit.Id}"
-                
-);
-
-
-                // ==========================
-                // Reminder
-                // ==========================
-
-
-                var reminder =
-                    new ServiceReminder
-                    {
-
-                        CustomerId =
-                            service.CustomerId,
-
-
-                        AirConUnitId =
-                            airconId,
-
-
-                        ServiceRequestId =
-                            service.ServiceId,
-
-
-                        ReminderDate =
-                            nextDate,
-
-
-                        ReminderType =
-                            "Next",
-
-
-                        SentStatus = false,
-
-                        IsDeleted = false,
-
-                        CreatedAt =
-                            DateTime.Now
-
-                    };
-
-
-
-                _context.ServiceReminders
-                    .Add(reminder);
-
-
-
-
-                // ==========================
-                // Update AC Next Service
-                // ==========================
-
-
-                var ac =
-                    await _context.AirConUnits
-                    .FirstOrDefaultAsync(x =>
-                        x.Id == airconId);
-
-
-
-                if (ac != null)
+                var reminder = new ServiceReminder
                 {
+                    CustomerId = service.CustomerId,
 
-                    ac.UpdatedAt =
-                        DateTime.Now;
+                    AirConUnitId = airconId,
 
+                    ServiceRequestId = service.ServiceId,
+
+                    ReminderDate = nextDate,
+
+                    ReminderType = "Next",
+
+                    SentStatus = false,
+
+                    IsDeleted = false,
+
+                    CreatedAt = DateTime.Now
+                };
+
+
+                _context.ServiceReminders.Add(reminder);
+
+                var aircon = await _context.AirConUnits
+                    .FirstOrDefaultAsync(x =>
+                        x.Id == airconId &&
+                        x.IsDeleted != true);
+
+                if (aircon != null)
+                {
+                    aircon.UpdatedAt = DateTime.Now;
                 }
-
-
-
             }
-
-
-
         }
 
-
-
-
-
-        // ==============================
-        // Save Service Photos
-        // ==============================
-
-
         if (model.ServicePhotos != null &&
-           model.ServicePhotos.Count > 0)
+            model.ServicePhotos.Count > 0)
         {
-
-
-            string folder =
-            Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "wwwroot/images/service");
-
-
+            string folder = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/images/service");
 
             if (!Directory.Exists(folder))
+            {
                 Directory.CreateDirectory(folder);
-
-
+            }
 
 
             foreach (var photo in model.ServicePhotos)
             {
-
-
-                string fileName =
-                    Guid.NewGuid()
-                    +
-                    Path.GetExtension(
-                        photo.FileName);
-
-
-
-                string filePath =
-                    Path.Combine(
-                        folder,
-                        fileName);
-
-
-
-                using (var stream =
-                    new FileStream(
-                        filePath,
-                        FileMode.Create))
+                if (photo == null ||
+                    photo.Length == 0)
                 {
-
-                    await photo.CopyToAsync(stream);
-
+                    continue;
                 }
 
 
+                string fileName =
+                    Guid.NewGuid().ToString()
+                    + Path.GetExtension(photo.FileName);
 
 
-
-                var servicePhoto =
-                    new ServicePhoto
-                    {
-
-                        ServiceRecordId =
-                            record.Id,
+                string filePath =
+                    Path.Combine(folder, fileName);
 
 
-                        PhotoPath =
-                            "/images/service/"
-                            + fileName,
+                using (var stream =
+                       new FileStream(
+                           filePath,
+                           FileMode.Create))
+                {
+                    await photo.CopyToAsync(stream);
+                }
 
 
-                        PhotoType =
-                            "Service",
+                var servicePhoto = new ServicePhoto
+                {
+                    ServiceRecordId = record.Id,
+
+                    PhotoPath =
+                        "/images/service/"
+                        + fileName,
+
+                    PhotoType = "Service",
+
+                    CreatedAt = DateTime.Now,
+
+                    IsDeleted = false
+                };
 
 
-                        CreatedAt =
-                            DateTime.Now,
-
-
-                        IsDeleted =
-                            false
-
-                    };
-
-
-
-                _context.ServicePhotos
-                    .Add(servicePhoto);
-
-
+                _context.ServicePhotos.Add(servicePhoto);
             }
-
         }
 
-
-
-
-
-        // ==============================
-        // Check Remaining Quantity
-        // ==============================
-
-
-        //bool hasRemaining = false;
-
-
-
-        //foreach (var unit in model.Units)
-        //{
-
-        //    if (unit.ServiceQuantity <
-        //       unit.TotalQuantity)
-        //    {
-
-        //        hasRemaining = true;
-
-        //    }
-
-        //}
-
-        //bool hasRemaining = model.Units
-        //.Where(x => x.IsSelected)
-        //.Any(x =>
-        //    x.ServiceQuantity < x.TotalQuantity);
-        bool hasRemaining = model.Units
-        .Where(x => x.IsSelected)
-        .Any(x =>
+        bool hasRemaining = model.Units.Any(x =>
         {
+            int completedQuantity =
+                x.CompletedQuantity;
+
+            int serviceQuantity =
+                x.IsSelected
+                    ? x.ServiceQuantity
+                    : 0;
+
             int afterComplete =
-                x.CompletedQuantity + x.ServiceQuantity;
+                completedQuantity +
+                serviceQuantity;
 
             return afterComplete < x.TotalQuantity;
         });
 
-
         if (hasRemaining)
         {
+            service.Status = "Remaining";
 
-            service.Status =
-                "In Progress";
+            service.CompletedAt = null;
 
-
+            record.Status = "Remaining";
         }
         else
         {
 
-            service.Status =
-                "Completed";
+            service.Status = "Completed";
 
+            service.CompletedAt = DateTime.Now;
 
-            service.CompletedAt =
-                DateTime.Now;
-
+            record.Status = "Completed";
         }
 
-
-
-
-
-
-        // ==============================
-        // Technician Available
-        // ==============================
-
-
-        var technician =
-            await _context.Technicians
+        var technician = await _context.Technicians
             .FirstOrDefaultAsync(x =>
                 x.TechnicianId == techId);
 
-
-
         if (technician != null)
         {
-
-            technician.IsAvailable =
-                true;
-
+            technician.IsAvailable = true;
         }
 
-
-
-
-
-
-
-        // ==============================
-        // Appointment Update
-        // ==============================
-
-
-        var appointment =
-            await _context.Appointments
+        var appointment = await _context.Appointments
             .FirstOrDefaultAsync(x =>
                 x.AppointmentId ==
                 service.AppointmentId);
 
-
-
         if (appointment != null)
         {
-
             appointment.Status =
                 service.Status;
-
         }
-
-
-
-
-
 
         await _context.SaveChangesAsync();
 
-
-
-
-
-
         TempData["Success"] =
             "Service Saved Successfully";
-
-
-
-
-
-        // ==============================
-        // Payment Only Completed
-        // ==============================
-
 
         if (service.Status == "Completed")
         {
@@ -1058,21 +809,53 @@ public class TechnicianServiceController : Controller
                 "Payment",
                 new
                 {
+                    serviceId =
+                        service.ServiceId
+                });
+        }
+        if (service.Status == "Remaining")
+        {
+            return RedirectToAction(
+                "RemainingOptions",
+                "TechnicianService",
+                new
+                {
                     serviceId = service.ServiceId
                 });
         }
-
-
+        if (submitAction == "payment")
+        {
+            return RedirectToAction(
+                "Create",
+                "Payment",
+                new
+                {
+                    serviceId =
+                        service.ServiceId
+                });
+        }
 
         return RedirectToAction(
-      "Details",
-      "ServiceRequest",
-      new
-      {
-          appointmentId = service.AppointmentId
-      });
+            "Details",
+            "ServiceRequest",
+            new
+            {
+                appointmentId =
+                    service.AppointmentId
+            });
     }
+    [HttpGet]
+    public async Task<IActionResult> RemainingOptions(int serviceId)
+    {
+        var service = await _context.ServiceRequests
+            .FirstOrDefaultAsync(x =>
+                x.ServiceId == serviceId);
 
+        if (service == null)
+            return NotFound();
+
+        return View(service);
+    }
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> PreviewInvoiceAsync(
@@ -1137,10 +920,24 @@ public class TechnicianServiceController : Controller
     }
     public async Task<IActionResult> Reminders()
     {
+        var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+        if (technicianId == null)
+        {
+            return RedirectToAction("Login", "Login");
+        }
+
         var reminders = await _context.ServiceReminders
+            .AsNoTracking()
             .Include(x => x.Customer)
             .Include(x => x.AirConUnit)
-            .Where(x => x.IsDeleted ==false && x.SentStatus == false)
+            .Include(x => x.ServiceRequest)
+            .Where(x =>
+                x.IsDeleted == false &&
+                x.SentStatus == false &&
+                x.ServiceRequest != null &&
+                x.ServiceRequest.TechnicianId == technicianId
+            )
             .OrderBy(x => x.ReminderDate)
             .ToListAsync();
 
