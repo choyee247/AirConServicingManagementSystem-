@@ -258,6 +258,10 @@
             color: white;
         }
 
+    .badge-assigned{
+        background: silver;
+    }
+
     /* Payment buttons */
     .btn-payment-success {
         background: #22c55e;
@@ -637,6 +641,13 @@
                                                 <i class="fas fa-clock me-1"></i>Pending
                                             </span>
                                         }
+                                        else if (item.ServiceRequest.Status == "Assigned")
+                                        {
+                                            <span class="badge-status badge-assigned">
+                                                <i class="fas fa-user-check me-1"></i>
+                                                Assigned
+                                            </span>
+                                        }
                                         else if (item.ServiceRequest.Status == "In Progress")
                                         {
                                             <span class="badge-status badge-progress">
@@ -658,7 +669,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group-actions">
-                                            @if (item.ServiceRequest.Status == "Pending")
+                                            @* @if (item.ServiceRequest.Status == "Pending")
                                             {
                                                 <a asp-action="Edit"
                                                    asp-route-id="@item.ServiceRequest.ServiceId"
@@ -666,7 +677,7 @@
                                                     <i class="fas fa-play"></i>
                                                     Start Service
                                                 </a>
-                                            }
+                                            } *@
                                             @if (item.ServiceRequest.Status == "Remaining")
                                             {
                                                 <a asp-controller="TechnicianService"
@@ -675,6 +686,16 @@
                                                    class="btn-sm-custom btn-remain">
                                                     <i class="fas fa-redo"></i>
                                                     Remain
+                                                </a>
+                                            }
+                                            @if (item.ServiceRequest.Status == "Assigned")
+                                            {
+                                                <a asp-controller="ServiceRequest"
+                                                   asp-action="Create"
+                                                   asp-route-appointmentId="@item.ServiceRequest.AppointmentId"
+                                                   class="btn-sm-custom btn-start-service">
+                                                    <i class="fas fa-play"></i>
+                                                    Start Service
                                                 </a>
                                             }
                                             @if (item.ServiceRequest.Status == "In Progress")
@@ -825,6 +846,13 @@
                                         <i class="fas fa-clock me-1"></i>Pending
                                     </span>
                                 }
+                                else if (item.ServiceRequest.Status == "Assigned")
+                                {
+                                    <span class="badge-status badge-assigned">
+                                        <i class="fas fa-user-check"></i>
+                                        Assigned
+                                    </span>
+                                }
                                 else if (item.ServiceRequest.Status == "In Progress")
                                 {
                                     <span class="badge-status badge-progress" style="font-size:0.65rem;">
@@ -911,12 +939,22 @@
                                     </a>
                                 }
                             }
+                            @if (item.ServiceRequest.Status == "Assigned")
+                            {
+                                <a asp-controller="ServiceRequest"
+                                   asp-action="Create"
+                                   asp-route-appointmentId="@item.ServiceRequest.AppointmentId"
+                                   class="btn-sm-mobile btn-start-service">
+                                    <i class="fas fa-play"></i>
+                                    Start Service
+                                </a>
+                            }
                             @if (item.ServiceRequest.Status == "Remaining")
                             {
                                 <a asp-controller="TechnicianService"
                                    asp-action="Complete"
                                    asp-route-id="@item.ServiceRequest.ServiceId"
-                                   class="btn-sm-custom btn-remain">
+                                   class="btn-sm-mobile btn-remain">
                                     <i class="fas fa-redo"></i>
                                     Remain
                                 </a>

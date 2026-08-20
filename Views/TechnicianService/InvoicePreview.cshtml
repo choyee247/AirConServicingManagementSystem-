@@ -753,6 +753,9 @@
                     <input asp-for="TechnicianNote" type="hidden" />
                     <input asp-for="GrandTotal" type="hidden" />
                     <input asp-for="SubTotal" type="hidden" />
+                    <input asp-for="BeforePhotos" type="hidden" />
+                    <input asp-for="AfterPhotos" type="hidden" />
+                    <input asp-for="ProblemPhotos" type="hidden" />
 
                     @for (int i = 0; i < Model.Units.Count; i++)
                     {
@@ -793,22 +796,47 @@
 
                     @for (int i = 0; i < Model.Parts.Count; i++)
                     {
-                        <input type="hidden" name="Parts[@i].PartName" value="@Model.Parts[i].PartName" />
-                        <input type="hidden" name="Parts[@i].Quantity" value="@Model.Parts[i].Quantity" />
-                        <input type="hidden" name="Parts[@i].UnitPrice" value="@Model.Parts[i].UnitPrice" />
-                        <input type="hidden" name="Parts[@i].Total" value="@Model.Parts[i].Total" />
+                        <input type="hidden"
+                               name="Parts[@i].AirConUnitId"
+                               value="@Model.Parts[i].AirConUnitId" />
+
+                        <input type="hidden"
+                               name="Parts[@i].PartName"
+                               value="@Model.Parts[i].PartName" />
+
+                        <input type="hidden"
+                               name="Parts[@i].Quantity"
+                               value="@Model.Parts[i].Quantity" />
+
+                        <input type="hidden"
+                               name="Parts[@i].UnitPrice"
+                               value="@Model.Parts[i].UnitPrice" />
+
+                        <input type="hidden"
+                               name="Parts[@i].Total"
+                               value="@Model.Parts[i].Total" />
                     }
 
                     @for (int i = 0; i < Model.Charges.Count; i++)
                     {
-                        <input type="hidden" name="Charges[@i].ChargeName" value="@Model.Charges[i].Description" />
-                        <input type="hidden" name="Charges[@i].Amount" value="@Model.Charges[i].Amount" />
+                        <input type="hidden"
+                               name="Charges[@i].Description"
+                               value="@Model.Charges[i].Description" />
+
+                        <input type="hidden"
+                               name="Charges[@i].Amount"
+                               value="@Model.Charges[i].Amount" />
                     }
 
                     @for (int i = 0; i < Model.Expenses.Count; i++)
                     {
-                        <input type="hidden" name="Expenses[@i].ExpenseName" value="@Model.Expenses[i].Description" />
-                        <input type="hidden" name="Expenses[@i].Amount" value="@Model.Expenses[i].Amount" />
+                        <input type="hidden"
+                               name="Expenses[@i].Description"
+                               value="@Model.Expenses[i].Description" />
+
+                        <input type="hidden"
+                               name="Expenses[@i].Amount"
+                               value="@Model.Expenses[i].Amount" />
                     }
                  
 

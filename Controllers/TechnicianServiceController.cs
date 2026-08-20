@@ -591,6 +591,128 @@ public class TechnicianServiceController : Controller
             .Select(x => x.AirConUnitId)
             .ToListAsync();
 
+        if (model.Parts != null && model.Parts.Any())
+        {
+            foreach (var part in model.Parts)
+            {
+                if (string.IsNullOrWhiteSpace(part.PartName))
+                {
+                    continue;
+                }
+
+                if (part.Quantity <= 0)
+                {
+                    continue;
+                }
+
+                if (part.UnitPrice < 0)
+                {
+                    continue;
+                }
+
+
+                var servicePart = new ServicePart
+                {
+                    ServiceRecordId = record.Id,
+
+                    AirConUnitId =
+                        part.AirConUnitId > 0
+                            ? part.AirConUnitId
+                            : null,
+
+                    PartName =
+                        part.PartName.Trim(),
+
+                    Qty =
+                        part.Quantity,
+
+                    UnitPrice =
+                        part.UnitPrice,
+
+                    Total =
+                        part.Total
+                };
+
+                Console.WriteLine(
+    $"Parts: {model.Parts?.Count ?? 0}"
+);
+                _context.ServiceParts.Add(servicePart);
+            }
+        }
+
+        // ==========================================
+        // SAVE SERVICE CHARGES
+        // ==========================================
+
+        if (model.Charges != null && model.Charges.Any())
+        {
+            foreach (var charge in model.Charges)
+            {
+                // Skip empty description
+                if (string.IsNullOrWhiteSpace(charge.Description))
+                {
+                    continue;
+                }
+
+                // Skip zero / negative amount
+                if (charge.Amount <= 0)
+                {
+                    continue;
+                }
+
+                var serviceCharge = new ServiceCharge
+                {
+                    ServiceRecordId = record.Id,
+
+                    Description =
+                        charge.Description.Trim(),
+
+                    Amount =
+                        charge.Amount
+                };
+
+                Console.WriteLine(
+                    $"Charges: {model.Charges?.Count ?? 0}"
+                );
+
+                _context.ServiceCharges.Add(serviceCharge);
+            }
+        }
+
+        // ==========================================
+        // SAVE SERVICE EXPENSES
+        // ==========================================
+
+        if (model.Expenses != null && model.Expenses.Any())
+        {
+            foreach (var expense in model.Expenses)
+            {
+                if (string.IsNullOrWhiteSpace(expense.Description))
+                {
+                    continue;
+                }
+
+                if (expense.Amount <= 0)
+                {
+                    continue;
+                }
+
+                var serviceExpense = new ServiceExpense
+                {
+                    ServiceRecordId = record.Id,
+
+                    Description =
+                        expense.Description.Trim(),
+
+                    Amount =
+                        expense.Amount
+                };
+                Console.WriteLine(
+    $"Expenses: {model.Expenses?.Count ?? 0}"
+);
+                _context.ServiceExpenses.Add(serviceExpense);
+            }
+        }
 
         foreach (var unit in model.Units
             .Where(x =>
@@ -599,7 +721,7 @@ public class TechnicianServiceController : Controller
                 x.AirConUnitIds != null &&
                 x.AirConUnitIds.Any()))
         {
-
+           
             var availableIds = unit.AirConUnitIds
                 .Where(x => x > 0)
                 .ToList();
@@ -682,63 +804,86 @@ public class TechnicianServiceController : Controller
             }
         }
 
-        if (model.ServicePhotos != null &&
-            model.ServicePhotos.Count > 0)
+
+        string folder = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            "images",
+            "service"
+        );
+
+        if (!Directory.Exists(folder))
         {
-            string folder = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot/images/service");
+            Directory.CreateDirectory(folder);
+        }
 
-            if (!Directory.Exists(folder))
+
+        // ==========================================
+        // BEFORE PHOTOS
+        // ==========================================
+
+        if (model.BeforePhotos != null &&
+            model.BeforePhotos.Any())
+        {
+            foreach (var photo in model.BeforePhotos)
             {
-                Directory.CreateDirectory(folder);
+                Console.WriteLine(
+                $"Before Photos: {model.BeforePhotos?.Count ?? 0}"
+            );
+
+                await SaveServicePhoto(
+                    photo,
+                    record.Id,
+                    "Before",
+                    folder
+                );
             }
+        }
 
 
-            foreach (var photo in model.ServicePhotos)
+        // ==========================================
+        // AFTER PHOTOS
+        // ==========================================
+
+        if (model.AfterPhotos != null &&
+            model.AfterPhotos.Any())
+        {
+            foreach (var photo in model.AfterPhotos)
             {
-                if (photo == null ||
-                    photo.Length == 0)
-                {
-                    continue;
-                }
+                Console.WriteLine(
+    $"After Photos: {model.AfterPhotos?.Count ?? 0}"
+);
+
+                await SaveServicePhoto(
+                    photo,
+                    record.Id,
+                    "After",
+                    folder
+                );
+            }
+        }
 
 
-                string fileName =
-                    Guid.NewGuid().ToString()
-                    + Path.GetExtension(photo.FileName);
+        // ==========================================
+        // PROBLEM PHOTOS
+        // ==========================================
 
+        if (model.ProblemPhotos != null &&
+            model.ProblemPhotos.Any())
+        {
+            foreach (var photo in model.ProblemPhotos)
+            {
 
-                string filePath =
-                    Path.Combine(folder, fileName);
+                Console.WriteLine(
+                    $"Problem Photos: {model.ProblemPhotos?.Count ?? 0}"
+                );
 
-
-                using (var stream =
-                       new FileStream(
-                           filePath,
-                           FileMode.Create))
-                {
-                    await photo.CopyToAsync(stream);
-                }
-
-
-                var servicePhoto = new ServicePhoto
-                {
-                    ServiceRecordId = record.Id,
-
-                    PhotoPath =
-                        "/images/service/"
-                        + fileName,
-
-                    PhotoType = "Service",
-
-                    CreatedAt = DateTime.Now,
-
-                    IsDeleted = false
-                };
-
-
-                _context.ServicePhotos.Add(servicePhoto);
+                await SaveServicePhoto(
+                    photo,
+                    record.Id,
+                    "Problem",
+                    folder
+                );
             }
         }
 
@@ -843,6 +988,68 @@ public class TechnicianServiceController : Controller
                 appointmentId =
                     service.AppointmentId
             });
+    }
+
+    private async Task SaveServicePhoto(
+    IFormFile photo,
+    int serviceRecordId,
+    string photoType,
+    string folder)
+    {
+        if (photo == null || photo.Length == 0)
+        {
+            return;
+        }
+
+
+        string extension =
+            Path.GetExtension(photo.FileName);
+
+
+        string fileName =
+            Guid.NewGuid().ToString()
+            + extension;
+
+
+        string filePath =
+            Path.Combine(
+                folder,
+                fileName
+            );
+
+
+        using (var stream =
+               new FileStream(
+                   filePath,
+                   FileMode.Create))
+        {
+            await photo.CopyToAsync(stream);
+        }
+
+
+        var servicePhoto = new ServicePhoto
+        {
+            ServiceRecordId =
+                serviceRecordId,
+
+            PhotoPath =
+                "/images/service/"
+                + fileName,
+
+            PhotoType =
+                photoType,
+
+            CreatedAt =
+                DateTime.Now,
+
+            IsDeleted =
+                false
+        };
+
+
+        _context.ServicePhotos.Add(
+            servicePhoto
+        );
     }
     [HttpGet]
     public async Task<IActionResult> RemainingOptions(int serviceId)

@@ -150,9 +150,6 @@ namespace AirConServicingManagementSystem.Controllers
         }
 
 
-        // =========================
-        // 📅 CREATE (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Appointment model)
@@ -165,22 +162,14 @@ namespace AirConServicingManagementSystem.Controllers
 
             var userRole = HttpContext.Session.GetString("UserRole");
 
-
-            // ============================================
-            // CHECK LOGIN
-            // ============================================
-
             if (userId == null || string.IsNullOrEmpty(userRole))
             {
-                return RedirectToAction(
-                    "Login",
-                    "Login"
-                );
+                return RedirectToAction("Login", "Login");
             }
 
 
             // ============================================
-            // SAVE CREATED BY USER
+            // SAVE CREATED BY
             // ============================================
 
             model.CreatedByUserId = userId.Value;
@@ -192,49 +181,35 @@ namespace AirConServicingManagementSystem.Controllers
 
             if (userRole == "Admin")
             {
-                // Admin selects technician
-                // from Create View
+                // Admin creates appointment
+                // Do NOT automatically assign technician
 
-                if (model.TechnicianId == null)
-                {
-                    ModelState.AddModelError(
-                        "TechnicianId",
-                        "Please select a technician."
-                    );
-                }
+                model.TechnicianId = null;
+
+                model.Status = "Pending";
             }
 
 
             // ============================================
             // TECHNICIAN
-            // Senior / Junior
             // ============================================
 
-            else if (
-                userRole == "Senior" ||
-                userRole == "Junior"
-            )
+            else if (userRole == "Senior" || userRole == "Junior")
             {
                 var technicianId =
-                    HttpContext.Session.GetInt32(
-                        "TechnicianId"
-                    );
-
+                    HttpContext.Session.GetInt32("TechnicianId");
 
                 if (technicianId == null)
                 {
-                    return RedirectToAction(
-                        "Login",
-                        "Login"
-                    );
+                    return RedirectToAction("Login", "Login");
                 }
 
 
-                // Automatically assign
-                // logged-in technician
+                // Technician creates own appointment
 
-                model.TechnicianId =
-                    technicianId.Value;
+                model.TechnicianId = technicianId.Value;
+
+                model.Status = "Pending";
             }
 
 
@@ -246,39 +221,27 @@ namespace AirConServicingManagementSystem.Controllers
             {
                 HttpContext.Session.Clear();
 
-                return RedirectToAction(
-                    "Login",
-                    "Login"
-                );
+                return RedirectToAction("Login", "Login");
             }
 
 
             // ============================================
-            // MODEL VALIDATION
+            // VALIDATION FAILED
             // ============================================
 
             if (ModelState.IsValid)
             {
-                // Reload Customers
-
                 ViewBag.Customers =
                     await _context.Customers
                         .Where(c => c.IsDeleted != true)
                         .ToListAsync();
-
-
-                // Reload Technicians
 
                 ViewBag.Technicians =
                     await _context.Technicians
                         .Where(t => t.IsDeleted != true)
                         .ToListAsync();
 
-
-                // Send Role to View
-
                 ViewBag.UserRole = userRole;
-
 
                 return View(model);
             }
@@ -288,11 +251,16 @@ namespace AirConServicingManagementSystem.Controllers
             // DEFAULT VALUES
             // ============================================
 
-            model.Status = "Pending";
-            model.ScheduledDate = model.ScheduledDate;
+            //model.ScheduledDate = DateTime.Now;
+
+            if (model.ScheduledDate == default)
+            {
+                model.ScheduledDate = DateTime.Now;
+            }
+
 
             // ============================================
-            // SAVE
+            // SAVE APPOINTMENT
             // ============================================
 
             _context.Appointments.Add(model);
@@ -301,7 +269,7 @@ namespace AirConServicingManagementSystem.Controllers
 
 
             // ============================================
-            // SUCCESS MESSAGE
+            // SUCCESS
             // ============================================
 
             TempData["SuccessMessage"] =
@@ -314,20 +282,11 @@ namespace AirConServicingManagementSystem.Controllers
 
             if (userRole == "Admin")
             {
-                // Admin → Admin Appointment List
-
-                return RedirectToAction(
-                    "AppointmentList"
-                );
+                return RedirectToAction("AppointmentList");
             }
 
 
-            // Senior / Junior
-            // → Technician Appointment Index
-
-            return RedirectToAction(
-                "Index"
-            );
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -427,8 +386,7 @@ namespace AirConServicingManagementSystem.Controllers
 
             var data = await _context.Appointments
                 .Where(a =>
-                    a.TechnicianId == technicianId.Value &&
-                    a.CreatedByUserId == userId.Value
+                    a.TechnicianId == technicianId.Value
                 )
                 .Include(a => a.Customer)
                 .Include(a => a.Technician)
@@ -457,9 +415,9 @@ namespace AirConServicingManagementSystem.Controllers
             }
 
             var appointments = await _context.Appointments
-                .Where(a => a.CreatedByUserId == userId.Value)
                 .Include(a => a.Customer)
                 .Include(a => a.Technician)
+                .Include(a => a.ServiceRequests)
                 .OrderByDescending(a => a.ScheduledDate)
                 .ToListAsync();
 

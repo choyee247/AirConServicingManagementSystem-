@@ -23,6 +23,7 @@ namespace AirConServicingManagementSystem.Controllers
 
         public async Task<IActionResult> Create(int serviceId)
         {
+            // Get all active service records
             var records = await _context.ServiceRecords
                 .Where(r =>
                     r.ServiceRequestId == serviceId &&
@@ -31,52 +32,60 @@ namespace AirConServicingManagementSystem.Controllers
                 .ToListAsync();
 
             if (!records.Any())
-                return NotFound();
-
-
-            // All service costs including previous Remaining services
-            decimal totalAmount =
-                records.Sum(r => r.ServiceCost ?? 0);
-
-
-            // Check if already paid
-            bool alreadyPaid =
-                await _context.Payments.AnyAsync(p =>
-                    p.ServiceRecord.ServiceRequestId == serviceId &&
-                    p.PaymentStatus == "Paid" &&
-                    p.IsDeleted != true);
-
-
-            if (alreadyPaid)
             {
-                return RedirectToAction(
-                    "Invoice",
-                    "Payment");
+                TempData["Error"] = "No service record found.";
+                return RedirectToAction("Index", "ServiceRequest");
             }
 
 
+            // =====================================
+            // CURRENT SERVICE RECORD
+            // Latest Record
+            // =====================================
+
+            var currentRecord = records.Last();
+
+
+            // =====================================
+            // TOTAL AMOUNT
+            // Include previous remaining services
+            // =====================================
+
+            decimal totalAmount = records.Sum(r =>
+                r.ServiceCost ?? 0);
+
+
+            // =====================================
+            // CREATE PAYMENT VIEW MODEL
+            // =====================================
+
             var model = new PaymentViewModel
             {
-                ServiceRecordId = records.Last().Id,
+                ServiceRecordId = currentRecord.Id,
 
                 Amount = totalAmount,
 
-                InvoiceNo =
-                    $"INV-{DateTime.Now:yyyyMMddHHmmss}"
+                InvoiceNo = $"INV-{DateTime.Now:yyyyMMddHHmmss}"
             };
 
 
+            // ALWAYS GO TO PAYMENT CREATE PAGE
             return View(model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             PaymentViewModel model,
-            string fileName)
+            string? fileName)
         {
             Console.WriteLine("STEP 1");
 
-            if (ModelState.IsValid)
+
+            // ==========================================
+            // VALIDATE MODEL
+            // ==========================================
+
+            if (!ModelState.IsValid)
             {
                 Console.WriteLine("MODEL INVALID");
 
@@ -94,27 +103,33 @@ namespace AirConServicingManagementSystem.Controllers
             }
 
 
-            Console.WriteLine("STEP 2");
+            // ==========================================
+            // START TRANSACTION
+            // ==========================================
 
-            using var transaction =
+            await using var transaction =
                 await _context.Database.BeginTransactionAsync();
 
 
             try
             {
-                Console.WriteLine("STEP 3");
+                Console.WriteLine("STEP 2");
 
-                var serviceRecord =
+
+                // ==========================================
+                // GET CURRENT SERVICE RECORD
+                // ==========================================
+
+                var currentServiceRecord =
                     await _context.ServiceRecords
                         .Include(x => x.ServiceRequest)
                         .FirstOrDefaultAsync(
-                            x => x.Id == model.ServiceRecordId);
+                            x =>
+                                x.Id == model.ServiceRecordId &&
+                                x.IsDeleted != true);
 
 
-                Console.WriteLine("STEP 4");
-
-
-                if (serviceRecord == null)
+                if (currentServiceRecord == null)
                 {
                     Console.WriteLine(
                         "SERVICE RECORD NOT FOUND");
@@ -122,8 +137,9 @@ namespace AirConServicingManagementSystem.Controllers
                     return NotFound();
                 }
 
+
                 var serviceRequest =
-                    serviceRecord.ServiceRequest;
+                    currentServiceRecord.ServiceRequest;
 
 
                 if (serviceRequest == null)
@@ -132,13 +148,92 @@ namespace AirConServicingManagementSystem.Controllers
                 }
 
 
-                Console.WriteLine("STEP 5");
+                Console.WriteLine(
+                    $"SERVICE REQUEST ID : " +
+                    serviceRequest.ServiceId
+                );
 
+
+                // ==========================================
+                // GET ALL UNPAID SERVICE RECORDS
+                // SAME SERVICE REQUEST
+                // ==========================================
+
+                var unpaidRecords =
+                    await _context.ServiceRecords
+                        .Where(x =>
+                            x.ServiceRequestId ==
+                                serviceRequest.ServiceId &&
+                            x.IsDeleted != true &&
+                            x.Status != "Paid")
+                        .ToListAsync();
+
+
+                if (!unpaidRecords.Any())
+                {
+                    TempData["Error"] =
+                        "All service fees have already been paid.";
+
+                    return RedirectToAction(
+                        "Index",
+                        "ServiceRequest"
+                    );
+                }
+
+
+                // ==========================================
+                // CALCULATE ACTUAL UNPAID TOTAL
+                // Don't trust the Amount from the browser
+                // ==========================================
+
+                decimal totalAmount =
+                    unpaidRecords.Sum(x =>
+                        x.ServiceCost ?? 0);
+
+
+                Console.WriteLine(
+                    $"TOTAL UNPAID AMOUNT : {totalAmount}"
+                );
+
+
+                // ==========================================
+                // CALCULATE CHANGE
+                // ==========================================
+
+                decimal paidAmount =
+                    model.PaidAmount;
+
+
+                decimal changeAmount =
+                    paidAmount - totalAmount;
+
+
+                // ==========================================
+                // PAYMENT AMOUNT VALIDATION
+                // ==========================================
+
+                if (paidAmount < totalAmount)
+                {
+                    ModelState.AddModelError(
+                        "PaidAmount",
+                        "Paid amount is less than the total service fee."
+                    );
+
+                    return View(model);
+                }
+
+
+                // ==========================================
+                // CREATE ONE PAYMENT
+                // ==========================================
 
                 var payment = new Payment
                 {
+                    // Use current/latest record as the
+                    // primary record for the invoice
+
                     ServiceRecordId =
-                        model.ServiceRecordId,
+                        currentServiceRecord.Id,
 
                     InvoiceNo =
                         model.InvoiceNo,
@@ -149,11 +244,15 @@ namespace AirConServicingManagementSystem.Controllers
                     PaymentMethod =
                         model.PaymentMethod,
 
+                    // Actual total from all unpaid records
                     Amount =
-                        model.Amount,
+                        totalAmount,
 
                     PaidAmount =
-                        model.PaidAmount,
+                        paidAmount,
+
+                    ChangeAmount =
+                        changeAmount,
 
                     PaymentStatus =
                         "Paid",
@@ -177,8 +276,9 @@ namespace AirConServicingManagementSystem.Controllers
                         model.AccountNo,
 
                     PaymentSlip =
-                        "/paymentslip/service/"
-                        + fileName,
+                        !string.IsNullOrEmpty(fileName)
+                            ? "/paymentslip/service/" + fileName
+                            : null,
 
                     VerifiedBy =
                         model.VerifiedBy,
@@ -194,44 +294,70 @@ namespace AirConServicingManagementSystem.Controllers
                 };
 
 
-                Console.WriteLine("STEP 6");
-
-
                 _context.Payments.Add(payment);
 
-                serviceRecord.Status = "Paid";
 
-                serviceRecord.UpdatedAt = DateTime.Now;
-
-                serviceRequest.PaymentStatus = "Paid";
-
-
-                // Service itself remains Completed
-                // Do NOT change:
-                //
-                // serviceRequest.Status = "Paid";
-                //
-                // It should remain:
-                //
-                // serviceRequest.Status = "Completed";
+                Console.WriteLine(
+                    "PAYMENT CREATED"
+                );
 
 
-                Console.WriteLine("STEP 7");
+                // ==========================================
+                // MARK ALL UNPAID SERVICE RECORDS AS PAID
+                // ==========================================
 
-                var save =
+                foreach (var record in unpaidRecords)
+                {
+                    record.Status =
+                        "Paid";
+
+                    record.UpdatedAt =
+                        DateTime.Now;
+                }
+
+
+                // ==========================================
+                // UPDATE SERVICE REQUEST PAYMENT STATUS
+                // ==========================================
+
+                serviceRequest.PaymentStatus =
+                    "Paid";
+
+                //serviceRequest.UpdatedAt =
+                //    DateTime.Now;
+
+
+                // IMPORTANT:
+                // Service Status remains Completed.
+                // Don't change ServiceRequest.Status here.
+
+
+                // ==========================================
+                // SAVE ALL
+                // ==========================================
+
+                var saveResult =
                     await _context.SaveChangesAsync();
 
 
                 Console.WriteLine(
-                    "SAVE RESULT : " + save
+                    "SAVE RESULT : " +
+                    saveResult
                 );
 
 
                 Console.WriteLine(
-                    "PAYMENT ID : " + payment.PaymentId
+                    "PAYMENT ID : " +
+                    payment.PaymentId
                 );
 
+
                 await transaction.CommitAsync();
+
+
+                // ==========================================
+                // GO TO INVOICE
+                // ==========================================
 
                 return RedirectToAction(
                     "Invoice",

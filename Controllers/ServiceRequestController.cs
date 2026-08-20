@@ -36,25 +36,49 @@ namespace AirConServicingManagementSystem.Controllers
             int technicianId =
                 HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
+            if (technicianId == 0)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
             var services = await _context.ServiceRequests
-              .Include(x => x.ServiceRecords)
-                .ThenInclude(x => x.Payments)
-             .Include(x => x.Customer)
-             .Include(x => x.AirConUnits)
-             .Where(x => x.TechnicianId == technicianId)
-             .Select(x => new ServiceRequestCreateVM
-             {
-                 ServiceRequest = x,
-                 AirCons = _context.AirConUnits
-                     .Where(a => a.CustomerId == x.CustomerId)
-                     .ToList()
-             })
-             .ToListAsync();
+
+                .Include(x => x.ServiceRecords)
+                    .ThenInclude(x => x.Payments)
+
+                .Include(x => x.Customer)
+
+                .Include(x => x.AirConUnits)
+
+                .Where(x =>
+                    x.TechnicianId == technicianId
+                )
+
+                .Select(x => new ServiceRequestCreateVM
+                {
+                    ServiceRequest = x,
+
+                    AirCons = _context.AirConUnits
+                        .Where(a =>
+                            a.CustomerId == x.CustomerId)
+                        .ToList()
+                })
+
+                .OrderByDescending(x =>
+                    x.ServiceRequest.RequestedAt)
+
+                .ToListAsync();
 
             return View(services);
         }
         public async Task<IActionResult> Create(int? appointmentId)
         {
+            int technicianId =
+                HttpContext.Session.GetInt32("TechnicianId") ?? 0;
+
+            if (technicianId == 0)
+                return RedirectToAction("Login", "Login");
+
             ViewBag.Customers = await _context.Customers
                 .Where(c => c.IsDeleted != true)
                 .ToListAsync();
@@ -66,18 +90,26 @@ namespace AirConServicingManagementSystem.Controllers
                 var appointment = await _context.Appointments
                     .Include(a => a.Customer)
                     .Include(a => a.Technician)
-                    .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId.Value);
+                    .FirstOrDefaultAsync(a =>
+                        a.AppointmentId == appointmentId.Value);
 
-                if (appointment != null)
-                {
-                    ViewBag.Appointment = appointment;
+                if (appointment == null)
+                    return NotFound();
 
-                    // Auto Fill
-                    model.CustomerId = appointment.CustomerId;
-                    model.TechnicianId = appointment.TechnicianId;
-                    model.Location = appointment.Location;
-                    model.Notes = appointment.Notes;
-                }
+               
+                if (appointment.TechnicianId != technicianId)
+                    return Forbid();
+
+                ViewBag.Appointment = appointment;
+
+                model.CustomerId = appointment.CustomerId;
+                model.TechnicianId = appointment.TechnicianId;
+                model.Location = appointment.Location;
+                model.Notes = appointment.Notes;
+
+                // IMPORTANT
+                model.AppointmentId = appointment.AppointmentId;
+                model.Status = "Assigned";
             }
 
             return View(model);
@@ -85,49 +117,128 @@ namespace AirConServicingManagementSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ServiceRequest model, int appointmentId)
+        public async Task<IActionResult> Create(
+     ServiceRequest model,
+     int appointmentId)
         {
+            // ==========================================
+            // 1. GET APPOINTMENT
+            // ==========================================
+
             var appointment = await _context.Appointments
-                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
+                .FirstOrDefaultAsync(a =>
+                    a.AppointmentId == appointmentId);
 
             if (appointment == null)
                 return NotFound();
 
-            model.CustomerId = appointment.CustomerId;
-            model.TechnicianId = appointment.TechnicianId;
-            model.Location = appointment.Location;
-            model.Notes = appointment.Notes;
-            model.Status = "In Progress";
-            model.RequestedAt = DateTime.Now;
-            model.CreatedAt = DateTime.Now;
-            model.PaymentStatus = "Unpaid";
-            //model.AirConId = null;
-            model.AppointmentId = appointmentId;
 
-            _context.ServiceRequests.Add(model);
+            // ==========================================
+            // 2. GET EXISTING SERVICE REQUEST
+            // ==========================================
 
-            appointment.Status = "In Progress";
+            var serviceRequest = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x =>
+                    x.AppointmentId == appointmentId);
+
+            if (serviceRequest == null)
+            {
+                return NotFound();
+            }
+
+
+            // ==========================================
+            // 3. CHECK ASSIGNED
+            // ==========================================
+
+            if (serviceRequest.Status != "Assigned")
+            {
+                TempData["ErrorMessage"] =
+                    "This service is not ready to start.";
+
+                return RedirectToAction("Index");
+            }
+
+
+            // ==========================================
+            // 4. UPDATE SERVICE REQUEST
+            // ==========================================
+
+            serviceRequest.CustomerId =
+                appointment.CustomerId;
+
+            serviceRequest.TechnicianId =
+                appointment.TechnicianId;
+
+            serviceRequest.Location =
+                appointment.Location;
+
+            serviceRequest.Notes =
+                appointment.Notes;
+
+            serviceRequest.Status =
+                "In Progress";
+
+            serviceRequest.RequestedAt =
+                serviceRequest.RequestedAt;
+
+            serviceRequest.AppointmentId =
+                appointmentId;
+
+            serviceRequest.PaymentStatus =
+                "Unpaid";
+
+
+            // ==========================================
+            // 5. UPDATE APPOINTMENT
+            // ==========================================
+
+            appointment.Status =
+                "In Progress";
+
+
+            // ==========================================
+            // 6. UPDATE TECHNICIAN SCHEDULE
+            // ==========================================
 
             var schedule = await _context.TechnicianSchedulePlans
                 .FirstOrDefaultAsync(x =>
-                    x.TechnicianId == appointment.TechnicianId &&
-                    x.CustomerId == appointment.CustomerId &&
-                    x.Status == "Pending");
+                    x.TechnicianId ==
+                        appointment.TechnicianId &&
+
+                    x.CustomerId ==
+                        appointment.CustomerId &&
+
+                    x.PlannedDate.Date ==
+                        appointment.ScheduledDate.Date &&
+
+                    x.PlanType == "Service");
 
             if (schedule != null)
             {
-                schedule.Status = "In Progress";
+                schedule.Status =
+                    "In Progress";
             }
+
+
+            // ==========================================
+            // 7. SAVE
+            // ==========================================
+
             await _context.SaveChangesAsync();
 
-            //return RedirectToAction(nameof(Index));
+
+            // ==========================================
+            // 8. GO TO AIRCON UNIT
+            // ==========================================
 
             return RedirectToAction(
                 "Create",
                 "AirConUnit",
                 new
                 {
-                    serviceId = model.ServiceId
+                    serviceId =
+                        serviceRequest.ServiceId
                 });
         }
         public async Task<IActionResult> Details(int appointmentId)

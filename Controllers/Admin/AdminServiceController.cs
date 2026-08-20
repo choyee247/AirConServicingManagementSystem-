@@ -147,55 +147,249 @@ namespace AirConServicingManagementSystem.Controllers.Admin
 
             return View(appointment);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Assign(int id, int technicianId)
+        public async Task<IActionResult> Assign(
+         int id,
+         int technicianId)
         {
+            // ============================================
+            // GET APPOINTMENT
+            // ============================================
+
             var appointment = await _context.Appointments
                 .Include(x => x.Customer)
-                .FirstOrDefaultAsync(x => x.AppointmentId == id);
+                .FirstOrDefaultAsync(x =>
+                    x.AppointmentId == id);
 
             if (appointment == null)
+            {
                 return NotFound();
+            }
+
+
+            // ============================================
+            // CHECK TECHNICIAN
+            // ============================================
+
+            var technician = await _context.Technicians
+                .FirstOrDefaultAsync(x =>
+                    x.TechnicianId == technicianId &&
+                    x.IsDeleted != true);
+
+            if (technician == null)
+            {
+                TempData["ErrorMessage"] =
+                    "Technician not found.";
+
+                return RedirectToAction("AppointmentList");
+            }
+
+
+            // ============================================
+            // CHECK ALREADY ASSIGNED
+            // ============================================
+
+            if (appointment.TechnicianId != null)
+            {
+                TempData["ErrorMessage"] =
+                    "This appointment has already been assigned.";
+
+                return RedirectToAction("AppointmentList");
+            }
+
+
+            // ============================================
+            // UPDATE APPOINTMENT
+            // ============================================
 
             appointment.TechnicianId = technicianId;
+
             appointment.Status = "Assigned";
 
-            // Schedule Auto Create
-            var schedule = new TechnicianSchedulePlan
+
+            // ============================================
+            // CHECK SERVICE REQUEST
+            // ============================================
+
+            var existingServiceRequest =
+                await _context.ServiceRequests
+                    .FirstOrDefaultAsync(x =>
+                        x.AppointmentId ==
+                        appointment.AppointmentId);
+
+
+            // ============================================
+            // CREATE / UPDATE SERVICE REQUEST
+            // ============================================
+
+            if (existingServiceRequest == null)
             {
-                TechnicianId = technicianId,
+                // ----------------------------------------
+                // CREATE NEW SERVICE REQUEST
+                // ----------------------------------------
 
-                CustomerId = appointment.CustomerId,
+                var serviceRequest =
+                    new ServiceRequest
+                    {
+                        AppointmentId =
+                            appointment.AppointmentId,
 
-                CustomerName = appointment.Customer?.Name,
+                        CustomerId =
+                            appointment.CustomerId,
 
-                Title = "AirCon Service Visit",
+                        TechnicianId =
+                            technicianId,
 
-                PlanType = "Service",
+                        ServiceType =
+                            "Appointment Service",
 
-                Location = appointment.Location,
+                        IsUrgent =
+                            false,
 
-                PlannedDate = appointment.ScheduledDate,
+                        Status =
+                            "Assigned",
 
-                Priority = "Normal",
+                        RequestedAt =
+                            appointment.ScheduledDate,
 
-                Status = "Pending",
+                        Location =
+                            appointment.Location ?? "",
 
-                Notes = appointment.Notes,
+                        Fee =
+                            0,
 
-                CreatedAt = DateTime.Now
-            };
+                        PaymentStatus =
+                            "Unpaid",
 
-            _context.TechnicianSchedulePlans.Add(schedule);
+                        Notes =
+                            appointment.Notes,
+
+                        CreatedAt =
+                            DateTime.Now,
+
+                        IsWarrantyApplied =
+                            false,
+
+                        IsFreeService =
+                            false,
+
+                        DiscountAmount =
+                            0
+                    };
+
+
+                _context.ServiceRequests.Add(
+                    serviceRequest
+                );
+            }
+            else
+            {
+                // ----------------------------------------
+                // SERVICE REQUEST ALREADY EXISTS
+                // ----------------------------------------
+
+                existingServiceRequest.TechnicianId =
+                    technicianId;
+
+                existingServiceRequest.Status =
+                    "Assigned";
+
+                existingServiceRequest.CustomerId =
+                    appointment.CustomerId;
+
+                existingServiceRequest.Location =
+                    appointment.Location ?? "";
+
+                existingServiceRequest.Notes =
+                    appointment.Notes;
+            }
+
+
+            // ============================================
+            // CHECK TECHNICIAN SCHEDULE
+            // ============================================
+
+            var existingSchedule =
+                await _context.TechnicianSchedulePlans
+                    .FirstOrDefaultAsync(x =>
+                        x.TechnicianId == technicianId &&
+                        x.CustomerId == appointment.CustomerId &&
+                        x.PlannedDate.Date ==
+                            appointment.ScheduledDate.Date &&
+                        x.PlanType == "Service");
+
+
+            // ============================================
+            // CREATE TECHNICIAN SCHEDULE
+            // ============================================
+
+            if (existingSchedule == null)
+            {
+                var schedule =
+                    new TechnicianSchedulePlan
+                    {
+                        TechnicianId =
+                            technicianId,
+
+                        CustomerId =
+                            appointment.CustomerId,
+
+                        CustomerName =
+                            appointment.Customer?.Name,
+
+                        Title =
+                            "AirCon Service Visit",
+
+                        PlanType =
+                            "Service",
+
+                        Location =
+                            appointment.Location,
+
+                        PlannedDate =
+                            appointment.ScheduledDate,
+
+                        Priority =
+                            "Normal",
+
+                        Status =
+                            "Pending",
+
+                        Notes =
+                            appointment.Notes,
+
+                        CreatedAt =
+                            DateTime.Now
+                    };
+
+
+                _context.TechnicianSchedulePlans.Add(
+                    schedule
+                );
+            }
+
+
+            // ============================================
+            // SAVE ALL
+            // ============================================
 
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] =
-                "Technician assigned successfully.";
 
-            return RedirectToAction("AppointmentList", "Appointment");
+            // ============================================
+            // SUCCESS
+            // ============================================
+
+            TempData["SuccessMessage"] =
+                "Technician assigned successfully. " +
+                "Service is now waiting to be started.";
+
+
+            return RedirectToAction(
+                "AppointmentList",
+                "Appointment"
+            );
         }
         public async Task<IActionResult> Records(string search)
         {
