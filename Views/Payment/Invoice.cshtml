@@ -3,6 +3,14 @@
 @{
     ViewData["Title"] = "Invoice";
     Layout = null;
+
+    var chargeAmount = ViewBag.ChargeAmount ?? 0m;
+    var expenseAmount = ViewBag.ExpenseAmount ?? 0m;
+    var partsAmount = ViewBag.PartsAmount ?? 0m;
+    var totalServiceCost = ViewBag.TotalServiceCost ?? 0m;
+    var paidAmount = ViewBag.PaidAmount ?? 0m;
+    var remainingAmount = ViewBag.RemainingAmount ?? 0m;
+    var changeAmount = ViewBag.ChangeAmount ?? 0m;
 }
 
 <!DOCTYPE html>
@@ -335,7 +343,53 @@
             color: var(--text-dark);
         }
 
+        .invoice-action-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
+        .pdf-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: #dc3545;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: .2s ease;
+        }
+
+            .pdf-btn:hover {
+                background: #b02a37;
+                color: white;
+            }
+
+        @@media (max-width: 480px) {
+            .invoice-actions
+
+        {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .invoice-action-right {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .pdf-btn,
+        .print-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        }
         /* =========================
            SECTION TITLE
         ========================= */
@@ -704,6 +758,50 @@
             }
         }
 
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .payment-header h5 {
+                margin: 0;
+                font-size: 15px;
+                font-weight: 800;
+            }
+
+            .payment-header small {
+                display: block;
+                margin-top: 3px;
+                color: var(--text-muted);
+                font-size: 11px;
+            }
+
+        .payment-row i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        .paid-row strong {
+            color: #198754;
+        }
+
+        .remaining-row strong {
+            color: #d97706;
+        }
+
+        .change-row strong {
+            color: #6f42c1;
+        }
+
+        .parts-section {
+            margin-top: 5px;
+        }
+
+        .parts-table td:last-child,
+        .parts-table th:last-child {
+            text-align: right;
+        }
 
         /* =========================
            PRINT
@@ -778,24 +876,37 @@
 
             <a asp-controller="ServiceRequest"
                asp-action="Index"
-               class="back-btn btn-sm">
+               class="back-btn">
 
                 <i class="fas fa-arrow-left"></i>
-
                 Back
 
             </a>
 
 
-            <button type="button"
-                    onclick="window.print()"
-                    class="print-btn">
+            <div class="invoice-action-right">
 
-                <i class="fas fa-print"></i>
+                <a asp-controller="Payment"
+                   asp-action="DownloadInvoicePdf"
+                   asp-route-id="@Model.PaymentId"
+                   class="pdf-btn">
 
-                Print Invoice
+                    <i class="fas fa-file-pdf"></i>
+                    Download PDF
 
-            </button>
+                </a>
+
+
+                <button type="button"
+                        onclick="window.print()"
+                        class="print-btn">
+
+                    <i class="fas fa-print"></i>
+                    Print
+
+                </button>
+
+            </div>
 
         </div>
 
@@ -1149,8 +1260,215 @@
 
                 </div>
 
+                @if (Model.ServiceRecord?.ServiceParts != null &&
+                                Model.ServiceRecord.ServiceParts.Any())
+                {
+                    <div class="section-header parts-section">
+
+                        <i class="fas fa-cogs section-icon"></i>
+
+                        <h5 class="section-title">
+                            Parts & Materials
+                        </h5>
+
+                    </div>
 
 
+                    <div class="table-wrapper">
+
+                        <table class="invoice-table parts-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>#</th>
+
+                                    <th>Part / Material</th>
+
+                                    <th class="text-end">
+                                        Amount
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @{
+                                    var partNo = 1;
+                                }
+
+                                @foreach (var part in Model.ServiceRecord.ServiceParts)
+                                {
+
+                                    <tr>
+
+                                        <td>
+                                            @partNo
+                                        </td>
+
+                                        <td>
+                                            <strong>
+                                                @part.PartName
+                                            </strong>
+                                        </td>
+
+                                        <td class="text-end">
+                                            @((part.UnitPrice ?? 0m).ToString("N0")) MMK
+                                        </td>
+
+                                    </tr>
+
+                                    partNo++;
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+                @if (Model.ServiceRecord?.ServiceExpenses != null &&
+                                Model.ServiceRecord.ServiceExpenses.Any())
+                {
+                    <div class="section-header">
+
+                        <i class="fas fa-money-bill-wave section-icon"></i>
+
+                        <h5 class="section-title">
+                            Service Expenses
+                        </h5>
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table class="invoice-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>#</th>
+
+                                    <th>Expense</th>
+
+                                    <th class="text-end">
+                                        Amount
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @{
+                                    var expenseNo = 1;
+                                }
+
+                                @foreach (var expense in Model.ServiceRecord.ServiceExpenses)
+                                {
+
+                                    <tr>
+
+                                        <td>
+                                            @expenseNo
+                                        </td>
+
+                                        <td>
+                                            Service Expense
+                                        </td>
+
+                                        <td class="text-end">
+                                            @((expense.Amount ?? 0m).ToString("N0")) MMK
+                                        </td>
+
+                                    </tr>
+
+                                    expenseNo++;
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+                @if (Model.ServiceRecord?.ServiceCharges != null &&
+                                Model.ServiceRecord.ServiceCharges.Any())
+                {
+                    <div class="section-header">
+
+                        <i class="fas fa-plus-circle section-icon"></i>
+
+                        <h5 class="section-title">
+                            Additional Charges
+                        </h5>
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table class="invoice-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>#</th>
+
+                                    <th>Charge</th>
+
+                                    <th class="text-end">
+                                        Amount
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @{
+                                    var chargeNo = 1;
+                                }
+
+                                @foreach (var charge in Model.ServiceRecord.ServiceCharges)
+                                {
+
+                                    <tr>
+
+                                        <td>
+                                            @chargeNo
+                                        </td>
+
+                                        <td>
+                                            Additional Service Charge
+                                        </td>
+
+                                        <td class="text-end">
+                                            @((charge.Amount ?? 0m).ToString("N0")) MMK
+                                        </td>
+
+                                    </tr>
+
+                                    chargeNo++;
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
                 <!-- PAYMENT + QR -->
 
                 <div class="bottom-grid">
@@ -1181,9 +1499,16 @@
 
                         <div class="payment-header">
 
-                            <h5>
-                                Payment Summary
-                            </h5>
+                            <div>
+                                <h5>
+                                    <i class="fas fa-receipt me-2"></i>
+                                    Payment Summary
+                                </h5>
+
+                                <small>
+                                    Complete service payment breakdown
+                                </small>
+                            </div>
 
                         </div>
 
@@ -1191,40 +1516,83 @@
                         <div class="payment-body">
 
 
-                            <div class="payment-row">
+                            <!-- SERVICE COST -->
+
+                           @*  <div class="payment-row">
 
                                 <span>
+                                    <i class="fas fa-tools me-2"></i>
                                     Service Cost
                                 </span>
 
                                 <strong>
-                                    @Model.Amount?.ToString("N0") MMK
+                                    @serviceCost.ToString("N0") MMK
+                                </strong>
+
+                            </div> *@
+
+
+                            <!-- ADDITIONAL CHARGES -->
+
+                            <div class="payment-row">
+
+                                <span>
+                                    <i class="fas fa-plus-circle me-2"></i>
+                                    Additional Charges
+                                </span>
+
+                                <strong>
+                                    @chargeAmount.ToString("N0") MMK
                                 </strong>
 
                             </div>
 
 
+                            <!-- EXPENSES -->
+
                             <div class="payment-row">
 
                                 <span>
-                                    Paid Amount
+                                    <i class="fas fa-money-bill-wave me-2"></i>
+                                    Service Expenses
                                 </span>
 
                                 <strong>
-                                    @Model.PaidAmount?.ToString("N0") MMK
+                                    @expenseAmount.ToString("N0") MMK
+                                </strong>
+
+                            </div>
+                           
+
+                            <!-- PARTS -->
+
+                            <div class="payment-row">
+
+                                <span>
+                                    <i class="fas fa-cogs me-2"></i>
+                                    Parts Cost
+                                </span>
+
+                                <strong>
+                                    @partsAmount.ToString("N0") MMK
                                 </strong>
 
                             </div>
 
 
-                            <div class="payment-row">
+                            <div class="payment-divider"></div>
+                          
+
+                            <!-- TOTAL -->
+
+                            <div class="total-row">
 
                                 <span>
-                                    Change
+                                    Total Service Amount
                                 </span>
 
                                 <strong>
-                                    @Model.ChangeAmount?.ToString("N0") MMK
+                                    @totalServiceCost.ToString("N0") MMK
                                 </strong>
 
                             </div>
@@ -1233,34 +1601,101 @@
                             <div class="payment-divider"></div>
 
 
-                            <div class="total-row">
+                            <!-- PAID -->
+
+                            <div class="payment-row paid-row">
 
                                 <span>
-                                    Total Paid
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Paid Amount
                                 </span>
 
                                 <strong>
-                                    @Model.PaidAmount?.ToString("N0") MMK
+                                    @paidAmount.ToString("N0") MMK
                                 </strong>
 
                             </div>
 
+
+                            <!-- REMAINING -->
+
+                            <div class="payment-row remaining-row">
+
+                                <span>
+                                    <i class="fas fa-clock me-2"></i>
+                                    Remaining Amount
+                                </span>
+
+                                <strong>
+                                    @remainingAmount.ToString("N0") MMK
+                                </strong>
+
+                            </div>
+
+
+                            <!-- CHANGE -->
+
+                            <div class="payment-row change-row">
+
+                                <span>
+                                    <i class="fas fa-hand-holding-usd me-2"></i>
+                                    Change
+                                </span>
+
+                                <strong>
+                                    @changeAmount.ToString("N0") MMK
+                                </strong>
+
+                            </div>
+
+
+                            <!-- PAYMENT METHOD -->
 
                             <div class="payment-method">
 
                                 <span>
+                                    <i class="fas fa-wallet me-2"></i>
                                     Payment Method
                                 </span>
 
                                 <strong>
-
-                                    <i class="fas fa-wallet me-1"></i>
-
-                                    @Model.PaymentMethod
-
+                                    @(Model.PaymentMethod ?? "-")
                                 </strong>
 
                             </div>
+
+
+                            <!-- PAYMENT STATUS -->
+
+                            <div class="payment-method">
+
+                                <span>
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Payment Status
+                                </span>
+
+                                <strong>
+                                    @(Model.PaymentStatus ?? "Unpaid")
+                                </strong>
+
+                            </div>
+
+
+                            <!-- PAYMENT DATE -->
+
+                            <div class="payment-method">
+
+                                <span>
+                                    <i class="fas fa-calendar-alt me-2"></i>
+                                    Payment Date
+                                </span>
+
+                                <strong>
+                                    @(Model.PaymentDate?.ToString("dd MMM yyyy HH:mm") ?? "-")
+                                </strong>
+
+                            </div>
+
 
                         </div>
 

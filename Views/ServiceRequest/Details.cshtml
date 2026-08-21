@@ -4,8 +4,8 @@
     ViewData["Title"] = "Service Details";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 
-    var record = ViewBag.Record;
-    var payment = ViewBag.Payment;
+    ServiceRecord? record = ViewBag.Record as ServiceRecord;
+    Payment? payment = ViewBag.Payment as Payment;
 
     var serviceStatus = Model.Status?.Trim() ?? "Unknown";
 
@@ -25,7 +25,6 @@
         if (remainingAmount < 0)
             remainingAmount = 0;
     }
-
 
     // =========================
     // SERVICE STATUS
@@ -80,14 +79,7 @@
             statusIcon = "fa-ban";
             statusText = "Rejected";
             break;
-
-        default:
-            statusClass = "status-default";
-            statusIcon = "fa-info-circle";
-            statusText = serviceStatus;
-            break;
     }
-
 
     // =========================
     // PAYMENT STATUS
@@ -114,51 +106,77 @@
     {
         paymentStatus = Model.PaymentStatus;
     }
+
+
+    // =====================================================
+    // SERVICE RECORD UNIT LIST
+    // Avoid RuntimeBinderException from dynamic collection
+    // =====================================================
+
+    var serviceUnits = new List<AirConServicingManagementSystem.Models.ServiceRecordUnit>();
+
+    if (record?.ServiceRecordUnits != null)
+    {
+        serviceUnits =
+            ((IEnumerable<AirConServicingManagementSystem.Models.ServiceRecordUnit>)
+            record.ServiceRecordUnits).ToList();
+    }
+
+
+    // =====================================================
+    // COST BREAKDOWN
+    // =====================================================
+
+    decimal chargeAmount = 0;
+    decimal expenseAmount = 0;
+    decimal partsAmount = 0;
+
+    if (record?.ServiceCharges != null)
+    {
+        chargeAmount = record.ServiceCharges.Sum(x => x.Amount ?? 0);
+    }
+
+    if (record?.ServiceExpenses != null)
+    {
+        expenseAmount = record.ServiceExpenses.Sum(x => x.Amount ?? 0);
+    }
+
+    if (record?.ServiceParts != null)
+    {
+        partsAmount = record.ServiceParts.Sum(x => x.UnitPrice ?? 0);
+    }
+
+    decimal calculatedServiceCost =
+        chargeAmount + expenseAmount + partsAmount;
+
+    // If ServiceCost is already stored, use it as the total.
+    decimal displayServiceCost =
+        record?.ServiceCost ?? calculatedServiceCost;
 }
 
 
 <div class="service-page">
 
-
-    
-
-
-
-    <!-- =========================
-         MAIN CARD
-    ========================= -->
-
     <div class="service-card">
 
-
-        <!-- =========================
+        <!-- =====================================================
              HEADER
-        ========================= -->
+        ====================================================== -->
 
         <div class="service-header">
 
             <div class="header-left">
 
                 <div class="service-icon">
-
                     <i class="fas fa-tools"></i>
-
                 </div>
 
                 <div>
-
-                    <h2>
-                        Service Details
-                    </h2>
-
-                    <p>
-                        Complete Service Information
-                    </p>
-
+                    <h2>Service Details</h2>
+                    <p>Complete Service Information</p>
                 </div>
 
             </div>
-
 
             <div class="status-box">
 
@@ -179,57 +197,32 @@
         </div>
 
 
-
-        <!-- =========================
-             SERVICE SUMMARY
-        ========================= -->
+        <!-- =====================================================
+             SUMMARY
+        ====================================================== -->
 
         <div class="summary-bar">
 
             <div class="summary-item">
-
-                <span>
-                    Appointment ID
-                </span>
-
-                <strong>
-                    #@Model.AppointmentId
-                </strong>
-
+                <span>Appointment ID</span>
+                <strong>#@Model.AppointmentId</strong>
             </div>
 
-
             <div class="summary-item">
-
-                <span>
-                    Request Date
-                </span>
-
+                <span>Request Date</span>
                 <strong>
                     @Model.RequestedAt.ToString("dd MMM yyyy")
                 </strong>
-
             </div>
 
+            <div class="summary-item">
+                <span>Service Type</span>
+                <strong>@Model.ServiceType</strong>
+            </div>
 
             <div class="summary-item">
 
-                <span>
-                    Service Type
-                </span>
-
-                <strong>
-                    @Model.ServiceType
-                </strong>
-
-            </div>
-
-
-            <div class="summary-item">
-
-                <span>
-                    Payment
-                </span>
+                <span>Payment</span>
 
                 @if (paymentStatus == "Paid")
                 {
@@ -258,20 +251,18 @@
         </div>
 
 
-
-        <!-- =========================
+        <!-- =====================================================
              BODY
-        ========================= -->
+        ====================================================== -->
 
         <div class="service-body">
 
 
-            <!-- =========================
+            <!-- =================================================
                  CUSTOMER + TECHNICIAN
-            ========================= -->
+            ================================================== -->
 
             <div class="section-grid">
-
 
                 <!-- CUSTOMER -->
 
@@ -280,84 +271,43 @@
                     <div class="info-header">
 
                         <div class="info-icon">
-
                             <i class="fas fa-user"></i>
-
                         </div>
 
-                        <h4>
-                            Customer Information
-                        </h4>
+                        <h4>Customer Information</h4>
 
                     </div>
 
-
                     <div class="info-row">
-
-                        <span>
-                            Name
-                        </span>
-
-                        <strong>
-                            @Model.Customer?.Name
-                        </strong>
-
+                        <span>Name</span>
+                        <strong>@Model.Customer?.Name</strong>
                     </div>
 
-
                     <div class="info-row">
-
-                        <span>
-                            Phone
-                        </span>
-
-                        <strong>
-                            @Model.Customer?.Phone
-                        </strong>
-
+                        <span>Phone</span>
+                        <strong>@Model.Customer?.Phone</strong>
                     </div>
 
-
                     <div class="info-row">
-
-                        <span>
-                            Location
-                        </span>
-
-                        <strong>
-                            @Model.Location
-                        </strong>
-
+                        <span>Location</span>
+                        <strong>@Model.Location</strong>
                     </div>
 
-
                     <div class="info-row">
-
-                        <span>
-                            Requested
-                        </span>
-
+                        <span>Requested</span>
                         <strong>
                             @Model.RequestedAt.ToString("dd MMM yyyy HH:mm")
                         </strong>
-
                     </div>
 
-
                     <div class="info-row">
-
-                        <span>
-                            Completed
-                        </span>
-
+                        <span>Completed</span>
                         <strong>
                             @(Model.CompletedAt?.ToString("dd MMM yyyy HH:mm") ?? "-")
                         </strong>
-
                     </div>
 
                 </div>
-
 
 
                 <!-- TECHNICIAN -->
@@ -367,49 +317,26 @@
                     <div class="info-header">
 
                         <div class="info-icon">
-
                             <i class="fas fa-user-cog"></i>
-
                         </div>
 
-                        <h4>
-                            Technician Information
-                        </h4>
+                        <h4>Technician Information</h4>
 
                     </div>
 
-
                     <div class="info-row">
-
-                        <span>
-                            Name
-                        </span>
-
-                        <strong>
-                            @Model.Technician?.Name
-                        </strong>
-
+                        <span>Name</span>
+                        <strong>@Model.Technician?.Name</strong>
                     </div>
 
-
                     <div class="info-row">
-
-                        <span>
-                            Service Type
-                        </span>
-
-                        <strong>
-                            @Model.ServiceType
-                        </strong>
-
+                        <span>Service Type</span>
+                        <strong>@Model.ServiceType</strong>
                     </div>
 
-
                     <div class="info-row">
 
-                        <span>
-                            Status
-                        </span>
+                        <span>Status</span>
 
                         <strong>
 
@@ -425,17 +352,11 @@
 
                     </div>
 
-
                     <div class="info-row">
-
-                        <span>
-                            Service Date
-                        </span>
-
+                        <span>Service Date</span>
                         <strong>
                             @(record?.CreatedAt?.ToString("dd MMM yyyy") ?? "-")
                         </strong>
-
                     </div>
 
                 </div>
@@ -443,29 +364,19 @@
             </div>
 
 
-
-            <!-- =========================
+            <!-- =================================================
                  AIR CONDITIONERS
-            ========================= -->
+            ================================================== -->
 
             <div class="section-title">
 
                 <div class="section-title-icon">
-
                     <i class="fas fa-snowflake"></i>
-
                 </div>
 
                 <div>
-
-                    <h3>
-                        Air Conditioner Details
-                    </h3>
-
-                    <p>
-                        Equipment information for this service
-                    </p>
-
+                    <h3>Air Conditioner Details</h3>
+                    <p>Equipment information for this service</p>
                 </div>
 
             </div>
@@ -479,41 +390,33 @@
 
                         <tr>
 
-                            <th>
-                                #
-                            </th>
-
-                            <th>
-                                Brand
-                            </th>
-
-                            <th>
-                                Model
-                            </th>
-
-                            <th>
-                                Capacity
-                            </th>
-
-                           
-
-                            <th>
-                                Next Service
-                            </th>
+                            <th>#</th>
+                            <th>Brand</th>
+                            <th>Model</th>
+                            <th>Capacity</th>
+                            <th>Quantity</th>
 
                         </tr>
 
                     </thead>
-
 
                     <tbody>
 
                         @if (Model.AirConUnits != null &&
                                                 Model.AirConUnits.Any())
                         {
+                            var groupedUnits = Model.AirConUnits
+                            .GroupBy(x => new
+                            {
+                                Brand = x.Brand?.BrandName ?? "-",
+                                Model = x.Model?.ModelName ?? "-",
+                                Capacity = x.CapacityHp
+                            })
+                            .ToList();
+
                             var no = 1;
 
-                            foreach (var unit in Model.AirConUnits)
+                            foreach (var group in groupedUnits)
                             {
                                 <tr>
 
@@ -525,21 +428,33 @@
 
                                     <td>
                                         <strong>
-                                            @unit.Brand?.BrandName
+                                            @group.Key.Brand
                                         </strong>
                                     </td>
 
                                     <td>
-                                        @unit.Model?.ModelName
+                                        @group.Key.Model
                                     </td>
 
                                     <td>
-                                        @unit.CapacityHp HP
+                                        <span class="capacity-badge">
+                                            @group.Key.Capacity HP
+                                        </span>
                                     </td>
 
                                     <td>
-                                        -
+
+                                        <span class="quantity-badge">
+
+                                            <i class="fas fa-layer-group"></i>
+
+                                            @group.Count()
+
+                                        </span>
+
                                     </td>
+
+
 
                                 </tr>
 
@@ -552,6 +467,8 @@
 
                                 <td colspan="6"
                                     class="empty-row">
+
+                                    <i class="fas fa-snowflake"></i>
 
                                     No air conditioner information available.
 
@@ -567,138 +484,286 @@
             </div>
 
 
-
-            <!-- =========================
+            <!-- =================================================
                  SERVICE REPORT
-            ========================= -->
+            ================================================== -->
 
             <div class="section-title">
 
                 <div class="section-title-icon">
-
                     <i class="fas fa-clipboard-list"></i>
-
                 </div>
 
                 <div>
-
-                    <h3>
-                        Service Report
-                    </h3>
-
-                    <p>
-                        Technician service report and findings
-                    </p>
-
+                    <h3>Service Report</h3>
+                    <p>Technician service report and findings</p>
                 </div>
 
             </div>
 
 
-            @if (record != null)
+            @if (serviceUnits.Count > 0)
             {
+                var unitNo = 1;
 
-                <div class="report-grid">
+                foreach (var unitRecord in serviceUnits)
+                {
+                    <div class="unit-report-card">
+
+                        <!-- UNIT HEADER -->
+
+                        <div class="unit-report-header">
+
+                            <div class="unit-report-number">
+
+                                <span class="unit-report-icon">
+                                    <i class="fas fa-snowflake"></i>
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Air Conditioner @unitNo
+                                    </strong>
+
+                                    <small>
+                                        @(unitRecord.AirConUnit?.Brand?.BrandName ?? "-")
+                                        ·
+                                        @(unitRecord.AirConUnit?.Model?.ModelName ?? "-")
+                                        ·
+                                        @(unitRecord.AirConUnit?.CapacityHp.ToString() ?? "-") HP
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
 
 
-                    <div class="report-item">
+                        <!-- REPORT GRID -->
 
-                        <label>
-                            <i class="fas fa-search"></i>
-                            Problem Found
-                        </label>
+                        <div class="report-grid">
 
-                        <div class="report-value">
-                            @(record.ProblemFound ?? "-")
+                            <!-- PROBLEM -->
+
+                            <div class="report-item">
+
+                                <label>
+                                    <i class="fas fa-search"></i>
+                                    Problem Found
+                                </label>
+
+                                <div class="report-value">
+
+                                    @(unitRecord.ProblemFound ?? "-")
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- REPAIR -->
+
+                            <div class="report-item">
+
+                                <label>
+                                    <i class="fas fa-wrench"></i>
+                                    Repair Action
+                                </label>
+
+                                <div class="report-value">
+
+                                    @(unitRecord.RepairAction ?? "-")
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- PARTS -->
+
+                            <div class="report-item">
+
+                                <label>
+                                    <i class="fas fa-cogs"></i>
+                                    Parts Replaced
+                                </label>
+
+                                <div class="report-value parts-value">
+
+                                    @if (record?.ServiceParts != null &&
+                                                                record.ServiceParts.Any())
+                                    {
+                                        <div class="parts-list">
+
+                                            @foreach (var part in record.ServiceParts)
+                                            {
+                                                <span class="part-chip">
+
+                                                    <i class="fas fa-wrench"></i>
+
+                                                    <span>
+                                                        @part.PartName
+                                                    </span>
+
+                                                </span>
+                                            }
+
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="empty-text">No parts replaced</span>
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- NEXT SERVICE -->
+
+                            <div class="report-item">
+
+                                <label>
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Next Service Due
+                                </label>
+
+                                <div class="report-value">
+
+                                    @(unitRecord.NextServiceDue?.ToString("dd MMM yyyy") ?? "-")
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    unitNo++;
+                }
+
+
+                <!-- =================================================
+                     OVERALL SERVICE INFORMATION
+                ================================================== -->
+
+                <div class="section-title overall-title">
+
+                    <div class="section-title-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+
+                    <div>
+                        <h3>Overall Service Information</h3>
+                        <p>Service cost breakdown</p>
+                    </div>
+
+                </div>
+
+
+                <!-- COST CARDS -->
+
+                <div class="cost-grid">
+
+                    <!-- CHARGE -->
+
+                    <div class="cost-card charge-card">
+
+                        <div class="cost-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+
+                        <div class="cost-content">
+
+                            <span class="cost-label">
+                                Charge
+                            </span>
+
+                            <strong>
+                                @chargeAmount.ToString("N0")
+                                <small>MMK</small>
+                            </strong>
+
                         </div>
 
                     </div>
 
 
-                    <div class="report-item">
+                    <!-- EXPENSE -->
 
-                        <label>
-                            <i class="fas fa-wrench"></i>
-                            Repair Action
-                        </label>
+                    <div class="cost-card expense-card">
 
-                        <div class="report-value">
-                            @(record.RepairAction ?? "-")
+                        <div class="cost-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+
+                        <div class="cost-content">
+
+                            <span class="cost-label">
+                                Expense
+                            </span>
+
+                            <strong>
+                                @expenseAmount.ToString("N0")
+                                <small>MMK</small>
+                            </strong>
+
                         </div>
 
                     </div>
 
 
-                    <div class="report-item">
+                    <!-- PARTS -->
 
-                        <label>
+                    <div class="cost-card parts-cost-card">
+
+                        <div class="cost-icon">
                             <i class="fas fa-cogs"></i>
-                            Parts Replaced
-                        </label>
-
-                        <div class="report-value">
-                            @(record.PartsReplaced ?? "-")
                         </div>
 
-                    </div>
+                        <div class="cost-content">
 
+                            <span class="cost-label">
+                                Parts
+                            </span>
 
-                    <div class="report-item">
-
-                        <label>
-                            <i class="fas fa-money-bill-wave"></i>
-                            Service Cost
-                        </label>
-
-                        <div class="report-value amount">
-                            @record.ServiceCost?.ToString("N0") MMK
-                        </div>
-
-                    </div>
-
-
-                    <div class="report-item full-width">
-
-                        <label>
-                            <i class="fas fa-comment-alt"></i>
-                            Technician Note
-                        </label>
-
-                        <div class="report-value note">
-                            @(record.TechnicianNote ?? "-")
-                        </div>
-
-                    </div>
-
-
-                    <div class="report-item">
-
-                        <label>
-                            <i class="fas fa-calendar-alt"></i>
-                            Next Service Due
-                        </label>
-
-                        <div class="report-value">
-
-                            @(record.NextServiceDue?.ToString("dd MMM yyyy") ?? "-")
+                            <strong>
+                                @partsAmount.ToString("N0")
+                                <small>MMK</small>
+                            </strong>
 
                         </div>
 
                     </div>
 
+                </div>
 
-                    <div class="report-item">
 
-                        <label>
-                            <i class="fas fa-tools"></i>
-                            Service Type Performed
-                        </label>
+                <!-- TOTAL -->
 
-                        <div class="report-value">
-                            @(record.ServiceType ?? "-")
-                        </div>
+                <div class="service-total-card">
+
+                    <div>
+
+                        <span>
+                            <i class="fas fa-calculator"></i>
+                            Total Service Cost
+                        </span>
+
+                        <small>
+                            Charge + Expense + Parts
+                        </small>
 
                     </div>
+
+                    <strong>
+                        @displayServiceCost.ToString("N0")
+                        <small>MMK</small>
+                    </strong>
 
                 </div>
 
@@ -715,29 +780,19 @@
             }
 
 
-
-            <!-- =========================
+            <!-- =================================================
                  PAYMENT SUMMARY
-            ========================= -->
+            ================================================== -->
 
             <div class="section-title payment-section-title">
 
                 <div class="section-title-icon">
-
                     <i class="fas fa-credit-card"></i>
-
                 </div>
 
                 <div>
-
-                    <h3>
-                        Payment Information
-                    </h3>
-
-                    <p>
-                        Payment and invoice summary
-                    </p>
-
+                    <h3>Payment Information</h3>
+                    <p>Payment and invoice summary</p>
                 </div>
 
             </div>
@@ -745,42 +800,31 @@
 
             <div class="payment-card">
 
-
                 <div class="payment-status-area">
 
                     <span class="payment-label">
                         Payment Status
                     </span>
 
-
                     @if (paymentStatus == "Paid")
                     {
                         <span class="payment-badge payment-paid">
-
                             <i class="fas fa-check-circle"></i>
-
                             Paid
-
                         </span>
                     }
                     else if (paymentStatus == "Remaining")
                     {
                         <span class="payment-badge payment-remaining">
-
                             <i class="fas fa-clock"></i>
-
                             Remaining
-
                         </span>
                     }
                     else
                     {
                         <span class="payment-badge payment-unpaid">
-
                             <i class="fas fa-exclamation-circle"></i>
-
                             Unpaid
-
                         </span>
                     }
 
@@ -789,12 +833,9 @@
 
                 <div class="payment-grid">
 
-
                     <div class="payment-item">
 
-                        <span>
-                            Total Service Cost
-                        </span>
+                        <span>Total Service Cost</span>
 
                         <strong>
                             @totalAmount.ToString("N0") MMK
@@ -805,9 +846,7 @@
 
                     <div class="payment-item">
 
-                        <span>
-                            Paid Amount
-                        </span>
+                        <span>Paid Amount</span>
 
                         <strong class="paid-value">
                             @paidAmount.ToString("N0") MMK
@@ -818,14 +857,10 @@
 
                     <div class="payment-item">
 
-                        <span>
-                            Remaining Amount
-                        </span>
+                        <span>Remaining Amount</span>
 
                         <strong class="remaining-value">
-
                             @remainingAmount.ToString("N0") MMK
-
                         </strong>
 
                     </div>
@@ -833,9 +868,7 @@
 
                     <div class="payment-item">
 
-                        <span>
-                            Change
-                        </span>
+                        <span>Change</span>
 
                         <strong>
                             @changeAmount.ToString("N0") MMK
@@ -846,12 +879,9 @@
 
                     @if (payment != null)
                     {
-
                         <div class="payment-item">
 
-                            <span>
-                                Payment Method
-                            </span>
+                            <span>Payment Method</span>
 
                             <strong>
                                 @(payment.PaymentMethod ?? "-")
@@ -862,9 +892,7 @@
 
                         <div class="payment-item">
 
-                            <span>
-                                Payment Date
-                            </span>
+                            <span>Payment Date</span>
 
                             <strong>
                                 @(payment.PaymentDate?.ToString("dd MMM yyyy HH:mm") ?? "-")
@@ -875,16 +903,13 @@
 
                         <div class="payment-item">
 
-                            <span>
-                                Invoice No
-                            </span>
+                            <span>Invoice No</span>
 
                             <strong>
                                 @(payment.InvoiceNo ?? "-")
                             </strong>
 
                         </div>
-
                     }
 
                 </div>
@@ -903,7 +928,8 @@
                             </strong>
 
                             <span>
-                                @remainingAmount.ToString("N0") MMK is still remaining.
+                                @remainingAmount.ToString("N0")
+                                MMK is still remaining.
                             </span>
 
                         </div>
@@ -954,10 +980,9 @@
             </div>
 
 
-
-            <!-- =========================
-                 FOOTER ACTIONS
-            ========================= -->
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
 
             <div class="bottom-actions">
 
@@ -966,7 +991,7 @@
 
                     <i class="fas fa-arrow-left"></i>
 
-                    Back 
+                    Back
 
                 </a>
 
@@ -974,7 +999,6 @@
                 @if (payment != null &&
                                 !string.IsNullOrEmpty(payment.InvoiceNo))
                 {
-
                     <a asp-controller="Payment"
                        asp-action="Invoice"
                        asp-route-id="@payment.ServiceRecordId"
@@ -985,18 +1009,15 @@
                         View Invoice
 
                     </a>
-
                 }
 
             </div>
-
 
         </div>
 
     </div>
 
 </div>
-
 
 
 <style>
@@ -1017,6 +1038,10 @@
     }
 
 
+    /* =========================================================
+           PAGE
+        ========================================================= */
+
     .service-page {
         max-width: 1100px;
         margin: 0 auto;
@@ -1024,89 +1049,21 @@
     }
 
 
-    /* =========================
-           ACTIONS
-        ========================= */
-
-    .top-actions,
-    .bottom-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 18px;
-    }
-
-
-    .back-btn,
-    .print-btn,
-    .invoice-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 10px 18px;
-        border-radius: 9px;
-        font-size: 13px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: .2s ease;
-    }
-
-
-    .back-btn {
-        background: white;
-        border: 1px solid var(--border);
-        color: #495057;
-    }
-
-
-        .back-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-
-    .print-btn {
-        border: none;
-        background: var(--primary);
-        color: white;
-    }
-
-
-        .print-btn:hover,
-        .invoice-btn:hover {
-            background: var(--primary-dark);
-            color: white;
-        }
-
-
-    .invoice-btn {
-        background: var(--primary);
-        color: white;
-    }
-
-
-    /* =========================
-           MAIN CARD
-        ========================= */
-
     .service-card {
-        background: white;
+        background: #fff;
         border-radius: 18px;
         overflow: hidden;
         box-shadow: 0 8px 35px rgba(0,0,0,.07);
     }
 
 
-    /* =========================
+    /* =========================================================
            HEADER
-        ========================= */
+        ========================================================= */
 
     .service-header {
         padding: 30px 35px;
-        background: linear-gradient( 135deg, #2c8c99, #23727d );
+        background: linear-gradient(135deg, #2c8c99, #23727d);
         color: white;
         display: flex;
         justify-content: space-between;
@@ -1174,39 +1131,30 @@
     }
 
 
-    /* =========================
-           STATUS COLORS
-        ========================= */
-
     .status-pending {
         background: #fff3cd;
         color: #856404;
     }
-
 
     .status-assigned {
         background: #dbeafe;
         color: #1d4ed8;
     }
 
-
     .status-accepted {
         background: #e0e7ff;
         color: #4338ca;
     }
-
 
     .status-progress {
         background: #cff4fc;
         color: #087990;
     }
 
-
     .status-completed {
         background: #d1e7dd;
         color: #146c43;
     }
-
 
     .status-cancelled,
     .status-rejected {
@@ -1214,16 +1162,15 @@
         color: #b02a37;
     }
 
-
     .status-default {
         background: #e9ecef;
         color: #495057;
     }
 
 
-    /* =========================
+    /* =========================================================
            SUMMARY
-        ========================= */
+        ========================================================= */
 
     .summary-bar {
         display: grid;
@@ -1262,25 +1209,27 @@
         color: #198754;
     }
 
-
     .payment-text.remaining {
         color: #d97706;
     }
-
 
     .payment-text.unpaid {
         color: #dc3545;
     }
 
 
-    /* =========================
+    /* =========================================================
            BODY
-        ========================= */
+        ========================================================= */
 
     .service-body {
         padding: 35px;
     }
 
+
+    /* =========================================================
+           CUSTOMER / TECHNICIAN
+        ========================================================= */
 
     .section-grid {
         display: grid;
@@ -1289,10 +1238,6 @@
         margin-bottom: 38px;
     }
 
-
-    /* =========================
-           INFO CARD
-        ========================= */
 
     .info-card {
         border: 1px solid var(--border);
@@ -1360,9 +1305,9 @@
     }
 
 
-    /* =========================
+    /* =========================================================
            SECTION TITLE
-        ========================= */
+        ========================================================= */
 
     .section-title {
         display: flex;
@@ -1381,6 +1326,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
     }
 
 
@@ -1398,9 +1344,9 @@
     }
 
 
-    /* =========================
-           TABLE
-        ========================= */
+    /* =========================================================
+           AIR CONDITIONER TABLE
+        ========================================================= */
 
     .table-wrapper {
         overflow-x: auto;
@@ -1412,7 +1358,7 @@
 
     .aircon-table {
         width: 100%;
-        min-width: 700px;
+        min-width: 650px;
         border-collapse: collapse;
     }
 
@@ -1420,7 +1366,7 @@
         .aircon-table th {
             background: var(--primary);
             color: white;
-            padding: 13px;
+            padding: 12px 13px;
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: .3px;
@@ -1429,9 +1375,10 @@
 
 
         .aircon-table td {
-            padding: 14px 13px;
+            padding: 11px 13px;
             border-bottom: 1px solid var(--border);
             font-size: 12px;
+            vertical-align: middle;
         }
 
 
@@ -1441,27 +1388,40 @@
 
 
     .number-badge {
-        width: 26px;
-        height: 26px;
+        width: 25px;
+        height: 25px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
         background: var(--primary-light);
         color: var(--primary);
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 800;
     }
 
 
-    .condition-badge {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 20px;
-        background: var(--primary-light);
-        color: var(--primary);
+    .capacity-badge {
+        display: inline-flex;
+        padding: 4px 8px;
+        border-radius: 5px;
+        background: #f1f7f8;
+        color: var(--primary-dark);
         font-size: 10px;
         font-weight: 700;
+    }
+
+
+    .quantity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        background: var(--primary-light);
+        color: var(--primary);
+        border-radius: 15px;
+        font-size: 11px;
+        font-weight: 800;
     }
 
 
@@ -1472,65 +1432,303 @@
     }
 
 
-    /* =========================
-           REPORT
-        ========================= */
+        .empty-row i {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+
+
+    /* =========================================================
+           UNIT REPORT
+        ========================================================= */
+
+    .unit-report-card {
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        overflow: hidden;
+        margin-bottom: 22px;
+        background: #fff;
+    }
+
+
+    .unit-report-header {
+        padding: 13px 16px;
+        background: #f7fafb;
+        border-bottom: 1px solid var(--border);
+    }
+
+
+    .unit-report-number {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+
+    .unit-report-icon {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: var(--primary-light);
+        color: var(--primary);
+        flex-shrink: 0;
+    }
+
+
+    .unit-report-number strong {
+        display: block;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+
+    .unit-report-number small {
+        display: block;
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 10px;
+    }
+
+
+    .unit-report-card .report-grid {
+        padding: 16px;
+        margin-bottom: 0;
+    }
+
 
     .report-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 18px;
-        margin-bottom: 38px;
+        gap: 15px;
+        margin-bottom: 35px;
     }
 
 
     .report-item {
         border: 1px solid var(--border);
-        border-radius: 11px;
+        border-radius: 10px;
         overflow: hidden;
+        background: #fff;
     }
-
-
-        .report-item.full-width {
-            grid-column: 1 / -1;
-        }
 
 
         .report-item label {
             display: block;
-            padding: 11px 14px;
+            padding: 9px 12px;
             background: #f7fafb;
             color: var(--primary);
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
         }
 
 
             .report-item label i {
-                margin-right: 6px;
+                margin-right: 5px;
             }
 
 
     .report-value {
-        min-height: 48px;
-        padding: 13px 14px;
-        font-size: 13px;
+        min-height: 45px;
+        padding: 11px 12px;
+        font-size: 12px;
         font-weight: 500;
         white-space: pre-wrap;
         word-break: break-word;
     }
 
 
-        .report-value.note {
-            min-height: 90px;
+    /* =========================================================
+           PARTS - COMPACT
+        ========================================================= */
+
+    .parts-value {
+        min-height: 45px;
+        padding: 10px 12px;
+    }
+
+
+    .parts-list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+
+    .part-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 7px;
+        background: #f4f8f9;
+        border: 1px solid #dce8ea;
+        border-radius: 5px;
+        color: #495057;
+        font-size: 10px;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+
+
+        .part-chip i {
+            color: var(--primary);
+            font-size: 9px;
         }
 
 
-        .report-value.amount {
-            color: var(--primary);
+    .empty-text {
+        color: var(--muted);
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+           COST BREAKDOWN
+        ========================================================= */
+
+    .overall-title {
+        margin-top: 32px;
+    }
+
+
+    .cost-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 14px;
+    }
+
+
+    .cost-card {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 17px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: #fff;
+    }
+
+
+    .cost-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        background: var(--primary-light);
+        color: var(--primary);
+        flex-shrink: 0;
+    }
+
+
+    .cost-content {
+        min-width: 0;
+    }
+
+
+    .cost-label {
+        display: block;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 700;
+        margin-bottom: 3px;
+    }
+
+
+    .cost-content strong {
+        display: block;
+        color: var(--text);
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+
+        .cost-content strong small,
+        .service-total-card strong small {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+
+    .charge-card .cost-icon {
+        background: #e8f6f8;
+        color: #2c8c99;
+    }
+
+
+    .expense-card .cost-icon {
+        background: #fff5df;
+        color: #c58a00;
+    }
+
+
+    .parts-cost-card .cost-icon {
+        background: #f0eafd;
+        color: #7655c7;
+    }
+
+
+    .service-total-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 18px 20px;
+        margin-bottom: 35px;
+        border-radius: 11px;
+        background: linear-gradient(135deg, #2c8c99, #23727d);
+        color: white;
+    }
+
+
+        .service-total-card span {
+            display: block;
+            font-size: 12px;
             font-weight: 800;
         }
 
+
+            .service-total-card span i {
+                margin-right: 6px;
+            }
+
+
+        .service-total-card small {
+            display: block;
+            margin-top: 3px;
+            font-size: 9px;
+            opacity: .75;
+        }
+
+
+        .service-total-card strong {
+            font-size: 19px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+
+            .service-total-card strong small {
+                display: inline;
+                color: rgba(255,255,255,.75);
+            }
+
+
+    /* =========================================================
+           NO RECORD
+        ========================================================= */
 
     .no-record {
         padding: 20px;
@@ -1538,6 +1736,7 @@
         border-radius: 10px;
         color: var(--muted);
         margin-bottom: 35px;
+        font-size: 12px;
     }
 
 
@@ -1547,9 +1746,9 @@
         }
 
 
-    /* =========================
+    /* =========================================================
            PAYMENT
-        ========================= */
+        ========================================================= */
 
     .payment-section-title {
         margin-top: 10px;
@@ -1614,7 +1813,7 @@
 
 
     .payment-item {
-        padding: 18px 20px;
+        padding: 17px 19px;
         border-right: 1px solid var(--border);
         border-bottom: 1px solid var(--border);
     }
@@ -1628,13 +1827,13 @@
         .payment-item span {
             display: block;
             color: var(--muted);
-            font-size: 11px;
-            margin-bottom: 7px;
+            font-size: 10px;
+            margin-bottom: 6px;
         }
 
 
         .payment-item strong {
-            font-size: 14px;
+            font-size: 13px;
         }
 
 
@@ -1648,20 +1847,20 @@
     }
 
 
-    /* =========================
+    /* =========================================================
            PAYMENT ALERT
-        ========================= */
+        ========================================================= */
 
     .remaining-alert,
     .paid-alert,
     .unpaid-alert {
-        margin: 20px;
+        margin: 18px;
         padding: 13px 15px;
         border-radius: 9px;
         display: flex;
         align-items: flex-start;
         gap: 10px;
-        font-size: 12px;
+        font-size: 11px;
     }
 
 
@@ -1683,13 +1882,6 @@
     }
 
 
-        .remaining-alert i,
-        .paid-alert i,
-        .unpaid-alert i {
-            margin-top: 2px;
-        }
-
-
         .remaining-alert strong,
         .paid-alert strong,
         .unpaid-alert strong {
@@ -1698,19 +1890,67 @@
         }
 
 
-    /* =========================
-           BOTTOM
-        ========================= */
+    /* =========================================================
+           ACTIONS
+        ========================================================= */
 
     .bottom-actions {
-        margin-bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
         padding-top: 5px;
     }
 
 
-    /* =========================
+    .back-btn,
+    .print-btn,
+    .invoice-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+
+    .back-btn {
+        background: white;
+        border: 1px solid var(--border);
+        color: #495057;
+    }
+
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+
+    .invoice-btn,
+    .print-btn {
+        border: none;
+        background: var(--primary);
+        color: white;
+    }
+
+
+        .invoice-btn:hover,
+        .print-btn:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+
+    /* =========================================================
            MOBILE
-        ========================= */
+        ========================================================= */
 
     @@media (max-width: 768px) {
 
@@ -1752,18 +1992,14 @@
         }
 
 
-        .section-grid {
-            grid-template-columns: 1fr;
-        }
-
-
+        .section-grid,
         .report-grid {
             grid-template-columns: 1fr;
         }
 
 
-        .report-item.full-width {
-            grid-column: auto;
+        .cost-grid {
+            grid-template-columns: 1fr;
         }
 
 
@@ -1788,25 +2024,11 @@
     }
 
 
-    /* =========================
+    /* =========================================================
            SMALL MOBILE
-        ========================= */
+        ========================================================= */
 
     @@media (max-width: 480px) {
-
-        .top-actions,
-        .bottom-actions {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-
-        .back-btn,
-        .print-btn,
-        .invoice-btn {
-            width: 100%;
-        }
-
 
         .service-header h2 {
             font-size: 21px;
@@ -1859,12 +2081,41 @@
             .payment-item + .payment-item {
                 border-top: 1px solid var(--border);
             }
+
+
+        .bottom-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+
+        .back-btn,
+        .invoice-btn {
+            width: 100%;
+        }
+
+
+        .service-total-card {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+            .service-total-card strong {
+                font-size: 17px;
+            }
+
+
+        .part-chip {
+            font-size: 9px;
+            padding: 4px 6px;
+        }
     }
 
 
-    /* =========================
+    /* =========================================================
            PRINT
-        ========================= */
+        ========================================================= */
 
     @@media print {
 
@@ -1880,7 +2131,6 @@
         }
 
 
-        .top-actions,
         .bottom-actions {
             display: none !important;
         }
@@ -1893,7 +2143,8 @@
 
 
         .service-header,
-        .aircon-table th {
+        .aircon-table th,
+        .service-total-card {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }

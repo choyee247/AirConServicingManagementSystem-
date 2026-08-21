@@ -246,29 +246,29 @@ namespace AirConServicingManagementSystem.Controllers
             var service = await _context.ServiceRequests
                 .Include(x => x.Customer)
                 .Include(x => x.Technician)
-
                 .Include(x => x.AirConUnits)
                     .ThenInclude(x => x.Brand)
-
                 .Include(x => x.AirConUnits)
                     .ThenInclude(x => x.Model)
-
                 .FirstOrDefaultAsync(x => x.AppointmentId == appointmentId);
-
 
             if (service == null)
                 return NotFound();
 
 
-            
             var record = await _context.ServiceRecords
+                .Include(x => x.ServiceRecordUnits)
+                    .ThenInclude(x => x.AirConUnit)
+                        .ThenInclude(x => x.Brand)
+                .Include(x => x.ServiceRecordUnits)
+                    .ThenInclude(x => x.AirConUnit)
+                        .ThenInclude(x => x.Model)
+                .Include(x => x.ServiceParts)
+                .Include(x => x.ServiceCharges)
+                .Include(x => x.ServiceExpenses)
                 .FirstOrDefaultAsync(x =>
                     x.ServiceRequestId == service.ServiceId);
 
-
-            // =========================
-            // PAYMENT
-            // =========================
 
             var payment = record == null
                 ? null
@@ -279,7 +279,6 @@ namespace AirConServicingManagementSystem.Controllers
 
             ViewBag.Record = record;
             ViewBag.Payment = payment;
-
 
             return View(service);
         }
