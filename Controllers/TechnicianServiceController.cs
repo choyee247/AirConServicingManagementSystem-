@@ -259,249 +259,183 @@ public class TechnicianServiceController : Controller
     {
         int techId = HttpContext.Session.GetInt32("TechnicianId") ?? 0;
 
-
         if (techId == 0)
             return RedirectToAction("Login", "Login");
 
 
+        // =====================================================
+        // 1. GET SERVICE REQUEST
+        // =====================================================
 
-        // 1. Get Service Request
         var service = await _context.ServiceRequests
-
             .Include(x => x.Customer)
-
             .Include(x => x.Technician)
-
             .FirstOrDefaultAsync(x =>
                 x.ServiceId == id &&
                 x.TechnicianId == techId);
 
-
-
         if (service == null)
             return NotFound();
-
 
 
         if (service.Status == "Completed")
             return Content("Already Completed");
 
 
-
-
-        // 2. Get Customer AirCon Units
+        // =====================================================
+        // 2. GET CUSTOMER AC UNITS
+        // =====================================================
 
         var aircons = await _context.AirConUnits
-
             .Include(x => x.Brand)
-
             .Include(x => x.Model)
-
             .Include(x => x.Warranty)
-
             .Include(x => x.MaintenanceSchedules)
-
-            .Include(x => x.ServiceRecordUnits)
-                .ThenInclude(x => x.ServiceRecord)
-
-             .Where(x =>
+            .Where(x =>
                 x.CustomerId == service.CustomerId &&
-                x.IsDeleted == false &&
+                x.IsDeleted != true &&
                 x.ServiceId == service.ServiceId)
-
             .ToListAsync();
 
 
+        // =====================================================
+        // 3. GET ALL ALREADY COMPLETED AC IDs
+        //
+        // IMPORTANT:
+        // Count from ALL ServiceRecords under this ServiceRequest
+        // =====================================================
+
+        var completedAirConIds = await _context.ServiceRecordUnits
+            .Where(x =>
+                x.ServiceRecord.ServiceRequestId == service.ServiceId)
+            .Select(x => x.AirConUnitId)
+            .Distinct()
+            .ToListAsync();
 
 
-        // 3. Group Brand + Model + Installation Type
+        // =====================================================
+        // 4. GROUP BRAND + MODEL + INSTALLATION TYPE
+        // =====================================================
 
         var unitGroups = aircons
-
             .GroupBy(x => new
             {
                 x.BrandId,
                 x.ModelId,
                 x.InstallationType
-
             })
-
-
             .Select(g =>
             {
-
                 var first = g.First();
-
-
 
                 var maintenance =
                     first.MaintenanceSchedules
-                    .OrderByDescending(x => x.MaintenanceId)
-                    .FirstOrDefault();
+                        .OrderByDescending(x => x.MaintenanceId)
+                        .FirstOrDefault();
 
+
+                // All AC IDs in this group
+                var groupAirConIds =
+                    g.Select(x => x.Id)
+                     .ToList();
+
+
+                // Already completed ACs
+                int completedQuantity =
+                    groupAirConIds.Count(x =>
+                        completedAirConIds.Contains(x));
+
+
+                // Remaining ACs
+                int remainingQuantity =
+                    groupAirConIds.Count -
+                    completedQuantity;
 
 
                 return new ServiceUnitVM
                 {
-
-
-                    // All AC IDs in this group
-
                     AirConUnitIds =
-                        g.Select(x => x.Id)
-                        .ToList(),
-
-
+                        groupAirConIds,
 
                     BrandName =
                         first.Brand?.BrandName,
 
-
-
                     ModelName =
                         first.Model?.ModelName,
 
-
-
-                    // Total AC Count
                     TotalQuantity =
-                        g.Count(),
-
-                    // Already Completed Count
-                    //CompletedQuantity =
-                    //    g.Count(x =>
-                    //        x.ServiceRecordUnits.Any(r =>
-                    //            r.ServiceRecord.Status == "Completed"
-                    //        )
-                    //    ),
-
-                    //CompletedQuantity =
-                    //g.Count(x =>
-                    //    x.ServiceRecordUnits.Any()
-                    //),
-                    //CompletedQuantity =
-                    //g.Count(x =>
-                    //    x.ServiceRecordUnits.Any(r =>
-                    //        r.ServiceRecordId == service.ServiceId
-                    //    )
-                    //),
+                        groupAirConIds.Count,
 
                     CompletedQuantity =
-                    g.Count(x =>
-                        x.ServiceRecordUnits.Any(sru =>
-                            sru.ServiceRecord.ServiceRequestId == service.ServiceId
-                        )
-                    ),
+                        completedQuantity,
+
                     InstallationType =
                         first.InstallationType,
-
-
-
-
-                    // Warranty / Contract
 
                     HasWarranty =
                         first.Warranty != null,
 
-
-
                     WarrantyStartDate =
                         first.Warranty?.StartDate,
-
-
 
                     WarrantyEndDate =
                         first.Warranty?.EndDate,
 
-
-
                     ContractMonths =
-                first.Warranty != null
-                    ? (first.Warranty.EndDate - first.Warranty.StartDate).Days / 30
-                    : first.WarrantyPeriodMonths,
-
-
+                        first.Warranty != null
+                            ? (first.Warranty.EndDate -
+                               first.Warranty.StartDate).Days / 30
+                            : first.WarrantyPeriodMonths,
 
                     IsFreeService =
                         first.Warranty != null &&
                         first.Warranty.EndDate >= DateTime.Now,
 
-
-
-
-                    // Maintenance
                     MaintenanceMonths =
-                first.InstallationType == "New"
-                    ? first.NextServiceOption ?? 3
-                    : null,
-
-
-
-                    // Default
+                        first.InstallationType == "New"
+                            ? first.NextServiceOption ?? 3
+                            : null,
 
                     IsSelected = false
-
-
                 };
-
             })
-
+            .Where(x => x.RemainingQuantity > 0)
             .ToList();
 
 
-
-        unitGroups = unitGroups
-        .Where(x => x.RemainingQuantity > 0)
-        .ToList();
-
-
-
-        // 4. Prepare ViewModel
-
+        // =====================================================
+        // 5. PREPARE VIEW MODEL
+        // =====================================================
 
         var model = new CompleteServiceViewModel
         {
-
-            ServiceId = service.ServiceId,
-
+            ServiceId =
+                service.ServiceId,
 
             CustomerName =
                 service.Customer?.Name,
 
-
             PhoneNumber =
                 service.Customer?.Phone,
-
 
             Address =
                 service.Customer?.Address,
 
-
-
             TechnicianName =
                 service.Technician?.Name,
-
-
 
             JobNo =
                 "JOB-" + service.ServiceId,
 
-
-
-            Units = unitGroups,
-
+            Units =
+                unitGroups,
 
             CompletedDate =
                 DateTime.Now
-
         };
 
 
-
-
-
         return View(model);
-
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -548,48 +482,85 @@ public class TechnicianServiceController : Controller
                 });
         }
 
-
-        var record = await _context.ServiceRecords
-            .FirstOrDefaultAsync(x =>
-                x.ServiceRequestId == service.ServiceId);
-
-        if (record == null)
+        var record = new ServiceRecord
         {
-            record = new ServiceRecord
-            {
-                ServiceRequestId = service.ServiceId,
+            ServiceRequestId = service.ServiceId,
 
-                CustomerId = service.CustomerId,
+            CustomerId = service.CustomerId,
 
-                TechnicianId = techId,
+            TechnicianId = techId,
 
-                CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.Now,
 
-                IsDeleted = false
-            };
+            IsDeleted = false,
 
-            _context.ServiceRecords.Add(record);
+            Status = "Unpaid"
+        };
 
-            await _context.SaveChangesAsync();
-        }
+        _context.ServiceRecords.Add(record);
+
+        await _context.SaveChangesAsync();
 
 
         record.TechnicianNote = model.TechnicianNote;
 
         record.PartsReplaced = model.PartsReplaced;
 
-        record.ServiceCost = model.GrandTotal;
+        // ==========================================
+        // CALCULATE PARTS TOTAL
+        // ==========================================
+
+        decimal partsTotal = model.Parts?
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.PartName) &&
+                x.Quantity > 0 &&
+                x.UnitPrice >= 0)
+            .Sum(x =>
+                x.Quantity * x.UnitPrice)
+            ?? 0m;
+
+
+        // ==========================================
+        // CALCULATE CHARGES TOTAL
+        // ==========================================
+
+        decimal chargesTotal = model.Charges?
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.Description) &&
+                x.Amount > 0)
+            .Sum(x => x.Amount)
+            ?? 0m;
+
+        decimal expensesTotal = model.Expenses?
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.Description) &&
+                x.Amount > 0)
+            .Sum(x => x.Amount)
+            ?? 0m;
+
+        decimal grandTotal =
+            partsTotal +
+            chargesTotal +
+            expensesTotal;
+
+        record.ServiceCost = grandTotal;
 
         record.ServiceType = model.ServiceType;
 
         record.UpdatedAt = DateTime.Now;
 
 
+        //var completedAirConIds = await _context.ServiceRecordUnits
+        //    .Where(x =>
+        //        x.ServiceRecordId == record.Id)
+        //    .Select(x => x.AirConUnitId)
+        //    .ToListAsync();
         var completedAirConIds = await _context.ServiceRecordUnits
-            .Where(x =>
-                x.ServiceRecordId == record.Id)
-            .Select(x => x.AirConUnitId)
-            .ToListAsync();
+        .Where(x =>
+            x.ServiceRecord.ServiceRequestId == service.ServiceId)
+        .Select(x => x.AirConUnitId)
+        .Distinct()
+        .ToListAsync();
 
         if (model.Parts != null && model.Parts.Any())
         {
@@ -887,22 +858,70 @@ public class TechnicianServiceController : Controller
             }
         }
 
-        bool hasRemaining = model.Units.Any(x =>
-        {
-            int completedQuantity =
-                x.CompletedQuantity;
+        //bool hasRemaining = model.Units.Any(x =>
+        //{
+        //    int completedQuantity =
+        //        x.CompletedQuantity;
 
-            int serviceQuantity =
-                x.IsSelected
-                    ? x.ServiceQuantity
-                    : 0;
+        //    int serviceQuantity =
+        //        x.IsSelected
+        //            ? x.ServiceQuantity
+        //            : 0;
 
-            int afterComplete =
-                completedQuantity +
-                serviceQuantity;
+        //    int afterComplete =
+        //        completedQuantity +
+        //        serviceQuantity;
 
-            return afterComplete < x.TotalQuantity;
-        });
+        //    return afterComplete < x.TotalQuantity;
+        //});
+
+        //if (hasRemaining)
+        //{
+        //    service.Status = "Remaining";
+
+        //    service.CompletedAt = null;
+
+        //    record.Status = "Remaining";
+        //}
+        //else
+        //{
+
+        //    service.Status = "Completed";
+
+        //    service.CompletedAt = DateTime.Now;
+
+        //    record.Status = "Completed";
+        //}
+      
+        await _context.SaveChangesAsync();
+
+
+        // Total AC units for this Service Request
+        var totalAirConCount = await _context.AirConUnits
+            .CountAsync(x =>
+                x.CustomerId == service.CustomerId &&
+                x.ServiceId == service.ServiceId &&
+                x.IsDeleted != true);
+
+
+        // Count all unique AC units already serviced
+        // from ALL ServiceRecords of this ServiceRequest
+        var completedAirConCount = await _context.ServiceRecordUnits
+            .Where(x =>
+                x.ServiceRecord.ServiceRequestId == service.ServiceId)
+            .Select(x => x.AirConUnitId)
+            .Distinct()
+            .CountAsync();
+
+
+        // Check if any AC is still remaining
+        bool hasRemaining =
+            completedAirConCount < totalAirConCount;
+
+
+        // ==========================================
+        // UPDATE STATUS
+        // ==========================================
 
         if (hasRemaining)
         {
@@ -914,14 +933,12 @@ public class TechnicianServiceController : Controller
         }
         else
         {
-
             service.Status = "Completed";
 
             service.CompletedAt = DateTime.Now;
 
             record.Status = "Completed";
         }
-
         var technician = await _context.Technicians
             .FirstOrDefaultAsync(x =>
                 x.TechnicianId == techId);

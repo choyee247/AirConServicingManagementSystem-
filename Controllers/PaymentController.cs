@@ -40,31 +40,58 @@ namespace AirConServicingManagementSystem.Controllers
 
             if (!records.Any())
             {
-                TempData["Error"] = "No service record found.";
-                return RedirectToAction("Index", "ServiceRequest");
+                TempData["Error"] =
+                    "No service record found.";
+
+                return RedirectToAction(
+                    "Index",
+                    "ServiceRequest"
+                );
             }
 
+
+            // Latest Service Record
             var currentRecord = records.Last();
+
+
+            // ==========================================
+            // CURRENT SERVICE BREAKDOWN
+            // ==========================================
 
             decimal currentChargeAmount =
                 currentRecord.ServiceCharges?
-                    .Sum(x => x.Amount ?? 0m) ?? 0m;
+                    .Sum(x => x.Amount ?? 0m)
+                ?? 0m;
+
 
             decimal currentExpenseAmount =
                 currentRecord.ServiceExpenses?
-                    .Sum(x => x.Amount ?? 0m) ?? 0m;
+                    .Sum(x => x.Amount ?? 0m)
+                ?? 0m;
+
 
             decimal currentPartsAmount =
                 currentRecord.ServiceParts?
-                    .Sum(x => x.UnitPrice ?? 0m) ?? 0m;
+                    .Sum(x => x.Total ?? 0m)
+                ?? 0m;
 
 
-            decimal currentTotalAmount =
-                currentChargeAmount +
-                currentExpenseAmount +
-                currentPartsAmount;
+            // ==========================================
+            // CURRENT SERVICE TOTAL
+            // IMPORTANT:
+            // Use ServiceCost as the official total
+            // ==========================================
+
+            decimal currentServiceAmount =
+                currentRecord.ServiceCost ?? 0m;
+
+
+            // ==========================================
+            // PREVIOUS UNPAID / REMAINING RECORDS
+            // ==========================================
 
             decimal previousRemainingAmount = 0m;
+
 
             var previousRecords = records
                 .Where(r => r.Id != currentRecord.Id)
@@ -73,58 +100,79 @@ namespace AirConServicingManagementSystem.Controllers
 
             foreach (var record in previousRecords)
             {
-                decimal chargeAmount =
-                    record.ServiceCharges?
-                        .Sum(x => x.Amount ?? 0m) ?? 0m;
-
-                decimal expenseAmount =
-                    record.ServiceExpenses?
-                        .Sum(x => x.Amount ?? 0m) ?? 0m;
-
-                decimal partsAmount =
-                    record.ServiceParts?
-                        .Sum(x => x.UnitPrice ?? 0m) ?? 0m;
+                decimal serviceCost =
+                    record.ServiceCost ?? 0m;
 
 
-                decimal serviceTotal =
-                    chargeAmount +
-                    expenseAmount +
-                    partsAmount;
-
-                decimal paidAmount = await _context.Payments
-                    .Where(p =>
-                        p.ServiceRecordId == record.Id &&
-                        p.IsDeleted == false)
-                    .SumAsync(p => p.PaidAmount ?? 0m);
+                decimal paidAmount =
+                    await _context.Payments
+                        .Where(p =>
+                            p.ServiceRecordId == record.Id &&
+                            p.IsDeleted == false)
+                        .SumAsync(p =>
+                            p.Amount ?? 0m);
 
 
                 decimal remaining =
-                    Math.Max(serviceTotal - paidAmount, 0m);
+                    Math.Max(
+                        serviceCost - paidAmount,
+                        0m
+                    );
 
 
-                previousRemainingAmount += remaining;
+                previousRemainingAmount +=
+                    remaining;
             }
 
-            decimal totalAmount =
-                currentTotalAmount +
+
+            // ==========================================
+            // TOTAL PAYABLE
+            // ==========================================
+
+            decimal totalPayable =
+                currentServiceAmount +
                 previousRemainingAmount;
+
+
+            // ==========================================
+            // CREATE VIEW MODEL
+            // ==========================================
 
             var model = new PaymentViewModel
             {
-                ServiceRecordId = currentRecord.Id,
+                ServiceRecordId =
+                    currentRecord.Id,
 
-                Amount = totalAmount,
+                Amount =
+                    totalPayable,
 
-                InvoiceNo = $"INV-{DateTime.Now:yyyyMMddHHmmss}"
+                InvoiceNo =
+                    $"INV-{DateTime.Now:yyyyMMddHHmmss}"
             };
 
-            ViewBag.CurrentServiceAmount = currentTotalAmount;
-            ViewBag.PreviousRemainingAmount = previousRemainingAmount;
-            ViewBag.TotalAmount = totalAmount;
 
-            ViewBag.CurrentChargeAmount = currentChargeAmount;
-            ViewBag.CurrentExpenseAmount = currentExpenseAmount;
-            ViewBag.CurrentPartsAmount = currentPartsAmount;
+            // ==========================================
+            // SEND DATA TO VIEW
+            // ==========================================
+
+            ViewBag.CurrentServiceAmount =
+                currentServiceAmount;
+
+            ViewBag.PreviousRemainingAmount =
+                previousRemainingAmount;
+
+            ViewBag.TotalAmount =
+                totalPayable;
+
+            ViewBag.CurrentChargeAmount =
+                currentChargeAmount;
+
+            ViewBag.CurrentExpenseAmount =
+                currentExpenseAmount;
+
+            ViewBag.CurrentPartsAmount =
+                currentPartsAmount;
+
 
             return View(model);
         }
@@ -132,8 +180,8 @@ namespace AirConServicingManagementSystem.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-      PaymentViewModel model,
-      string? fileName)
+            PaymentViewModel model,
+            string? fileName)
         {
             if (!ModelState.IsValid)
             {
@@ -144,8 +192,12 @@ namespace AirConServicingManagementSystem.Controllers
             await using var transaction =
                 await _context.Database.BeginTransactionAsync();
 
+
             try
             {
+                // ==========================================
+                // GET CURRENT SERVICE RECORD
+                // ==========================================
 
                 var currentServiceRecord =
                     await _context.ServiceRecords
@@ -153,6 +205,7 @@ namespace AirConServicingManagementSystem.Controllers
                         .FirstOrDefaultAsync(x =>
                             x.Id == model.ServiceRecordId &&
                             x.IsDeleted != true);
+
 
                 if (currentServiceRecord == null)
                 {
@@ -163,14 +216,20 @@ namespace AirConServicingManagementSystem.Controllers
                 var serviceRequest =
                     currentServiceRecord.ServiceRequest;
 
+
                 if (serviceRequest == null)
                 {
                     return NotFound();
                 }
 
+
+                // ==========================================
+                // GET ALL SERVICE RECORDS
+                // SAME SERVICE REQUEST
+                // ==========================================
+
                 var serviceRecords =
                     await _context.ServiceRecords
-                        .Include(x => x.Payments)
                         .Where(x =>
                             x.ServiceRequestId ==
                                 serviceRequest.ServiceId &&
@@ -190,6 +249,11 @@ namespace AirConServicingManagementSystem.Controllers
                     );
                 }
 
+
+                // ==========================================
+                // CALCULATE TOTAL REMAINING
+                // ==========================================
+
                 decimal totalRemainingAmount = 0m;
 
 
@@ -199,24 +263,31 @@ namespace AirConServicingManagementSystem.Controllers
                         record.ServiceCost ?? 0m;
 
 
-                    // Sum actual paid money
                     decimal totalPaidForRecord =
-                        record.Payments?
-                            .Where(p => p.IsDeleted == false)
-                            .Sum(p => p.PaidAmount ?? 0m)
-                        ?? 0m;
+                        await _context.Payments
+                            .Where(p =>
+                                p.ServiceRecordId == record.Id &&
+                                p.IsDeleted == false)
+                            .SumAsync(p =>
+                                p.Amount ?? 0m);
 
 
-                    // Don't include change as actual payment
                     decimal remaining =
                         Math.Max(
-                            serviceCost - totalPaidForRecord,
+                            serviceCost -
+                            totalPaidForRecord,
                             0m
                         );
 
 
-                    totalRemainingAmount += remaining;
+                    totalRemainingAmount +=
+                        remaining;
                 }
+
+
+                // ==========================================
+                // NO REMAINING PAYMENT
+                // ==========================================
 
                 if (totalRemainingAmount <= 0)
                 {
@@ -229,50 +300,80 @@ namespace AirConServicingManagementSystem.Controllers
                     );
                 }
 
-                decimal paidAmount =
+
+                // ==========================================
+                // CUSTOMER CASH RECEIVED
+                // ==========================================
+
+                decimal customerPaidAmount =
                     model.PaidAmount;
 
-                if (paidAmount < totalRemainingAmount)
+
+                // ==========================================
+                // VALIDATE PAYMENT
+                // ==========================================
+
+                if (customerPaidAmount <
+                    totalRemainingAmount)
                 {
                     ModelState.AddModelError(
                         "PaidAmount",
-                        $"Paid amount must be at least {totalRemainingAmount:N0} MMK."
+                        $"Customer paid amount must be at least " +
+                        $"{totalRemainingAmount:N0} MMK."
                     );
+
 
                     model.Amount =
                         totalRemainingAmount;
 
+
                     return View(model);
                 }
 
+
+                // ==========================================
+                // CALCULATE CHANGE
+                // ==========================================
+
                 decimal changeAmount =
-                    Math.Max(
-                        paidAmount - totalRemainingAmount,
-                        0m
-                    );
+                    customerPaidAmount -
+                    totalRemainingAmount;
+
+
+                // ==========================================
+                // CREATE PAYMENT
+                // ==========================================
 
                 var payment = new Payment
                 {
+                    // Latest record used as invoice reference
                     ServiceRecordId =
                         currentServiceRecord.Id,
+
 
                     InvoiceNo =
                         model.InvoiceNo,
 
+
                     PaymentDate =
                         DateTime.Now,
+
 
                     PaymentMethod =
                         model.PaymentMethod,
 
+
+                    // Actual service amount
                     Amount =
                         totalRemainingAmount,
 
 
+                    // Actual amount used to pay service
                     PaidAmount =
-                        paidAmount,
+                        totalRemainingAmount,
 
 
+                    // Customer cash change
                     ChangeAmount =
                         changeAmount,
 
@@ -307,7 +408,8 @@ namespace AirConServicingManagementSystem.Controllers
 
                     PaymentSlip =
                         !string.IsNullOrEmpty(fileName)
-                            ? "/paymentslip/service/" + fileName
+                            ? "/paymentslip/service/" +
+                              fileName
                             : null,
 
 
@@ -330,41 +432,50 @@ namespace AirConServicingManagementSystem.Controllers
 
                 _context.Payments.Add(payment);
 
+
+                // ==========================================
+                // MARK ALL UNPAID RECORDS AS PAID
+                // ==========================================
+
                 foreach (var record in serviceRecords)
                 {
-                    decimal serviceCost =
-                        record.ServiceCost ?? 0m;
-
-
-                    decimal previousPaid =
-                        record.Payments?
-                            .Where(p => p.IsDeleted == false)
-                            .Sum(p => p.PaidAmount ?? 0m)
-                        ?? 0m;
-
-
-                    decimal remaining =
-                        Math.Max(
-                            serviceCost - previousPaid,
-                            0m
-                        );
-
-
-                    if (remaining <= 0)
+                    // Skip already paid records
+                    if (record.Status == "Paid")
                     {
-                        record.Status = "Paid";
-
-                        record.UpdatedAt =
-                            DateTime.Now;
+                        continue;
                     }
+
+
+                    record.Status =
+                        "Paid";
+
+
+                    record.UpdatedAt =
+                        DateTime.Now;
                 }
+
+
+                // ==========================================
+                // UPDATE SERVICE REQUEST
+                // ==========================================
 
                 serviceRequest.PaymentStatus =
                     "Paid";
 
+
+                // ==========================================
+                // SAVE
+                // ==========================================
+
                 await _context.SaveChangesAsync();
 
+
                 await transaction.CommitAsync();
+
+
+                // ==========================================
+                // INVOICE
+                // ==========================================
 
                 return RedirectToAction(
                     "Invoice",
@@ -383,8 +494,11 @@ namespace AirConServicingManagementSystem.Controllers
         }
         public async Task<IActionResult> Invoice(int id)
         {
-            var payment = await _context.Payments
+            // ==========================================
+            // GET PAYMENT
+            // ==========================================
 
+            var payment = await _context.Payments
                 .Include(x => x.ServiceRecord)
                     .ThenInclude(x => x.Customer)
 
@@ -410,58 +524,113 @@ namespace AirConServicingManagementSystem.Controllers
                 .Include(x => x.ServiceRecord)
                     .ThenInclude(x => x.ServiceParts)
 
-                .FirstOrDefaultAsync(
-                    x => x.PaymentId == id &&
-                         x.IsDeleted == false
-                );
+                .FirstOrDefaultAsync(x =>
+                    x.PaymentId == id &&
+                    x.IsDeleted == false);
 
             if (payment == null)
             {
                 return NotFound();
             }
 
-            var record = payment.ServiceRecord;
 
             // ==========================================
-            // PAYMENT CALCULATION
+            // CURRENT RECORD
             // ==========================================
 
-            decimal chargeAmount =
-                record?.ServiceCharges?.Sum(x => x.Amount ?? 0m) ?? 0m;
+            var currentRecord = payment.ServiceRecord;
 
-            decimal expenseAmount =
-                record?.ServiceExpenses?.Sum(x => x.Amount ?? 0m) ?? 0m;
+            if (currentRecord == null)
+            {
+                return NotFound();
+            }
 
-            decimal partsAmount =
-                record?.ServiceParts?.Sum(x => x.UnitPrice ?? 0m) ?? 0m;
 
-            // Total Service Cost
-            // Charges + Expenses + Parts
-            decimal totalServiceCost =
-                chargeAmount +
-                expenseAmount +
-                partsAmount;
+            // ==========================================
+            // GET ALL SERVICE RECORDS
+            // SAME SERVICE REQUEST
+            // ==========================================
+
+            var records = await _context.ServiceRecords
+
+                .Where(x =>
+                    x.ServiceRequestId ==
+                        currentRecord.ServiceRequestId &&
+                    x.IsDeleted != true)
+
+                .Include(x => x.ServiceCharges)
+                .Include(x => x.ServiceExpenses)
+                .Include(x => x.ServiceParts)
+
+                .OrderBy(x => x.CreatedAt)
+
+                .ToListAsync();
+
+            decimal totalServiceCost = 0m;
+
+            decimal totalChargeAmount = 0m;
+
+            decimal totalExpenseAmount = 0m;
+
+            decimal totalPartsAmount = 0m;
+
+
+            foreach (var record in records)
+            {
+                totalChargeAmount +=
+                    record.ServiceCharges?
+                        .Sum(x => x.Amount ?? 0m) ?? 0m;
+
+                totalExpenseAmount +=
+                    record.ServiceExpenses?
+                        .Sum(x => x.Amount ?? 0m) ?? 0m;
+
+                totalPartsAmount +=
+                    record.ServiceParts?
+                        .Sum(x => x.UnitPrice ?? 0m) ?? 0m;
+            }
+
+
+            totalServiceCost =
+                totalChargeAmount +
+                totalExpenseAmount +
+                totalPartsAmount;
 
             decimal paidAmount =
                 payment.PaidAmount ?? 0m;
 
+
             decimal remainingAmount =
-                Math.Max(totalServiceCost - paidAmount, 0m);
+                Math.Max(
+                    totalServiceCost - paidAmount,
+                    0m
+                );
+
 
             decimal changeAmount =
                 payment.ChangeAmount ?? 0m;
 
+            ViewBag.ChargeAmount =
+                totalChargeAmount;
 
-            // ==========================================
-            // VIEW BAG
-            // ==========================================
-            ViewBag.ChargeAmount = chargeAmount;
-            ViewBag.ExpenseAmount = expenseAmount;
-            ViewBag.PartsAmount = partsAmount;
-            ViewBag.TotalServiceCost = totalServiceCost;
-            ViewBag.PaidAmount = paidAmount;
-            ViewBag.RemainingAmount = remainingAmount;
-            ViewBag.ChangeAmount = changeAmount;
+            ViewBag.ExpenseAmount =
+                totalExpenseAmount;
+
+            ViewBag.PartsAmount =
+                totalPartsAmount;
+
+            ViewBag.TotalServiceCost =
+                totalServiceCost;
+
+            ViewBag.PaidAmount =
+                paidAmount;
+
+            ViewBag.RemainingAmount =
+                remainingAmount;
+
+            ViewBag.ChangeAmount =
+                changeAmount;
+
 
             return View(payment);
         }

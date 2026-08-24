@@ -246,39 +246,84 @@ namespace AirConServicingManagementSystem.Controllers
             var service = await _context.ServiceRequests
                 .Include(x => x.Customer)
                 .Include(x => x.Technician)
+
                 .Include(x => x.AirConUnits)
                     .ThenInclude(x => x.Brand)
+
                 .Include(x => x.AirConUnits)
                     .ThenInclude(x => x.Model)
-                .FirstOrDefaultAsync(x => x.AppointmentId == appointmentId);
+
+                .FirstOrDefaultAsync(x =>
+                    x.AppointmentId == appointmentId);
 
             if (service == null)
+            {
                 return NotFound();
+            }
 
 
-            var record = await _context.ServiceRecords
+            // ==========================================
+            // GET ALL SERVICE RECORDS
+            // ==========================================
+
+            var records = await _context.ServiceRecords
+
+                .Where(x =>
+                    x.ServiceRequestId == service.ServiceId &&
+                    x.IsDeleted != true)
+
                 .Include(x => x.ServiceRecordUnits)
                     .ThenInclude(x => x.AirConUnit)
                         .ThenInclude(x => x.Brand)
+
                 .Include(x => x.ServiceRecordUnits)
                     .ThenInclude(x => x.AirConUnit)
                         .ThenInclude(x => x.Model)
+
                 .Include(x => x.ServiceParts)
+
                 .Include(x => x.ServiceCharges)
+
                 .Include(x => x.ServiceExpenses)
-                .FirstOrDefaultAsync(x =>
-                    x.ServiceRequestId == service.ServiceId);
+
+                .OrderBy(x => x.CreatedAt)
+
+                .ToListAsync();
 
 
-            var payment = record == null
-                ? null
-                : await _context.Payments
-                    .FirstOrDefaultAsync(x =>
-                        x.ServiceRecordId == record.Id);
+            // ==========================================
+            // PAYMENT
+            // ==========================================
+
+            var payments = await _context.Payments
+
+                .Where(x =>
+                    x.ServiceRecord.ServiceRequestId ==
+                        service.ServiceId &&
+                    x.IsDeleted == false)
+
+                .OrderByDescending(x => x.PaymentDate)
+
+                .ToListAsync();
 
 
-            ViewBag.Record = record;
-            ViewBag.Payment = payment;
+            // ==========================================
+            // VIEWBAG
+            // ==========================================
+
+            ViewBag.Records = records;
+
+            ViewBag.Payments = payments;
+
+            // Keep latest payment for existing UI
+            ViewBag.Payment =
+                payments.FirstOrDefault();
+
+
+            // Keep latest record for existing UI
+            ViewBag.Record =
+                records.LastOrDefault();
+
 
             return View(service);
         }
