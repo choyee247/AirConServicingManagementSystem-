@@ -266,8 +266,7 @@ namespace AirConServicingManagementSystem.Controllers
             // GET ALL SERVICE RECORDS
             // ==========================================
 
-            var records = await _context.ServiceRecords
-
+            var record = await _context.ServiceRecords
                 .Where(x =>
                     x.ServiceRequestId == service.ServiceId &&
                     x.IsDeleted != true)
@@ -296,10 +295,8 @@ namespace AirConServicingManagementSystem.Controllers
             // ==========================================
 
             var payments = await _context.Payments
-
                 .Where(x =>
-                    x.ServiceRecord.ServiceRequestId ==
-                        service.ServiceId &&
+                    x.ServiceRecord.ServiceRequestId == service.ServiceId &&
                     x.IsDeleted == false)
 
                 .OrderByDescending(x => x.PaymentDate)
@@ -311,18 +308,12 @@ namespace AirConServicingManagementSystem.Controllers
             // VIEWBAG
             // ==========================================
 
-            ViewBag.Records = records;
+            ViewBag.Records = record;
 
             ViewBag.Payments = payments;
 
-            // Keep latest payment for existing UI
             ViewBag.Payment =
                 payments.FirstOrDefault();
-
-
-            // Keep latest record for existing UI
-            ViewBag.Record =
-                records.LastOrDefault();
 
 
             return View(service);

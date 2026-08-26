@@ -4,10 +4,28 @@
     ViewData["Title"] = "Service Details";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 
-    ServiceRecord? record = ViewBag.Record as ServiceRecord;
+    // ==========================================
+    // ALL SERVICE RECORDS
+    // ==========================================
+
+    var record =
+        ViewBag.Records as List<AirConServicingManagementSystem.Models.ServiceRecord>
+        ?? new List<AirConServicingManagementSystem.Models.ServiceRecord>();
+
+
     Payment? payment = ViewBag.Payment as Payment;
 
+
+    // ==========================================
+    // SERVICE STATUS
+    // ==========================================
+
     var serviceStatus = Model.Status?.Trim() ?? "Unknown";
+
+
+    // ==========================================
+    // PAYMENT CALCULATION
+    // ==========================================
 
     decimal totalAmount = 0;
     decimal paidAmount = 0;
@@ -26,9 +44,10 @@
             remainingAmount = 0;
     }
 
-    // =========================
-    // SERVICE STATUS
-    // =========================
+
+    // ==========================================
+    // STATUS
+    // ==========================================
 
     string statusClass = "status-default";
     string statusIcon = "fa-info-circle";
@@ -81,9 +100,10 @@
             break;
     }
 
-    // =========================
+
+    // ==========================================
     // PAYMENT STATUS
-    // =========================
+    // ==========================================
 
     string paymentStatus = "Unpaid";
 
@@ -108,52 +128,47 @@
     }
 
 
-    // =====================================================
-    // SERVICE RECORD UNIT LIST
-    // Avoid RuntimeBinderException from dynamic collection
-    // =====================================================
+    // ==========================================
+    // ALL SERVICE RECORD UNITS
+    // ==========================================
 
-    var serviceUnits = new List<AirConServicingManagementSystem.Models.ServiceRecordUnit>();
-
-    if (record?.ServiceRecordUnits != null)
-    {
-        serviceUnits =
-            ((IEnumerable<AirConServicingManagementSystem.Models.ServiceRecordUnit>)
-            record.ServiceRecordUnits).ToList();
-    }
+    var serviceUnits = record
+        .Where(r => r.ServiceRecordUnits != null)
+        .SelectMany(r => r.ServiceRecordUnits)
+        .ToList();
 
 
-    // =====================================================
-    // COST BREAKDOWN
-    // =====================================================
+    // ==========================================
+    // OVERALL COST
+    // ALL SERVICE RECORDS
+    // ==========================================
 
-    decimal chargeAmount = 0;
-    decimal expenseAmount = 0;
-    decimal partsAmount = 0;
+    decimal chargeAmount = record
+        .SelectMany(r =>
+            r.ServiceCharges ??
+            Enumerable.Empty<ServiceCharge>())
+        .Sum(x => x.Amount ?? 0);
 
-    if (record?.ServiceCharges != null)
-    {
-        chargeAmount = record.ServiceCharges.Sum(x => x.Amount ?? 0);
-    }
 
-    if (record?.ServiceExpenses != null)
-    {
-        expenseAmount = record.ServiceExpenses.Sum(x => x.Amount ?? 0);
-    }
+    decimal expenseAmount = record
+        .SelectMany(r =>
+            r.ServiceExpenses ??
+            Enumerable.Empty<ServiceExpense>())
+        .Sum(x => x.Amount ?? 0);
 
-    if (record?.ServiceParts != null)
-    {
-        partsAmount = record.ServiceParts.Sum(x => x.UnitPrice ?? 0);
-    }
 
-    decimal calculatedServiceCost =
-        chargeAmount + expenseAmount + partsAmount;
+    decimal partsAmount = record
+        .SelectMany(r =>
+            r.ServiceParts ??
+            Enumerable.Empty<ServicePart>())
+        .Sum(x => x.Total ?? 0);
 
-    // If ServiceCost is already stored, use it as the total.
+
     decimal displayServiceCost =
-        record?.ServiceCost ?? calculatedServiceCost;
+        chargeAmount +
+        expenseAmount +
+        partsAmount;
 }
-
 
 <div class="service-page">
 
@@ -355,7 +370,7 @@
                     <div class="info-row">
                         <span>Service Date</span>
                         <strong>
-                            @(record?.CreatedAt?.ToString("dd MMM yyyy") ?? "-")
+                            @(record.LastOrDefault()?.CreatedAt?.ToString("dd MMM yyyy") ?? "-")
                         </strong>
                     </div>
 
@@ -508,6 +523,11 @@
 
                 foreach (var unitRecord in serviceUnits)
                 {
+                    var unitParts = record
+                    .SelectMany(r => r.ServiceParts ?? Enumerable.Empty<ServicePart>())
+                    .Where(p => p.AirConUnitId == unitRecord.AirConUnitId)
+                    .ToList();
+
                     <div class="unit-report-card">
 
                         <!-- UNIT HEADER -->
@@ -592,12 +612,11 @@
 
                                 <div class="report-value parts-value">
 
-                                    @if (record?.ServiceParts != null &&
-                                                                record.ServiceParts.Any())
+                                    @if (unitParts.Any())
                                     {
                                         <div class="parts-list">
 
-                                            @foreach (var part in record.ServiceParts)
+                                            @foreach (var part in unitParts)
                                             {
                                                 <span class="part-chip">
 
@@ -614,8 +633,11 @@
                                     }
                                     else
                                     {
-                                        <span class="empty-text">No parts replaced</span>
+                                        <span class="empty-text">
+                                            No parts replaced
+                                        </span>
                                     }
+
 
                                 </div>
 

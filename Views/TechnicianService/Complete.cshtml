@@ -951,6 +951,9 @@
                                                class="form-check-input aircon-selector"
                                                data-index="@i"
                                                data-target="service_@i"
+                                               data-ac-ids="@string.Join(",", unit.AirConUnitIds)"
+                                               data-brand="@unit.BrandName"
+                                               data-model="@unit.ModelName"
                                                @(unit.IsSelected ? "checked" : "") />
 
                                         <div class="aircon-card-header">
@@ -1041,11 +1044,27 @@
                                         <p><strong class="text-danger">Remaining:</strong> <span id="remaining_@i">@unit.RemainingQuantity</span></p>
                                         <label class="fw-bold" style="min-width:120px;">Today's Qty</label>
 
-                                        <input type="number" class="service-qty-input" name="Units[@i].ServiceQuantity"
+                                      @*   <input type="number" class="service-qty-input" name="Units[@i].ServiceQuantity"
                                                value="0" min="0" max="@unit.RemainingQuantity"
                                                data-total="@unit.TotalQuantity" data-completed="@unit.CompletedQuantity"
                                                data-completed-id="completed_@i" data-remaining-id="remaining_@i"
-                                               data-summary-completed-id="summary_completed_@i" data-summary-remaining-id="summary_remaining_@i" />
+                                               data-summary-completed-id="summary_completed_@i" data-summary-remaining-id="summary_remaining_@i" /> *@
+
+                                        <input type="number"
+                                               class="service-qty-input"
+                                               name="Units[@i].ServiceQuantity"
+                                               value="0"
+                                               min="0"
+                                               max="@unit.RemainingQuantity"
+                                               data-total="@unit.TotalQuantity"
+                                               data-completed="@unit.CompletedQuantity"
+                                               data-completed-id="completed_@i"
+                                               data-remaining-id="remaining_@i"
+                                               data-summary-completed-id="summary_completed_@i"
+                                               data-summary-remaining-id="summary_remaining_@i"
+                                               data-ac-ids="@string.Join(",", unit.AirConUnitIds)"
+                                               data-brand="@unit.BrandName"
+                                               data-model="@unit.ModelName" />
 
                                         <input type="hidden"
                                                name="Units[@i].TotalQuantity"
@@ -1141,6 +1160,9 @@
                                                class="form-check-input aircon-selector"
                                                data-index="@i"
                                                data-target="service_@i"
+                                               data-ac-ids="@string.Join(",", unit.AirConUnitIds)"
+                                               data-brand="@unit.BrandName"
+                                               data-model="@unit.ModelName"
                                                @(unit.IsSelected ? "checked" : "") />
 
                                         <div class="aircon-card-header">
@@ -1272,10 +1294,26 @@
                                         <p><strong class="text-success">Completed:</strong> <span id="completed_@i">@unit.CompletedQuantity</span></p>
                                         <p><strong class="text-danger">Remaining:</strong> <span id="remaining_@i">@unit.RemainingQuantity</span></p>
                                         <label class="fw-bold" style="min-width:120px;">Today's Qty</label>
-                                        <input type="number" class="service-qty-input" name="Units[@i].ServiceQuantity" value="0" min="0" max="@unit.RemainingQuantity"
+                                       @*  <input type="number" class="service-qty-input" name="Units[@i].ServiceQuantity" value="0" min="0" max="@unit.RemainingQuantity"
                                                data-total="@unit.TotalQuantity" data-completed="@unit.CompletedQuantity"
                                                data-completed-id="completed_@i" data-remaining-id="remaining_@i"
-                                               data-summary-completed-id="summary_completed_@i" data-summary-remaining-id="summary_remaining_@i" />
+                                               data-summary-completed-id="summary_completed_@i" data-summary-remaining-id="summary_remaining_@i" /> *@
+                                               <input type="number"
+                                                   class="service-qty-input"
+                                                   name="Units[@i].ServiceQuantity"
+                                                   value="0"
+                                                   min="0"
+                                                   max="@unit.RemainingQuantity"
+                                                   data-total="@unit.TotalQuantity"
+                                                   data-completed="@unit.CompletedQuantity"
+                                                   data-completed-id="completed_@i"
+                                                   data-remaining-id="remaining_@i"
+                                                   data-summary-completed-id="summary_completed_@i"
+                                                   data-summary-remaining-id="summary_remaining_@i"
+                                                   data-ac-ids="@string.Join(",", unit.AirConUnitIds)"
+                                                   data-brand="@unit.BrandName"
+                                                   data-model="@unit.ModelName" />
+
                                         <input type="hidden"
                                                name="Units[@i].TotalQuantity"
                                                value="@unit.TotalQuantity" />
@@ -1426,55 +1464,83 @@
                         <tbody>
 
                             <tr>
+
                                 <td>
-                                  @*   <input type="hidden"
-                                           name="Parts[0].AirConUnitId"
-                                           value="0" /> *@
-                                    <input type="hidden"
-                                           name="Parts[0].AirConUnitId"
-                                           class="part-aircon-id" />
+                                    <select name="Parts[${partIndex}].AirConUnitId"
+                                            class="form-control part-aircon-id">
+
+                                        <option value="">-- Select AC --</option>
+
+                                    </select>
+                                 @*    <select name="Parts[0].AirConUnitId"
+                                            class="form-control part-aircon-id">
+
+                                        <option value="">-- Select AC --</option>
+
+                                        @foreach (var unit in Model.Units.Where(x => x.IsSelected))
+                                        {
+                                            foreach (var acId in unit.AirConUnitIds)
+                                            {
+                                                <option value="@acId">
+                                                    @unit.BrandName - @unit.ModelName
+                                                </option>
+                                            }
+                                        }
+
+                                    </select> *@
+                                </td>
+
+                                <td>
 
                                     <input type="text"
                                            name="Parts[0].PartName"
                                            class="form-control"
-                                           placeholder="Capacitor" />
+                                           placeholder="Part Name" />
+
                                 </td>
 
                                 <td>
+
                                     <input type="number"
                                            name="Parts[0].Quantity"
                                            class="form-control qty"
                                            value="1"
                                            min="1" />
+
                                 </td>
 
                                 <td>
+
                                     <input type="number"
                                            name="Parts[0].UnitPrice"
                                            class="form-control price"
                                            placeholder="0000"
                                            min="0"
                                            step="0.01" />
+
                                 </td>
 
                                 <td>
+
                                     <input type="text"
                                            class="form-control total"
                                            readonly />
+
                                 </td>
 
                                 <td>
+
                                     <button type="button"
                                             class="btn btn-danger"
                                             onclick="removeRow(this)">
                                         ✕
                                     </button>
+
                                 </td>
 
                             </tr>
 
                         </tbody>
-
                     </table>
 
                     <button type="button"
@@ -1864,21 +1930,26 @@
         // ADD PART
         // ==========================================
 
-        function addPartRow() {
+               function addPartRow() {
 
-            let table =
-                document.querySelector("#partsTable tbody");
-
+            let table = document.querySelector("#partsTable tbody");
 
             let row = `
                 <tr>
 
                     <td>
 
+                        <select name="Parts[${partIndex}].AirConUnitId"
+                                class="form-control part-aircon-id">
 
-        <input type="hidden"
-               name="Parts[${partIndex}].AirConUnitId"
-               class="part-aircon-id" />
+                            <option value="">-- Select AC --</option>
+
+                        </select>
+
+                    </td>
+
+
+                    <td>
 
                         <input type="text"
                                class="form-control"
@@ -1903,7 +1974,7 @@
 
                         <input type="number"
                                class="form-control price"
-                               value="0"
+                               placeholder="0000"
                                min="0"
                                step="0.01"
                                name="Parts[${partIndex}].UnitPrice" />
@@ -1943,6 +2014,9 @@
 
 
             partIndex++;
+
+            // Add selected ACs to the new dropdown
+            updateAllPartsDropdowns();
 
             calculateInvoice();
         }
@@ -2235,7 +2309,8 @@
             "problemPhotos",
             "problemPreview");
 
-           document.querySelectorAll(".aircon-selector").forEach(check => {
+
+        document.querySelectorAll(".aircon-selector").forEach(check => {
 
             const index = check.dataset.index;
             const hidden = document.getElementById("selected_" + index);
@@ -2258,9 +2333,78 @@
                     card.classList.add("d-none");
                 }
 
+                updateAllPartsDropdowns();
             });
 
         });
+
+
+                function updateAllPartsDropdowns() {
+
+            const selectedACs = [];
+
+            document.querySelectorAll(".service-qty-input")
+                .forEach(input => {
+
+                    const qty = parseInt(input.value) || 0;
+
+                    if (qty <= 0)
+                        return;
+
+                    const acIds = (input.dataset.acIds || "")
+                        .split(",")
+                        .filter(x => x.trim() !== "");
+
+                    const brand = input.dataset.brand || "";
+                    const model = input.dataset.model || "";
+
+                    const selectedIds = acIds.slice(0, qty);
+
+                    selectedIds.forEach(acId => {
+
+                        selectedACs.push({
+                            id: acId.trim(),
+                            text: `AC #${acId.trim()} | ${brand} ${model}`
+                        });
+
+                    });
+
+                });
+
+
+            document.querySelectorAll(".part-aircon-id")
+                .forEach(select => {
+
+                    const currentValue = select.value;
+
+                    select.innerHTML =
+                        `<option value="">-- Select AC --</option>`;
+
+                    selectedACs.forEach(ac => {
+
+                        const option =
+                            document.createElement("option");
+
+                        option.value = ac.id;
+                        option.textContent = ac.text;
+
+                        select.appendChild(option);
+
+                    });
+
+                    if (
+                        [...select.options]
+                            .some(option => option.value === currentValue)
+                    ) {
+                        select.value = currentValue;
+                    }
+
+                });
+        }
+
+
+        // Page Load
+        updateAllPartsDropdowns();
 
         document.querySelectorAll(".service-qty-input").forEach(input => {
           input.addEventListener("input", function() {
@@ -2278,6 +2422,9 @@
             document.getElementById(this.dataset.remainingId).innerText = newRemaining;
             document.getElementById(this.dataset.summaryCompletedId).innerText = newCompleted;
             document.getElementById(this.dataset.summaryRemainingId).innerText = newRemaining;
+
+             updateAllPartsDropdowns();
+
           });
         });
     </script>

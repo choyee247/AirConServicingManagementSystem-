@@ -959,6 +959,19 @@ public class TechnicianServiceController : Controller
                 service.Status;
         }
 
+        service.Status = "Completed";
+
+        var schedulePlans = await _context.TechnicianSchedulePlans
+            .Where(x =>
+                x.TechnicianId == techId &&
+                x.ServiceRequestId == service.ServiceId)
+            .ToListAsync();
+
+        foreach (var plan in schedulePlans)
+        {
+            plan.Status = "Completed";
+        }
+
         await _context.SaveChangesAsync();
 
         TempData["Success"] =
@@ -1264,6 +1277,7 @@ public class TechnicianServiceController : Controller
             return RedirectToAction("Login", "Login");
 
         var today = DateTime.Today;
+        var tomorrow = today.AddDays(1);
 
         var plans = await _context.TechnicianSchedulePlans
             .Include(p => p.Customer)
@@ -1274,19 +1288,34 @@ public class TechnicianServiceController : Controller
 
         var vm = new MyScheduleVM
         {
-            Plans = plans ?? new List<TechnicianSchedulePlan>(),
+            Plans = plans,
 
-            TodayCount = plans.Count(x => x.PlannedDate.Date == today),
-            UpcomingCount = plans.Count(x => x.PlannedDate > today),
-            HighPriorityCount = plans.Count(x => x.Priority == "High"),
-            CompletedCount = plans.Count(x => x.Status == "Completed"),
+            TodayCount = plans.Count(x =>
+                x.PlannedDate >= today &&
+                x.PlannedDate < tomorrow),
+
+            UpcomingCount = plans.Count(x =>
+                x.PlannedDate >= tomorrow &&
+                x.Status != "Completed"),
+
+            HighPriorityCount = plans.Count(x =>
+                x.Priority == "High" &&
+                x.Status != "Completed"),
+
+            CompletedCount = plans.Count(x =>
+                x.Status == "Completed"),
+
             TodayJobs = plans
-            .Where(x => x.PlannedDate.Date == today)
-            .ToList()
-            };
+                .Where(x =>
+                    x.PlannedDate >= today &&
+                    x.PlannedDate < tomorrow)
+                .OrderBy(x => x.PlannedDate)
+                .ToList()
+        };
 
         return View(vm);
     }
+
     //[HttpPost]
     //[ValidateAntiForgeryToken]
     //public async Task<IActionResult> Complete(

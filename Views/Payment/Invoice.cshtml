@@ -4,6 +4,30 @@
     ViewData["Title"] = "Invoice";
     Layout = null;
 
+    var allRecords =
+        ViewBag.AllServiceRecords as List<ServiceRecord>
+        ?? new List<ServiceRecord>();
+
+
+    var allUnits = allRecords
+        .SelectMany(x => x.ServiceRecordUnits ?? new List<ServiceRecordUnit>())
+        .ToList();
+
+
+    var allParts = allRecords
+        .SelectMany(x => x.ServiceParts ?? new List<ServicePart>())
+        .ToList();
+
+
+    var allExpenses = allRecords
+        .SelectMany(x => x.ServiceExpenses ?? new List<ServiceExpense>())
+        .ToList();
+
+
+    var allCharges = allRecords
+        .SelectMany(x => x.ServiceCharges ?? new List<ServiceCharge>())
+        .ToList();
+
     var chargeAmount = ViewBag.ChargeAmount ?? 0m;
     var expenseAmount = ViewBag.ExpenseAmount ?? 0m;
     var partsAmount = ViewBag.PartsAmount ?? 0m;
@@ -1212,7 +1236,7 @@
                                 var no = 1;
                             }
 
-                            @foreach (var item in Model.ServiceRecord.ServiceRecordUnits)
+                            @foreach (var item in allUnits)
                             {
 
                                 <tr>
@@ -1260,8 +1284,7 @@
 
                 </div>
 
-                @if (Model.ServiceRecord?.ServiceParts != null &&
-                                Model.ServiceRecord.ServiceParts.Any())
+                @if (allParts.Any())
                 {
                     <div class="section-header parts-section">
 
@@ -1301,7 +1324,7 @@
                                     var partNo = 1;
                                 }
 
-                                @foreach (var part in Model.ServiceRecord.ServiceParts)
+                                @foreach (var part in allParts)
                                 {
 
                                     <tr>
@@ -1331,8 +1354,8 @@
 
                     </div>
                 }
-                @if (Model.ServiceRecord?.ServiceExpenses != null &&
-                                Model.ServiceRecord.ServiceExpenses.Any())
+
+                @if (allExpenses.Any())
                 {
                     <div class="section-header">
 
@@ -1372,7 +1395,7 @@
                                     var expenseNo = 1;
                                 }
 
-                                @foreach (var expense in Model.ServiceRecord.ServiceExpenses)
+                                @foreach (var expense in allExpenses)
                                 {
 
                                     <tr>
@@ -1400,8 +1423,9 @@
 
                     </div>
                 }
-                @if (Model.ServiceRecord?.ServiceCharges != null &&
-                                Model.ServiceRecord.ServiceCharges.Any())
+
+                @if (allCharges.Any())
+
                 {
                     <div class="section-header">
 
@@ -1441,7 +1465,7 @@
                                     var chargeNo = 1;
                                 }
 
-                                @foreach (var charge in Model.ServiceRecord.ServiceCharges)
+                                @foreach (var charge in allCharges)
                                 {
 
                                     <tr>
@@ -1469,6 +1493,7 @@
 
                     </div>
                 }
+
                 <!-- PAYMENT + QR -->
 
                 <div class="bottom-grid">
@@ -1514,23 +1539,6 @@
 
 
                         <div class="payment-body">
-
-
-                            <!-- SERVICE COST -->
-
-                           @*  <div class="payment-row">
-
-                                <span>
-                                    <i class="fas fa-tools me-2"></i>
-                                    Service Cost
-                                </span>
-
-                                <strong>
-                                    @serviceCost.ToString("N0") MMK
-                                </strong>
-
-                            </div> *@
-
 
                             <!-- ADDITIONAL CHARGES -->
 

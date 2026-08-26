@@ -553,18 +553,28 @@ namespace AirConServicingManagementSystem.Controllers
 
             var records = await _context.ServiceRecords
 
-                .Where(x =>
-                    x.ServiceRequestId ==
-                        currentRecord.ServiceRequestId &&
-                    x.IsDeleted != true)
+              .Where(x =>
+                  x.ServiceRequestId ==
+                      currentRecord.ServiceRequestId &&
+                  x.IsDeleted != true)
 
-                .Include(x => x.ServiceCharges)
-                .Include(x => x.ServiceExpenses)
-                .Include(x => x.ServiceParts)
+              .Include(x => x.ServiceRecordUnits)
+                  .ThenInclude(x => x.AirConUnit)
+                      .ThenInclude(x => x.Brand)
 
-                .OrderBy(x => x.CreatedAt)
+              .Include(x => x.ServiceRecordUnits)
+                  .ThenInclude(x => x.AirConUnit)
+                      .ThenInclude(x => x.Model)
 
-                .ToListAsync();
+              .Include(x => x.ServiceCharges)
+
+              .Include(x => x.ServiceExpenses)
+
+              .Include(x => x.ServiceParts)
+
+              .OrderBy(x => x.CreatedAt)
+
+              .ToListAsync();
 
             decimal totalServiceCost = 0m;
 
@@ -631,7 +641,7 @@ namespace AirConServicingManagementSystem.Controllers
             ViewBag.ChangeAmount =
                 changeAmount;
 
-
+            ViewBag.AllServiceRecords = records;
             return View(payment);
         }
         public async Task<IActionResult> DownloadInvoicePdf(int id)

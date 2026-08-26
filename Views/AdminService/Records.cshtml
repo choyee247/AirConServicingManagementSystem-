@@ -462,36 +462,59 @@
 
                             <td>
 
-
-                                @if (item.ServiceRecord?.Status == "Completed")
+                                @switch (item.ServiceRecord?.Status)
                                 {
+                                    case "Paid":
 
-                                    <span class="badge rounded-pill bg-success px-3 py-2">
+                                        <span class="badge rounded-pill bg-success px-3 py-2">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            Paid
+                                        </span>
 
-                                        <i class="fas fa-check-circle me-1"></i>
+                                        break;
 
-                                        Completed
 
-                                    </span>
+                                    case "Completed":
 
+                                        <span class="badge rounded-pill bg-primary px-3 py-2">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            Completed
+                                        </span>
+
+                                        break;
+
+
+                                    case "Unpaid":
+
+                                        <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Unpaid
+                                        </span>
+
+                                        break;
+
+
+                                    case "Remaining":
+
+                                        <span class="badge rounded-pill bg-info text-dark px-3 py-2">
+                                            <i class="fas fa-spinner me-1"></i>
+                                            Remaining
+                                        </span>
+
+                                        break;
+
+
+                                    default:
+
+                                        <span class="badge rounded-pill bg-secondary px-3 py-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            @(item.ServiceRecord?.Status ?? "Unknown")
+                                        </span>
+
+                                        break;
                                 }
-                                else
-                                {
-
-                                    <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
-
-                                        <i class="fas fa-spinner me-1"></i>
-
-                                        In Progress
-
-                                    </span>
-
-                                }
-
 
                             </td>
-
-
 
 
 
@@ -845,7 +868,7 @@
                             <div class="mb-3">
 
 
-                                @if (item.ServiceRecord?.Status == "Completed")
+                               @*  @if (item.ServiceRecord?.Status == "Completed")
                                 {
 
                                     <span class="badge bg-success rounded-pill px-3 py-2">
@@ -872,9 +895,59 @@
 
                                     </span>
 
+                                } *@
+
+                                @switch (item.ServiceRecord?.Status)
+                                {
+                                    case "Paid":
+
+                                        <span class="badge rounded-pill bg-success px-3 py-2">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            Paid
+                                        </span>
+
+                                        break;
+
+
+                                    case "Completed":
+
+                                        <span class="badge rounded-pill bg-primary px-3 py-2">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            Completed
+                                        </span>
+
+                                        break;
+
+
+                                    case "Unpaid":
+
+                                        <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Unpaid
+                                        </span>
+
+                                        break;
+
+
+                                    case "Remaining":
+
+                                        <span class="badge rounded-pill bg-info text-dark px-3 py-2">
+                                            <i class="fas fa-spinner me-1"></i>
+                                            Remaining
+                                        </span>
+
+                                        break;
+
+
+                                    default:
+
+                                        <span class="badge rounded-pill bg-secondary px-3 py-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            @(item.ServiceRecord?.Status ?? "Unknown")
+                                        </span>
+
+                                        break;
                                 }
-
-
                             </div>
 
 

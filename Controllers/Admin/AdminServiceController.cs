@@ -418,8 +418,15 @@ namespace AirConServicingManagementSystem.Controllers.Admin
                         .ThenInclude(x => x.Brand)
                 .Include(x => x.AirConUnit)
                         .ThenInclude(x => x.Model)
-                .Where(r => r.ServiceRecord.IsDeleted != true
-                         && r.ServiceRecord.TechnicianId == technicianId.Value);
+                 .Where(r =>
+                        r.ServiceRecord.IsDeleted != true &&
+                        r.ServiceRecord.TechnicianId == technicianId.Value &&
+                        (
+                            r.ServiceRecord.Status == "Completed" ||
+                            r.ServiceRecord.Status == "Paid" ||
+                            r.ServiceRecord.Status == "Unpaid"
+                        )
+                    );
 
             if (!string.IsNullOrEmpty(search))
             {
