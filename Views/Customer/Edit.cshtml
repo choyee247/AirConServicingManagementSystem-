@@ -1,71 +1,723 @@
-﻿@model AirConServicingManagementSystem.Models.Customer
+﻿@model AirConServicingManagementSystem.ViewsModels.CustomerLocationViewModel
+
 @{
+    ViewData["Title"] = "Edit Customer";
     Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
 }
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header" style="background-color:#2c8c99; color:white;">
-            <h2 class="mb-0">Edit Customer</h2>
-        </div>
-        <div class="card-body">
-            <form asp-action="Edit" method="post">
-                <input type="hidden" asp-for="Id" />
 
-                <div class="mb-3">
-                    <label asp-for="Name" class="form-label" style="color:#2c8c99;"></label>
-                    <input asp-for="Name" class="form-control border-primary" style="border-color:#2c8c99;" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                </div>
+<div class="modern-container">
 
-                <div class="mb-3">
-                    <label asp-for="Phone" class="form-label" style="color:#2c8c99;"></label>
-                    <input asp-for="Phone" class="form-control border-primary" style="border-color:#2c8c99;" />
-                    <span asp-validation-for="Phone" class="text-danger"></span>
-                </div>
+    <!-- ================= HEADER ================= -->
 
-              @*   <div class="mb-3">
-                    <label asp-for="Email" class="form-label" style="color:#2c8c99;"></label>
-                    <input asp-for="Email" class="form-control border-primary" style="border-color:#2c8c99;" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div> *@
+    <div class="form-header">
 
-                <div class="mb-3">
-                    <label asp-for="Address" class="form-label" style="color:#2c8c99;"></label>
-                    <textarea asp-for="Address" class="form-control border-primary" style="border-color:#2c8c99;"></textarea>
-                    <span asp-validation-for="Address" class="text-danger"></span>
-                </div>
+       @*  <div class="header-icon">
+            <i class="fas fa-user-edit"></i>
+        </div> *@
 
-                <button type="submit" class="btn btn-primary me-2"
-                        style="background-color:#2c8c99; border-color:#2c8c99;">
-                    Save
-                </button>
-                <a asp-action="Index" class="btn btn-secondary">Back</a>
-            </form>
-        </div>
+        <h1 class="form-title">
+            Edit Customer
+        </h1>
+
+        <p class="form-subtitle">
+            Update customer information and location details
+        </p>
+
     </div>
+
+
+    <!-- ================= FORM CARD ================= -->
+
+    <div class="form-card">
+
+        <form asp-action="Edit"
+              asp-route-id="@Model.Id"
+              method="post"
+              class="modern-form">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="Id" />
+
+
+            <!-- ================= CUSTOMER INFORMATION ================= -->
+
+            <div class="form-section">
+
+                <div class="section-header">
+
+                    <div class="section-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+
+                    <div>
+                        <h3 class="section-title">
+                            Customer Information
+                        </h3>
+
+                        <p class="section-description">
+                            Basic information about the customer
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- NAME -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label asp-for="Name" class="form-label">
+
+                            Full Name
+
+                            <span class="required-indicator">*</span>
+
+                        </label>
+
+                        <div class="input-with-icon">
+
+                            <i class="input-icon fas fa-user"></i>
+
+                            <input asp-for="Name"
+                                   class="modern-input"
+                                   placeholder="Enter customer's full name" />
+
+                        </div>
+
+                        <span asp-validation-for="Name"
+                              class="validation-message">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label asp-for="Phone" class="form-label">
+
+                            Phone Number
+
+                            <span class="required-indicator">*</span>
+
+                        </label>
+
+                        <div class="input-with-icon">
+
+                            <i class="input-icon fas fa-phone-alt"></i>
+
+                            <input asp-for="Phone"
+                                   class="modern-input"
+                                   placeholder="e.g. 09-123456789" />
+
+                        </div>
+
+                        <span asp-validation-for="Phone"
+                              class="validation-message">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= LOCATION ================= -->
+
+            <div class="form-section">
+
+                <div class="section-header">
+
+                    <div class="section-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+
+                    <div>
+                        <h3 class="section-title">
+                            Customer Location
+                        </h3>
+
+                        <p class="section-description">
+                            Update customer's location information
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- STATE + TOWNSHIP -->
+
+                <div class="form-row">
+
+                    <!-- STATE DIVISION -->
+
+                    <div class="form-group">
+
+                        <label asp-for="StateDivisionPkid"
+                               class="form-label">
+
+                            State Division
+
+                            <span class="required-indicator">*</span>
+
+                        </label>
+
+                        <div class="select-wrapper">
+
+                            <i class="select-icon fas fa-map"></i>
+
+                            <select asp-for="StateDivisionPkid"
+                                    asp-items="@(new SelectList(
+                                                                            Model.StateDivisions,
+                                                                            "StateDivisionPkid",
+                                                                            "StateDivisionEn",
+                                                                            Model.StateDivisionPkid))"
+                                    id="StateDivision"
+                                    class="modern-input">
+
+                                <option value="">
+                                    -- Select State Division --
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <span asp-validation-for="StateDivisionPkid"
+                              class="validation-message">
+                        </span>
+
+                    </div>
+
+
+                    <!-- TOWNSHIP -->
+
+                    <div class="form-group">
+
+                        <label asp-for="TownshipPkid"
+                               class="form-label">
+
+                            Township
+
+                            <span class="required-indicator">*</span>
+
+                        </label>
+
+                        <div class="select-wrapper">
+
+                            <i class="select-icon fas fa-map-pin"></i>
+
+                            <select asp-for="TownshipPkid"
+                                    id="Township"
+                                    class="modern-input">
+
+                                <option value="">
+                                    -- Select Township --
+                                </option>
+
+                                @foreach (var township in Model.Townships)
+                                {
+                                    <option value="@township.TownshipPkid">
+                                        @township.TownshipEn
+                                    </option>
+                                }
+
+                            </select>
+
+                        </div>
+
+                        <span asp-validation-for="TownshipPkid"
+                              class="validation-message">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="form-row">
+
+                    <div class="form-group full-width">
+
+                        <label asp-for="Address"
+                               class="form-label">
+
+                            Complete Address
+
+                            <span class="required-indicator">*</span>
+
+                        </label>
+
+                        <div class="input-with-icon textarea-wrapper">
+
+                            <i class="input-icon fas fa-map-marker-alt"></i>
+
+                            <textarea asp-for="Address"
+                                      class="modern-textarea"
+                                      rows="4"
+                                      placeholder="Enter customer's complete address"></textarea>
+
+                        </div>
+
+                        <span asp-validation-for="Address"
+                              class="validation-message">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= ACTIONS ================= -->
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn-primary">
+
+                    <i class="fas fa-save"></i>
+
+                    Save Changes
+
+                </button>
+
+
+                <a asp-action="Index"
+                   class="btn-secondary">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Cancel
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
 </div>
 
+
 @section Styles {
+
     <style>
-        /* Input focus state */
-        .form-control:focus {
-            border-color: #2c8c99;
-            box-shadow: 0 0 0 0.2rem rgba(44, 140, 153, 0.25);
+
+        :root {
+            --primary: #2c8c99;
+            --primary-dark: #23727d;
+            --primary-light: #eef8f9;
+            --border: #d9e8eb;
+            --secondary: #6c757d;
+            --text: #333;
+            --muted: #737b83;
+            --background: #f8fafb;
         }
 
-        /* Button hover & active state */
-        .btn-primary:hover {
-            background-color: #23727d !important;
-            border-color: #23727d !important;
+
+        /* ================= CONTAINER ================= */
+
+        .modern-container {
+            max-width: 760px;
+            margin: 30px auto;
+            padding: 0 20px;
         }
 
-        .btn-primary:active {
-            background-color: #1f5e66 !important;
-            border-color: #1f5e66 !important;
+
+        /* ================= HEADER ================= */
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 25px;
         }
+
+
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 13px;
+            background: var(--primary);
+            color: white;
+            font-size: 20px;
+        }
+
+
+        .form-title {
+            margin: 0 0 7px;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+
+        .form-subtitle {
+            margin: 0;
+            color: var(--muted);
+            font-size: .92rem;
+        }
+
+
+        /* ================= CARD ================= */
+
+        .form-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 5px 18px rgba(44, 140, 153, .07);
+        }
+
+
+        /* ================= SECTION ================= */
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding-bottom: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+
+
+        .section-icon {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+
+        .section-title {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.08rem;
+            font-weight: 700;
+        }
+
+
+        .section-description {
+            margin: 2px 0 0;
+            color: var(--muted);
+            font-size: .78rem;
+        }
+
+
+        /* ================= FORM ================= */
+
+        .form-row {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+
+        .form-group {
+            flex: 1;
+            min-width: 0;
+        }
+
+
+        .full-width {
+            width: 100%;
+        }
+
+
+        .form-label {
+            display: block;
+            margin-bottom: 7px;
+            color: #4c555b;
+            font-size: .84rem;
+            font-weight: 600;
+        }
+
+
+        .required-indicator {
+            color: #dc3545;
+        }
+
+
+        /* ================= INPUT ================= */
+
+        .input-with-icon,
+        .select-wrapper {
+            position: relative;
+        }
+
+
+        .input-icon,
+        .select-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 13px;
+            z-index: 2;
+        }
+
+
+        .modern-input,
+        .modern-textarea {
+            width: 100%;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            background: white;
+            color: var(--text);
+            font-size: .9rem;
+            transition: all .2s ease;
+            box-sizing: border-box;
+        }
+
+
+        .modern-input {
+            height: 45px;
+            padding: 0 13px 0 39px;
+        }
+
+
+        .modern-textarea {
+            padding: 12px 13px 12px 39px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+
+            .modern-input:focus,
+            .modern-textarea:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(44, 140, 153, .10);
+            }
+
+
+            .modern-input::placeholder,
+            .modern-textarea::placeholder {
+                color: #a5adb3;
+            }
+
+
+        /* SELECT */
+
+        select.modern-input {
+            appearance: none;
+            cursor: pointer;
+            padding-right: 35px;
+        }
+
+
+        .select-wrapper::after {
+            content: "\f078";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 10px;
+            pointer-events: none;
+        }
+
+
+        /* TEXTAREA */
+
+        .textarea-wrapper .input-icon {
+            top: 18px;
+            transform: none;
+        }
+
+
+
+        .validation-message {
+            display: block;
+            min-height: 18px;
+            margin-top: 4px;
+            color: #dc3545;
+            font-size: .76rem;
+        }
+
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+
+        .btn-primary,
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 43px;
+            padding: 10px 20px;
+            border-radius: 9px;
+            font-size: .88rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+
+        .btn-primary {
+            flex: 1;
+            border: 1px solid var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+
+            .btn-primary:hover {
+                background: var(--primary-dark);
+                border-color: var(--primary-dark);
+                color: white;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 10px rgba(44, 140, 153, .20);
+            }
+
+
+        .btn-secondary {
+            flex: 0 0 130px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--secondary);
+        }
+
+
+            .btn-secondary:hover {
+                border-color: var(--primary);
+                color: var(--primary);
+                background: var(--primary-light);
+            }
+
+
+
+        @@media (max-width: 700px) {
+
+            .modern-container {
+                margin: 15px auto;
+                padding: 0 15px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+                margin-bottom: 0;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                flex: none;
+            }
+        }
+
+
+        @@media (max-width: 480px) {
+
+            .form-title {
+                font-size: 1.45rem;
+            }
+
+            .form-card {
+                padding: 17px;
+            }
+        }
+
     </style>
 }
 
+
 @section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            $("#StateDivision").change(function () {
+
+                var stateId = $(this).val();
+
+                var townshipDropdown = $("#Township");
+
+                townshipDropdown.empty();
+
+                townshipDropdown.append(
+                    '<option value="">-- Select Township --</option>'
+                );
+
+                if (!stateId) {
+                    return;
+                }
+
+                $.get(
+                    '@Url.Action("GetTownshipsByState", "Customer")',
+                    { stateId: stateId },
+                    function (data) {
+
+                        $.each(data, function (i, item) {
+
+                            townshipDropdown.append(
+                                $('<option>', {
+                                    value: item.townshipPkid,
+                                    text: item.townshipEn
+                                })
+                            );
+
+                        });
+
+                    }
+                );
+
+            });
+
+        });
+
+    </script>
 }

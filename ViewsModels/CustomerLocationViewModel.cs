@@ -19,15 +19,16 @@ namespace AirConServicingManagementSystem.ViewsModels
     //}
     public class CustomerLocationViewModel
     {
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public string Phone { get; set; }
 
         public string Address { get; set; }
 
-        public int StateDivisionPkid { get; set; }
+        public int? StateDivisionPkid { get; set; }
 
-        public int TownshipPkid { get; set; }
+        public int? TownshipPkid { get; set; }
 
         // Dropdown
 

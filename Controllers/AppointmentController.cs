@@ -14,152 +14,11 @@ namespace AirConServicingManagementSystem.Controllers
             _context = context;
         }
 
-        // =========================
-        // 📅 CREATE (GET)
-        // =========================
-        //public async Task<IActionResult> Create()
-        //{
-        //    ViewBag.Customers = await _context.Customers
-        //        .Where(c => c.IsDeleted != true)
-        //        .ToListAsync();
 
-        //    ViewBag.Technicians = await _context.Technicians
-        //        .Where(t => t.IsDeleted != true)
-        //        .ToListAsync();
-
-        //    return View();
-        //}
-
-        //// =========================
-        //// 📅 CREATE (POST)
-        //// =========================
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create(Appointment model)
-        //{
-        //    var technicianId = HttpContext.Session.GetInt32("TechnicianId");
-
-
-        //    if (technicianId == null)
-        //    {
-        //        return RedirectToAction("Login", "Login");
-        //    }
-
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        ViewBag.Customers = await _context.Customers
-        //            .Where(c => c.IsDeleted != true)
-        //            .ToListAsync();
-
-        //        return View(model);
-        //    }
-
-
-
-        //    model.Status = "Pending";
-
-
-        //    // Login Technician Assign
-        //    model.TechnicianId = technicianId.Value;
-
-
-
-        //    model.ScheduledDate = model.ScheduledDate;
-
-
-
-        //    _context.Appointments.Add(model);
-
-        //    await _context.SaveChangesAsync();
-
-
-
-        //    TempData["SuccessMessage"] = "Appointment created successfully";
-
-
-        //    return RedirectToAction("Index");
-        //}
-
-
-        // =========================
-        // 📅 CREATE (GET)
-        // =========================
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            // ============================================
-            // CHECK LOGIN
-            // ============================================
-
             var userId = HttpContext.Session.GetInt32("UserId");
-            var userRole = HttpContext.Session.GetString("UserRole");
-
-            if (userId == null || string.IsNullOrEmpty(userRole))
-            {
-                return RedirectToAction(
-                    "Login",
-                    "Login"
-                );
-            }
-
-
-            // ============================================
-            // CHECK ROLE
-            // ============================================
-
-            if (userRole != "Admin" &&
-                userRole != "Senior" &&
-                userRole != "Junior")
-            {
-                HttpContext.Session.Clear();
-
-                return RedirectToAction(
-                    "Login",
-                    "Login"
-                );
-            }
-
-
-            // ============================================
-            // LOAD CUSTOMERS
-            // ============================================
-
-            ViewBag.Customers = await _context.Customers
-                .Where(c => c.IsDeleted != true)
-                .ToListAsync();
-
-
-            // ============================================
-            // LOAD TECHNICIANS
-            // ============================================
-
-            ViewBag.Technicians = await _context.Technicians
-                .Where(t => t.IsDeleted != true)
-                .ToListAsync();
-
-
-            // ============================================
-            // USER ROLE
-            // ============================================
-
-            ViewBag.UserRole = userRole;
-
-
-            return View();
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Appointment model)
-        {
-            // ============================================
-            // GET LOGIN USER
-            // ============================================
-
-            var userId = HttpContext.Session.GetInt32("UserId");
-
             var userRole = HttpContext.Session.GetString("UserRole");
 
             if (userId == null || string.IsNullOrEmpty(userRole))
@@ -167,34 +26,72 @@ namespace AirConServicingManagementSystem.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
+            if (userRole != "Admin" &&
+                userRole != "Senior" &&
+                userRole != "Junior")
+            {
+                HttpContext.Session.Clear();
 
-            // ============================================
-            // SAVE CREATED BY
-            // ============================================
+                return RedirectToAction("Login", "Login");
+            }
+
+            ViewBag.UserRole = userRole;
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Appointment model)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole");
+
+            if (userId == null || string.IsNullOrEmpty(userRole))
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            if (userRole != "Admin" &&
+                userRole != "Senior" &&
+                userRole != "Junior")
+            {
+                HttpContext.Session.Clear();
+
+                return RedirectToAction("Login", "Login");
+            }
+
+
+            /*
+             * ==========================================
+             * Created By
+             * ==========================================
+             */
 
             model.CreatedByUserId = userId.Value;
 
 
-            // ============================================
-            // ADMIN
-            // ============================================
+            /*
+             * ==========================================
+             * Admin
+             * ==========================================
+             */
 
             if (userRole == "Admin")
             {
-                // Admin creates appointment
-                // Do NOT automatically assign technician
-
                 model.TechnicianId = null;
-
                 model.Status = "Pending";
             }
 
 
-            // ============================================
-            // TECHNICIAN
-            // ============================================
+            /*
+             * ==========================================
+             * Technician
+             * ==========================================
+             */
 
-            else if (userRole == "Senior" || userRole == "Junior")
+            else if (userRole == "Senior" ||
+                     userRole == "Junior")
             {
                 var technicianId =
                     HttpContext.Session.GetInt32("TechnicianId");
@@ -204,54 +101,16 @@ namespace AirConServicingManagementSystem.Controllers
                     return RedirectToAction("Login", "Login");
                 }
 
-
-                // Technician creates own appointment
-
-                model.TechnicianId = technicianId.Value;
-
+                //model.TechnicianId = technicianId.Value;
                 model.Status = "Pending";
             }
 
 
-            // ============================================
-            // UNKNOWN ROLE
-            // ============================================
-
-            else
-            {
-                HttpContext.Session.Clear();
-
-                return RedirectToAction("Login", "Login");
-            }
-
-
-            // ============================================
-            // VALIDATION FAILED
-            // ============================================
-
-            if (ModelState.IsValid)
-            {
-                ViewBag.Customers =
-                    await _context.Customers
-                        .Where(c => c.IsDeleted != true)
-                        .ToListAsync();
-
-                ViewBag.Technicians =
-                    await _context.Technicians
-                        .Where(t => t.IsDeleted != true)
-                        .ToListAsync();
-
-                ViewBag.UserRole = userRole;
-
-                return View(model);
-            }
-
-
-            // ============================================
-            // DEFAULT VALUES
-            // ============================================
-
-            //model.ScheduledDate = DateTime.Now;
+            /*
+             * ==========================================
+             * Default Date
+             * ==========================================
+             */
 
             if (model.ScheduledDate == default)
             {
@@ -259,36 +118,75 @@ namespace AirConServicingManagementSystem.Controllers
             }
 
 
-            // ============================================
-            // SAVE APPOINTMENT
-            // ============================================
+            /*
+             * ==========================================
+             * Validation
+             * ==========================================
+             */
+
+            if (ModelState.IsValid)
+            {
+                ViewBag.UserRole = userRole;
+
+                return View(model);
+            }
+
+
+            /*
+             * ==========================================
+             * Save Appointment
+             * ==========================================
+             */
 
             _context.Appointments.Add(model);
 
             await _context.SaveChangesAsync();
 
 
-            // ============================================
-            // SUCCESS
-            // ============================================
-
             TempData["SuccessMessage"] =
                 "Appointment created successfully.";
 
 
-            // ============================================
-            // REDIRECT
-            // ============================================
+            /*
+             * ==========================================
+             * Redirect
+             * ==========================================
+             */
 
             if (userRole == "Admin")
             {
                 return RedirectToAction("AppointmentList");
             }
 
-
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchCustomers(string? search)
+        {
+            var query = _context.Customers
+                .Where(c => c.IsDeleted != true);
 
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(c =>
+                    c.Name.Contains(search) ||
+                    c.Phone.Contains(search));
+            }
+
+            var customers = await query
+                .OrderBy(c => c.Name)
+                .Take(20)
+                .Select(c => new
+                {
+                    id = c.Id,
+                    text = c.Name + " (" + c.Phone + ")"
+                })
+                .ToListAsync();
+
+            return Json(customers);
+        }
         [HttpGet]
         public async Task<IActionResult> GetCustomerInfo(int id)
         {

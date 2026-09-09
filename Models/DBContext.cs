@@ -189,6 +189,8 @@ public partial class DBContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.Customers).HasConstraintName("FK_Customers_Technicians");
         });
 
         modelBuilder.Entity<CustomerFeedback>(entity =>

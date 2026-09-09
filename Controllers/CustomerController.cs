@@ -14,16 +14,23 @@ namespace AirConServicingManagementSystem.Controllers
             _context = context;
         }
 
-        // GET: Customer
         public async Task<IActionResult> Index(
-      string search,
-      int? stateId,
-      int? townshipId,
-      DateTime? filterDate)
+    string search,
+    int? stateId,
+    int? townshipId,
+    DateTime? filterDate)
         {
-            // States dropdown
+
+            var technicianId = HttpContext.Session.GetInt32("TechnicianId");
+
+            if (technicianId == null)
+            {
+                return Unauthorized();
+            }
+
             ViewBag.States = await _context.TbStateDivisions
-                .Select(x => new {
+                .Select(x => new
+                {
                     x.StateDivisionPkid,
                     x.StateDivision,
                     x.StateDivisionEn
@@ -31,19 +38,22 @@ namespace AirConServicingManagementSystem.Controllers
                 .OrderBy(x => x.StateDivisionEn)
                 .ToListAsync();
 
-            // base query
             var customers = _context.Customers
+
                 .Include(x => x.CustomerLocations)
                     .ThenInclude(x => x.StateDivisionPk)
+
                 .Include(x => x.CustomerLocations)
                     .ThenInclude(x => x.TownshipPk)
-                .Include(x => x.CustomerLocations)
-                .Where(x => x.IsDeleted != true)
+
+                .Where(x =>
+                    x.IsDeleted != true &&
+
+                   x.TechnicianId == technicianId
+                )
+
                 .AsQueryable();
 
-            // =========================
-            // SEARCH (REAL DATA)
-            // =========================
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Trim();
@@ -52,39 +62,41 @@ namespace AirConServicingManagementSystem.Controllers
                     c.Name.Contains(search) ||
                     c.Phone.Contains(search) ||
                     c.Address.Contains(search) ||
+
                     c.CustomerLocations.Any(l =>
                         l.StateDivisionPk.StateDivisionEn.Contains(search) ||
-                        l.TownshipPk.TownshipEn.Contains(search))
+                        l.TownshipPk.TownshipEn.Contains(search)
+                    )
                 );
             }
 
-            // =========================
-            // STATE FILTER
-            // =========================
             if (stateId.HasValue)
             {
                 customers = customers.Where(c =>
                     c.CustomerLocations.Any(l =>
-                        l.StateDivisionPkid == stateId.Value));
+                        l.StateDivisionPkid == stateId.Value
+                    )
+                );
             }
 
-            // =========================
-            // TOWNSHIP FILTER
-            // =========================
             if (townshipId.HasValue)
             {
                 customers = customers.Where(c =>
                     c.CustomerLocations.Any(l =>
-                        l.TownshipPkid == townshipId.Value));
+                        l.TownshipPkid == townshipId.Value
+                    )
+                );
             }
 
-            // =========================
-            // DATE FILTER (optional)
-            // =========================
             if (filterDate.HasValue)
             {
+                var date = filterDate.Value.Date;
+                var nextDate = date.AddDays(1);
+
                 customers = customers.Where(c =>
-                    c.CreatedAt == filterDate.Value.Date);
+                    c.CreatedAt >= date &&
+                    c.CreatedAt < nextDate
+                );
             }
 
             var result = await customers
@@ -93,129 +105,34 @@ namespace AirConServicingManagementSystem.Controllers
 
             return View(result);
         }
-        // GET: Customer/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var customer = await _context.Customers
-                .Include(c => c.AirConUnits)
-                        .ThenInclude(a => a.Warranty)
-                .Include(c => c.CustomerLocations)
-                .Include(c => c.ServiceRecords)
-                        .ThenInclude(sr => sr.Technician)
-                .Include(c => c.ServiceReminders)
-                .Include(c => c.ServiceRequests)
-                .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (customer == null) return NotFound();
+                .Include(c => c.AirConUnits)
+                    .ThenInclude(a => a.Brand)
+
+                .Include(c => c.AirConUnits)
+                    .ThenInclude(a => a.Model)
+
+                .Include(c => c.AirConUnits)
+                    .ThenInclude(a => a.Warranty)
+
+                .Include(c => c.AirConUnits)
+                    .ThenInclude(a => a.ServiceRecordUnits)
+                        .ThenInclude(sru => sru.ServiceRecord)
+                            .ThenInclude(sr => sr.Technician)
+
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (customer == null)
+                return NotFound();
 
             return View(customer);
         }
-
-        // GET: Customer/Create
-        //public IActionResult Create()
-        //{
-        //    var vm = new CustomerLocationViewModel();
-        //    return View(vm);
-        //}
-
-        //// POST: Customer/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create(CustomerLocationViewModel vm)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        // Save Customer
-        //        var customer = new Customer
-        //        {
-        //            Name = vm.Name,
-        //            Phone = vm.Phone,
-        //            Address = vm.Address,
-        //            CreatedAt = DateTime.Now
-        //        };
-
-        //        _context.Customers.Add(customer);
-        //        await _context.SaveChangesAsync();
-
-        //        // Save Location
-        //        var location = new CustomerLocation
-        //        {
-        //            CustomerId = customer.Id,
-
-        //            Latitude = vm.Latitude,
-        //            Longitude = vm.Longitude,
-
-        //            MapAddress = vm.MapAddress,
-
-        //            // NEW
-        //            StateDivisionPkid = vm.StateDivisionPkid,
-        //            TownshipPkid = vm.TownshipPkid,
-
-        //            CreatedAt = DateTime.Now
-        //        };
-
-        //        _context.CustomerLocations.Add(location);
-        //        await _context.SaveChangesAsync();
-
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    return View(vm);
-        //}
-        //[HttpGet]
-        //public JsonResult GetTownshipInfo(string township)
-        //{
-        //    var data = _context.TbTownships
-        //        .Include(x => x.StateDivisionPk)
-        //        .Where(x => township != null && x.TownshipEn.Contains(township.Trim()))
-        //        .Select(x => new
-        //        {
-        //            TownshipPkid = x.TownshipPkid,
-        //            TownshipName = x.TownshipEn,
-        //            StateDivisionPkid = x.StateDivisionPkid,
-        //            StateDivisionName = x.StateDivisionPk.StateDivisionEn
-        //        })
-        //        .FirstOrDefault();
-
-        //    return Json(data);
-        //}
-        //public async Task<IActionResult> GetTownshipsByState(int stateId)
-        //{
-        //    var data = await _context.TbTownships
-        //        .Where(x => x.StateDivisionPkid == stateId)
-        //       .Select(x => new
-        //       {
-        //           townshipPkid = x.TownshipPkid,
-        //           townshipEn = x.TownshipEn.Trim()
-        //       })
-        //        .ToListAsync();
-
-        //    return Json(data);
-        //}
-
-        // GET: Customer/Create
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
-
-        //// POST: Customer/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Name,Phone,Email,Address")] Customer customer)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        customer.CreatedAt = DateTime.Now;
-        //        _context.Add(customer);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(customer);
-        //}
-
         public IActionResult Create()
         {
             var vm = new CustomerLocationViewModel();
@@ -280,40 +197,120 @@ namespace AirConServicingManagementSystem.Controllers
 
             return Json(data);
         }
-        // GET: Customer/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null) return NotFound();
+            var customer = await _context.Customers
+                .Include(c => c.CustomerLocations)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            return View(customer);
+            if (customer == null)
+                return NotFound();
+
+            var location = customer.CustomerLocations?.FirstOrDefault();
+
+            var vm = new CustomerLocationViewModel
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                Phone = customer.Phone,
+                Address = customer.Address,
+                StateDivisionPkid = (location?.StateDivisionPkid),
+                TownshipPkid = (location?.TownshipPkid),
+
+                StateDivisions = await _context.TbStateDivisions
+                    .OrderBy(x => x.StateDivisionEn)
+                    .ToListAsync(),
+
+                Townships = location != null
+                    ? await _context.TbTownships
+                        .Where(x => x.StateDivisionPkid == location.StateDivisionPkid)
+                        .OrderBy(x => x.TownshipEn)
+                        .ToListAsync()
+                    : new List<TbTownship>()
+            };
+
+            return View(vm);
         }
 
-        // POST: Customer/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Customer vm)
+        public async Task<IActionResult> Edit(
+      int id,
+      CustomerLocationViewModel vm)
         {
-            if (id != vm.Id) return NotFound();
+            if (id != vm.Id)
+                return NotFound();
 
             if (ModelState.IsValid)
             {
-                var customer = await _context.Customers.FindAsync(id);
-                if (customer == null) return NotFound();
+                var customer = await _context.Customers
+                    .Include(c => c.CustomerLocations)
+                    .FirstOrDefaultAsync(c => c.Id == id);
 
-                // only update editable fields
+                if (customer == null)
+                    return NotFound();
+
+                // =========================
+                // CUSTOMER
+                // =========================
+
                 customer.Name = vm.Name;
                 customer.Phone = vm.Phone;
                 customer.Address = vm.Address;
-
-                // keep original CreatedAt
                 customer.UpdatedAt = DateTime.Now;
+
+
+                // =========================
+                // CUSTOMER LOCATION
+                // =========================
+
+                var location = customer.CustomerLocations?.FirstOrDefault();
+
+                if (location != null)
+                {
+                    location.StateDivisionPkid = vm.StateDivisionPkid;
+                    location.TownshipPkid = vm.TownshipPkid;
+                }
+                else
+                {
+                    location = new CustomerLocation
+                    {
+                        CustomerId = customer.Id,
+                        StateDivisionPkid = vm.StateDivisionPkid,
+                        TownshipPkid = vm.TownshipPkid,
+                        CreatedAt = DateTime.Now
+                    };
+
+                    _context.CustomerLocations.Add(location);
+                }
 
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
+            }
+
+
+            // =========================
+            // VALIDATION FAILED
+            // =========================
+
+            vm.StateDivisions = await _context.TbStateDivisions
+                .OrderBy(x => x.StateDivisionEn)
+                .ToListAsync();
+
+            if (vm.StateDivisionPkid.HasValue)
+            {
+                vm.Townships = await _context.TbTownships
+                    .Where(x => x.StateDivisionPkid == vm.StateDivisionPkid.Value)
+                    .OrderBy(x => x.TownshipEn)
+                    .ToListAsync();
+            }
+            else
+            {
+                vm.Townships = new List<TbTownship>();
             }
 
             return View(vm);

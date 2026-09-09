@@ -1,9 +1,8 @@
-﻿
+﻿@model Appointment
+
 @{
     ViewData["Title"] = "Create Appointment";
-    //Layout = "~/Views/Shared/_TechnicianLayout.cshtml";
-}
-@{
+
     var userRole = Context.Session.GetString("UserRole");
 
     if (userRole == "Admin")
@@ -19,183 +18,367 @@
         Layout = "~/Views/Shared/_Layout.cshtml";
     }
 }
-@model Appointment
 
 <link rel="stylesheet" href="~/css/select2.min(css).css" />
-@* <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-      rel="stylesheet" /> *@
+
+<style>
+
+    .appointment-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .appointment-card {
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .appointment-header {
+        background: #ffffff;
+        border-bottom: 1px solid #eeeeee;
+        padding: 24px 28px;
+    }
+
+    .appointment-title {
+        color: #2c8c99;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .appointment-subtitle {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    .appointment-body {
+        padding: 28px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 46px;
+        border-radius: 8px;
+        border: 1px solid #d9dfe3;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #2c8c99;
+            box-shadow: 0 0 0 0.15rem rgba(44, 140, 153, 0.15);
+        }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .customer-info-box {
+        background: #f6fbfc;
+        border: 1px solid #dceff1;
+        border-radius: 8px;
+        padding: 12px 15px;
+    }
+
+    .customer-info-label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 3px;
+    }
+
+    .customer-info-value {
+        color: #2c8c99;
+        font-weight: 600;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 46px;
+        border: 1px solid #d9dfe3;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+    }
+
+        .select2-container--default
+        .select2-selection--single
+        .select2-selection__rendered {
+            line-height: 44px;
+            padding-left: 14px;
+            color: #333;
+        }
+
+        .select2-container--default
+        .select2-selection--single
+        .select2-selection__arrow {
+            height: 44px;
+            right: 8px;
+        }
+
+    .select2-container--default.select2-container--focus
+    .select2-selection--single {
+        border-color: #2c8c99;
+        box-shadow: 0 0 0 0.15rem rgba(44, 140, 153, 0.15);
+    }
+
+    .select2-dropdown {
+        border-color: #2c8c99;
+    }
+
+    .select2-results__option--highlighted[aria-selected] {
+        background-color: #2c8c99 !important;
+    }
+
+    .btn-save {
+        background: #2c8c99;
+        border: none;
+        min-height: 46px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+        .btn-save:hover {
+            background: #247783;
+        }
+
+    .btn-cancel {
+        min-height: 46px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .required-star {
+        color: #dc3545;
+    }
+
+    .field-validation-error {
+        font-size: 13px;
+    }
+
+    @@media (max-width: 576px) {
+
+        .appointment-body {
+            padding: 20px;
+        }
+
+        .appointment-header {
+            padding: 20px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+            .action-buttons .btn {
+                width: 100%;
+            }
+    }
+
+</style>
+
 
 <div class="container py-4">
 
-    <div class="card shadow-sm rounded-3">
+    <div class="appointment-wrapper">
 
-        <div class="card-header bg-white">
+        <div class="card shadow-sm appointment-card">
 
-            <h3 style="color:#2c8c99;font-weight:700;">
-                Create Appointment
-            </h3>
+            <!-- Header -->
+            <div class="appointment-header">
 
-            <p class="text-muted mb-0">
-                Schedule customer service visit
-            </p>
+                <h3 class="appointment-title">
+                    <i class="fas fa-calendar-plus me-2"></i>
+                    Create Appointment
+                </h3>
 
-        </div>
+                <p class="appointment-subtitle">
+                    Schedule a customer service visit
+                </p>
 
-
-        <div class="card-body">
-
-
-            <form asp-action="Create" method="post">
-
-                @Html.AntiForgeryToken()
+            </div>
 
 
-                <!-- Customer -->
-                <div class="mb-3">
+            <!-- Body -->
+            <div class="appointment-body">
 
-                    <label class="form-label">
-                        Customer
-                    </label>
+                <form asp-action="Create"
+                      method="post">
 
-
-                    <select asp-for="CustomerId"
-                            id="CustomerId"
-                            class="form-select"
-                            required>
+                    @Html.AntiForgeryToken()
 
 
-                        <option value="">
-                            -- Search Customer --
-                        </option>
+                    <!-- Customer -->
+                    <div class="mb-4">
 
+                        <label class="form-label">
+                            Customer
+                            <span class="required-star">*</span>
+                        </label>
 
-                        @foreach (var c in ViewBag.Customers)
-                        {
-                            <option value="@c.Id">
+                        <select asp-for="CustomerId"
+                                id="CustomerId"
+                                class="form-select"
+                                required>
 
-                                @c.Name
-                                (@c.Phone)
-
+                            <option value="">
+                                -- Search Customer --
                             </option>
-                        }
+
+                        </select>
+
+                        <span asp-validation-for="CustomerId"
+                              class="text-danger">
+                        </span>
+
+                        <small class="text-muted">
+                            Type customer name or phone number to search.
+                        </small>
+
+                    </div>
 
 
-                    </select>
+                    <!-- Customer Phone -->
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Phone Number
+                        </label>
+
+                        <div class="customer-info-box">
+
+                            <div class="customer-info-label">
+                                Customer Phone
+                            </div>
+
+                            <div id="CustomerInfo"
+                                 class="customer-info-value">
+
+                                --
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
 
-                </div>
+                    <!-- Scheduled Date -->
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Scheduled Date
+                            <span class="required-star">*</span>
+                        </label>
+
+                        <input asp-for="ScheduledDate"
+                               type="datetime-local"
+                               class="form-control"
+                               required />
+
+                        <span asp-validation-for="ScheduledDate"
+                              class="text-danger">
+                        </span>
+
+                    </div>
 
 
+                    <!-- Location -->
+                    <div class="mb-4">
 
-                <!-- Phone -->
-                <div class="mb-3">
+                        <label class="form-label">
+                            Location
+                            <span class="required-star">*</span>
+                        </label>
 
-                    <label class="form-label">
-                        Phone Number
-                    </label>
+                        <textarea asp-for="Location"
+                                  id="Location"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Customer address / location"
+                                  required></textarea>
 
+                        <span asp-validation-for="Location"
+                              class="text-danger">
+                        </span>
 
-                    <input id="CustomerInfo"
-                           class="form-control"
-                           readonly />
-
-                </div>
-
-
-
-                <!-- Date -->
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Scheduled Date
-                    </label>
+                    </div>
 
 
-                    <input asp-for="ScheduledDate"
-                           type="datetime-local"
-                           class="form-control"
-                           required />
+                    <!-- Notes -->
+                    <div class="mb-4">
 
-                </div>
+                        <label class="form-label">
+                            Notes
+                        </label>
 
+                        <textarea asp-for="Notes"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Optional details"></textarea>
 
+                        <span asp-validation-for="Notes"
+                              class="text-danger">
+                        </span>
 
-
-                <!-- Location -->
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Location
-                    </label>
-
-
-                    <textarea asp-for="Location"
-                           id="Location"
-                           class="form-control"
-                           placeholder="Customer address / location"
-                           required ></textarea>
-
-                </div>
+                    </div>
 
 
+                    <!-- Buttons -->
+                    <div class="action-buttons d-flex justify-content-end gap-2">
 
+                        <a asp-action="Index"
+                           class="btn btn-light btn-cancel px-4">
 
-                <!-- Notes -->
-                <div class="mb-3">
+                            <i class="fas fa-times me-1"></i>
+                            Cancel
 
-                    <label class="form-label">
-                        Notes
-                    </label>
+                        </a>
 
+                        <button type="submit"
+                                class="btn btn-save text-white px-5">
 
-                    <textarea asp-for="Notes"
-                              class="form-control"
-                              rows="3"
-                              placeholder="Optional details"></textarea>
+                            <i class="fas fa-save me-1"></i>
+                            Save Appointment
 
+                        </button>
 
-                </div>
+                    </div>
 
+                </form>
 
-
-
-                <button type="submit"
-                        class="btn w-100 text-white"
-                        style="background:#2c8c99;">
-
-                    Save
-
-                </button>
-
-
-
-            </form>
-
+            </div>
 
         </div>
-
 
     </div>
-
 
 </div>
 
 
-
 @section Scripts
 {
+    <partial name="_ValidationScriptsPartial" />
 
     <script src="~/js/select2.min.js"></script>
-    @* <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> *@
 
     <script>
 
-
         $(document).ready(function () {
 
-
-
-            // Enable Search Dropdown
+            /*
+             * ==========================================
+             * Customer Search - Server Side AJAX
+             * ==========================================
+             */
 
             $("#CustomerId").select2({
 
@@ -203,95 +386,133 @@
 
                 allowClear: true,
 
-                width: "100%"
+                width: "100%",
+
+                minimumInputLength: 2,
+
+                ajax: {
+
+                    url: '@Url.Action("SearchCustomers", "Appointment")',
+
+                    type: "GET",
+
+                    dataType: "json",
+
+                    delay: 300,
+
+                    data: function (params) {
+
+                        return {
+                            search: params.term
+                        };
+
+                    },
+
+                    processResults: function (data) {
+
+                        return {
+                            results: data
+                        };
+
+                    },
+
+                    cache: true
+
+                },
+
+                language: {
+
+                    inputTooShort: function () {
+
+                        return "Please enter at least 2 characters.";
+
+                    },
+
+                    searching: function () {
+
+                        return "Searching...";
+
+                    },
+
+                    noResults: function () {
+
+                        return "No customer found.";
+
+                    }
+
+                }
 
             });
 
 
-
-
-
-            // Customer Change Event
+            /*
+             * ==========================================
+             * Customer Selected
+             * ==========================================
+             */
 
             $("#CustomerId").on("change", function () {
-
 
                 var customerId = $(this).val();
 
 
-
-                if(customerId == "")
-                {
+                if (!customerId) {
 
                     $("#Location").val("");
 
-                    $("#CustomerInfo").val("");
+                    $("#CustomerInfo").text("--");
 
                     return;
 
                 }
 
 
+                /*
+                 * Get Customer Information
+                 */
 
                 $.ajax({
 
-                    url: "/Appointment/GetCustomerInfo",
-
+                    url: '@Url.Action("GetCustomerInfo", "Appointment")',
 
                     type: "GET",
 
-
                     data: {
-
                         id: customerId
-
                     },
 
+                    success: function (data) {
 
-                    success: function(data)
-                    {
-
-
-                        if(data)
-                        {
+                        if (data) {
 
                             $("#Location")
-                                .val(data.location);
-
-
+                                .val(data.location || "");
 
                             $("#CustomerInfo")
-                                .val(data.phone);
+                                .text(data.phone || "--");
+
+                        }
+                        else {
+
+                            $("#Location").val("");
+
+                            $("#CustomerInfo").text("--");
 
                         }
 
-
                     },
 
+                    error: function () {
 
-                    error:function()
-                    {
-
-                        console.log(
-                            "Customer load error"
-                        );
+                        console.log("Customer information load error.");
 
                     }
 
-
                 });
-
-
 
             });
 
-
-
         });
 
-
-
     </script>
-
-
 }

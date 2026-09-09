@@ -31,6 +31,8 @@ public partial class Customer
     [Column(TypeName = "datetime")]
     public DateTime? DeletedAt { get; set; }
 
+    public int? TechnicianId { get; set; }
+
     [InverseProperty("Customer")]
     public virtual ICollection<AirConUnit> AirConUnits { get; set; } = new List<AirConUnit>();
 
@@ -57,6 +59,10 @@ public partial class Customer
 
     [InverseProperty("Customer")]
     public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
+
+    [ForeignKey("TechnicianId")]
+    [InverseProperty("Customers")]
+    public virtual Technician? Technician { get; set; }
 
     [InverseProperty("Customer")]
     public virtual ICollection<TechnicianSchedulePlan> TechnicianSchedulePlans { get; set; } = new List<TechnicianSchedulePlan>();

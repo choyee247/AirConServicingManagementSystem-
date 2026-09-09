@@ -9,12 +9,7 @@
 
 <div class="modern-container">
     <div class="form-header">
-        <div class="header-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-        </div>
+   
         <h1 class="form-title">Create New Customer</h1>
         <p class="form-subtitle">Fill in the details below to add a new customer to the system</p>
     </div>
@@ -48,7 +43,10 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label asp-for="Phone" class="form-label">Phone Number</label>
+                        <label asp-for="Phone" class="form-label">
+                            Phone Number                            
+                            <span class="required-indicator">*</span>
+                        </label>
                         <div class="input-with-icon">
                             <i class="input-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -79,7 +77,9 @@
                 <div class="form-row">
 
                     <div class="form-group">
-                        <label>State Division</label>
+                        <label>State Division
+                            <span class="required-indicator">*</span>
+                        </label>
 
                         <select asp-for="StateDivisionPkid"
                                 asp-items="@(new SelectList(Model.StateDivisions,"StateDivisionPkid","StateDivisionEn"))"
@@ -93,7 +93,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Township</label>
+                        <label>Township
+                            <span class="required-indicator">*</span>
+                        </label>
 
                         <select asp-for="TownshipPkid"
                                 id="Township"
@@ -107,7 +109,9 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group full-width">
-                        <label asp-for="Address" class="form-label">Complete Address</label>
+                        <label asp-for="Address" class="form-label">Complete Address
+                            <span class="required-indicator">*</span>
+                        </label>
                         <div class="input-with-icon">
                             <i class="input-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -124,21 +128,6 @@
                         <span asp-validation-for="Address" class="validation-message"></span>
                     </div>
                 </div>
-                <!-- MAP SECTION -->
-               @*  <div class="form-row">
-                    <div class="form-group full-width">
-                        <label class="form-label">
-                            📍 Select Location on Map
-                        </label>
-
-                        <div id="map" style="height: 320px;border-radius: 12px;border: 2px solid #dee2e6;"></div>
-                    </div>
-                </div>
-
-                <!-- Hidden fields for location -->
-                <input type="hidden" id="Latitude" name="Latitude" />
-                <input type="hidden" id="Longitude" name="Longitude" />
-                <input type="hidden" id="MapAddress" name="MapAddress" /> *@
 
             </div>
 

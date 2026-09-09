@@ -70,6 +70,9 @@ public partial class Technician
     public virtual ICollection<CustomerFeedback> CustomerFeedbacks { get; set; } = new List<CustomerFeedback>();
 
     [InverseProperty("Technician")]
+    public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+
+    [InverseProperty("Technician")]
     public virtual ICollection<MaintenanceSchedule> MaintenanceSchedules { get; set; } = new List<MaintenanceSchedule>();
 
     [InverseProperty("Technician")]
